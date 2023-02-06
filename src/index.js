@@ -3,7 +3,6 @@ import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, connectFires
 import emailjs from '@emailjs/browser';
 import { read, writeFileXLSX } from "xlsx";
 import XLSX from 'xlsx';
-import { MailSlurp } from "mailslurp-client";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD-yeq21RPZFZIYhecLaTh1OPkCuM0Z2ms",
@@ -108,48 +107,48 @@ if (coordBtn) {
       // }
 
 
-      const Mailjet = require('node-mailjet');
+      // const Mailjet = require('node-mailjet');
 
-      const mailjet = Mailjet.apiConnect(
-        process.env.MJ_APIKEY_PUBLIC,
-        process.env.MJ_APIKEY_PRIVATE,
-      );
+      // const mailjet = Mailjet.apiConnect(
+      //   process.env.MJ_APIKEY_PUBLIC,
+      //   process.env.MJ_APIKEY_PRIVATE,
+      // );
       
-      function sendEmail(recipient) {
-        return mailjet
-          .post("send", { version: "v3.1" })
-          .request({
-            Messages: [
-              {
-                From: {
-                  Email: "shady22elmagic@gmail.com",
-                  Name: "JackLeckerman",
-                },
-                To: [
-                  {
-                    Email: email.value,
-                  },
-                ],
-                Subject: "one",
-                TextPart: "two",
-                HTMLPart: "three",
-              },
-            ],
-          })
-          .then((result) => {
-            // do something with the send result or ignore
-            console.log("done")
-          })
-          .catch((err) => {
-            // handle an error
-            console.log("error")
-          });
-      }
+      // function sendEmail(recipient) {
+      //   return mailjet
+      //     .post("send", { version: "v3.1" })
+      //     .request({
+      //       Messages: [
+      //         {
+      //           From: {
+      //             Email: "shady22elmagic@gmail.com",
+      //             Name: "JackLeckerman",
+      //           },
+      //           To: [
+      //             {
+      //               Email: email.value,
+      //             },
+      //           ],
+      //           Subject: "one",
+      //           TextPart: "two",
+      //           HTMLPart: "three",
+      //         },
+      //       ],
+      //     })
+      //     .then((result) => {
+      //       // do something with the send result or ignore
+      //       console.log("done")
+      //     })
+      //     .catch((err) => {
+      //       // handle an error
+      //       console.log("error")
+      //     });
+      // }
 
-      const api = new MailSlurp({ apiKey: "db682089d96bec6fbce322f0ff2467b9e1ef6f639d663eb4a6de00332dbe2c2c" });
-      const newEmailInbox = await api.createInbox();
-      const result = await sendEmail(newEmailInbox.emailAddress);
-      expect(result.success).to.be(true);
+      // const api = new MailSlurp({ apiKey: "db682089d96bec6fbce322f0ff2467b9e1ef6f639d663eb4a6de00332dbe2c2c" });
+      // const newEmailInbox = await api.createInbox();
+      // const result = await sendEmail(newEmailInbox.emailAddress);
+      // expect(result.success).to.be(true);
 
       // **************
 

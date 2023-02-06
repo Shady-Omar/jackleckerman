@@ -5,9 +5,6 @@ import { read, writeFileXLSX } from "xlsx";
 import XLSX from 'xlsx';
 import { MailSlurp } from "mailslurp-client";
 
-
-
-
 const firebaseConfig = {
   apiKey: "AIzaSyD-yeq21RPZFZIYhecLaTh1OPkCuM0Z2ms",
   authDomain: "jackleckerman-70b9f.firebaseapp.com",

@@ -748,7 +748,7 @@ querySnapshotss.forEach((doc) => {
         }
 
       } else {
-        window.location.href = "/events.html";
+        window.location.href = "https://shady-omar.github.io/jackleckerman/events.html";
       }
     } )
   }

@@ -98,8 +98,38 @@ button {
   color: red;
 }
 
+#email-error, #pass-error {
+  font-size: 14px;
+  color: red;
+}
+
+#edit-error-one, #edit-error-two {
+  font-size: 14px;
+  color: red;
+}
+
+#user-error-one, #user-error-two, #user-error-three, #user-error-four, #user-error-five, #user-error-six {
+  font-size: 14px;
+  color: red;
+}
+
+#poll-error-one, #poll-error-two, #poll-error-three {
+  font-size: 14px;
+  color: red;
+}
+
 #mrg {
   margin: 2rem 0 !important;
+}
+
+#sec-one {
+  margin-top: 2rem;
+}
+
+
+#add-user-pop {
+  transform: translateX(-50%);
+  z-index: 40;
 }
 
 select {

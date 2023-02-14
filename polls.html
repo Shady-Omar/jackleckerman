@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./dist/output.css" rel="stylesheet" />
+    <title>Admin Panel - Polls</title>
+  </head>
+  <body class="bg-black">
+    <header class="w-full flex flex-col justify-start items-center min-w-375 shadow-2xl bg-darkblue">
+      <div class="max-w-5xl w-full flex flex-col justify-start items-center relative lg:max-w-screen-2xl">
+        <!-- Creating the navgation bar -->
+        <nav class="flex flex-row items-center justify-center w-full z-20 text-white font-semibold">
+          <div id="content-nav" class="w-[90%] flex flex-row items-center justify-between my-8 lg:my-6">
+            <div id="logo-side" class="flex flex-row justify-between items-center w-1/2">
+              <a href="#">Admin Panel</a>
+            </div>
+            <div id="menu" class="z-10 lg:hidden">
+              <!-- <img src="images/icon-hamburger.svg" alt="burger" class="menu cursor-pointer">
+              <img src="images/icon-close.svg" alt="close" class="close hidden cursor-pointer"> -->
+            </div>
+            <div class="hidden rounded-md flex flex-col justify-center items-center z-10 top-[14%] w-[90%] lg:flex lg:flex-row lg:w-1/2 lg:relative lg:justify-center">
+              <ul id="nav" class="hidden lg:flex flex-col w-3/4 items-center justify-center text-center my-8 lg:flex-row lg:w-[75%] lg:my-0 lg:justify-between">
+                <a href="index.html"><li>Log out</li></a>
+                <a href="events.html"><li class="active">Events</li></a>
+                <a href="coordinator.html"><li>Coordinators</li></a>
+                <a href="#"><li>Chat Rooms</li></a>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <main class="w-full flex flex-col justify-start items-center min-w-375">
+      <div id="bg" class="max-w-5xl w-full flex flex-col justify-start items-center lg:max-w-screen-2xl overflow-hidden bg-slate-200">
+        <section id="sec-one" class="w-full flex flex-col justify-center items-center">
+          <div class=" flex flex-col justify-center items-start w-[90%] sm:py-8">
+            <div>
+              <button id="add-poll" type="button" class="text-white bg-darkblue hover:bg-blue focus:ring-4 focus:ring-blue font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add New Poll</button>
+            </div>
+            <div class=" flex flex-col justify-center items-start w-[90%] sm:py-8">
+              <div class="poll-block">
+                <div id="poll-container" class="flex flex-col gap-4 items-start justify-center">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Pop up -->
+
+          <div id="poll-pop" class="hidden items-center justify-center relative">
+            <div class=" flex fixed z-10 top-[0] left-0 w-full h-full bg-black bg-opacity-60">
+              <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
+                  <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
+  
+                  <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                    <div class="relative">
+                      <input autocomplete="off" required id="poll-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Poll Name" />
+                      <label for="poll-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Poll Name</label>
+                    </div>
+  
+                    <div id="poll-error-one"></div>
+  
+                    <div class="relative">
+                      <input autocomplete="off" required id="poll-opt-one" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Option" />
+                      <label for="poll-opt-one" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Option 1</label>
+                    </div>
+                    
+                    <div id="poll-error-two"></div>
+
+                    <div class="relative">
+                      <input autocomplete="off" required id="poll-opt-two" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Option" />
+                      <label for="poll-opt-two" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Option 2</label>
+                    </div>
+
+                    <div id="poll-error-three"></div>
+  
+                  </div>
+                  <div class="relative">
+                    <button id="add-poll-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Add</button>
+                    <button id="close-poll-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                  </div>
+                  <button id="add-opt-btn">add btn</button>
+  
+                  </div>
+              </div>
+            </div>
+          </div>
+          
+          <!--  -->
+          <!-- ......................... -->
+          <div class="overlay hidden"></div>
+        </section>
+      </div>
+    </main>
+    <script src="dist/bundle.js"></script>
+  </body>
+</html>

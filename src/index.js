@@ -748,7 +748,7 @@ querySnapshotss.forEach((doc) => {
         }
 
       } else {
-        window.location.href = "jackleckerman/events.html";
+        window.location.href = "/events.html";
       }
     } )
   }

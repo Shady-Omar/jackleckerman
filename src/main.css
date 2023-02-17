@@ -118,6 +118,11 @@ button {
   color: red;
 }
 
+#btn-error-one, #btn-error-two {
+  font-size: 14px;
+  color: red;
+}
+
 #mrg {
   margin: 2rem 0 !important;
 }
@@ -135,4 +140,15 @@ button {
 select {
   border: 1px solid black !important;
   border-radius: 7px;
+}
+
+#cont-close {
+  content: '×';
+  position: absolute;
+  color: black;
+  font-weight: bold;
+  font-size: 20px;
+  right: 3px;
+  top: -8px;
+  cursor: pointer;
 }

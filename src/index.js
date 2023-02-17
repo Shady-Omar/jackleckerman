@@ -748,7 +748,7 @@ querySnapshotss.forEach((doc) => {
         }
 
       } else {
-        window.location.href = "https://shady-omar.github.io/jackleckerman/events.html";
+        window.location.href = "events.html";
       }
     } )
   }
@@ -908,16 +908,18 @@ querySnapshott.forEach(async(doccc) => {
     optBtn.addEventListener('click', async () => {
 
       let optPop = document.querySelector("#option-pop");
+      
         if (optPop) {
         let optionPopUp = document.createElement("div");
         optionPopUp.setAttribute('class', `${doccc.id}`);
         let ids = optionPopUp.getAttribute('class')
         sessionStorage.setItem("event ID", ids);
+
         optionPopUp.innerHTML = `
         
         <div id="opt-event-pop" class="hidden items-center justify-center relative">
-          <div class=" flex fixed z-10 top-0 w-full h-full bg-navy bg-opacity-60">
-            <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg grid gap-[1rem] grid-cols-4">
+        <div  class=" flex fixed z-10 top-0 w-full h-full bg-navy bg-opacity-60 flex-col items-center ">
+        <div  class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg grid gap-[1rem] grid-cols-4">
                 
               <div id=${doccc.id}-attend>
                 <a href="attendees.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
@@ -938,41 +940,190 @@ querySnapshott.forEach(async(doccc) => {
               </div>
 
               <div id=${doccc.id}-add-opt>
-                <a href="#" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
+                <a href="#" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-green border border-green rounded-lg shadow hover:bg-darkgreen">
                 <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Add Option</h5>
                 </a>
               </div>
 
-            </div>
+              </div>
+              <div class="relative mb-10">
+                <button id="close-opt-btn" class="bg-red hover:bg-black text-white rounded-md px-10 py-1">Close</button>
+              </div>
           </div>
         </div>
         `
         optPop.appendChild(optionPopUp);
+        var eventPopId = sessionStorage.getItem("event ID");
+        const q = query(collection(db, "Events", eventPopId, "buttons"), where("eventBtnID", "==", eventPopId));
+      
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+
+
+
+
+          let addOptBtn = document.querySelector(`#${doccc.id}-add-opt`)
+          let newBtn = document.createElement("div");
+          newBtn.innerHTML = `
+          <a href="https://${doc.data().btnURL}/" target="_blank" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
+          <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${doc.data().btnName}</h5>
+          </a>
+          `
+          addOptBtn.before(newBtn)
+
+
+        });
+
 
         let overlay = document.querySelector(".overlay");
         let optpopHidden = document.querySelector("#opt-event-pop");
-        optpopHidden.classList.add("flex");
-        optpopHidden.classList.remove("hidden");
-        overlay.classList.remove("hidden");
+        if (optpopHidden) {
+
+          optpopHidden.classList.add("flex");
+          optpopHidden.classList.remove("hidden");
+          overlay.classList.remove("hidden");
+        }
 
         let closeOptPop = document.querySelector("#close-opt-btn");
         if (closeOptPop) {
           closeOptPop.addEventListener('click',() => {
-            optpopHidden.classList.add("hidden");
-            optpopHidden.classList.remove("flex");
+            optionPopUp.remove()
             overlay.classList.add("hidden");
           });
         }
 
+        let addbtn = document.querySelector(`#${doccc.id}-add-opt`);
+        if (addbtn) {
+          addbtn.addEventListener('click',() => {
+
+            let addbtnpop = document.querySelector("#add-btn-pop");
+            let addBtnPopUp = document.createElement("div");
+
+          addBtnPopUp.innerHTML = `
+          
+          <div id="add-btn-popup" class="hidden items-center justify-center relative">
+            <div class=" flex fixed z-10 top-0 w-full h-full bg-black bg-opacity-60">
+              <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
+                  <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
+
+                  <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                    <div class="relative">
+                      <input autocomplete="off" required id="new-btn-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button Name" />
+                      <label for="new-btn-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button Name</label>
+                    </div>
+
+                    <div id="btn-error-one"></div>
+
+                    <div class="relative">
+                      <input autocomplete="off" required pattern="https://.*" id="new-btn-link" name="name" type="url" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button URL" />
+                      <label for="new-btn-link" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button URL</label>
+                    </div>
+                    
+
+                    <div id="btn-error-two"></div>
+
+                    <div class="relative">
+                      <button id="add-btn-click" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">add</button>
+                      <button id="close-event-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                    </div>
+                  </div>
+
+                  </div>
+              </div>
+            </div>
+          </div>
+          `
+          addbtnpop.appendChild(addBtnPopUp);
+
+          let overlay = document.querySelector(".overlay");
+          let addBtnPopHidden = document.querySelector("#add-btn-popup");
+          addBtnPopHidden.classList.add("flex");
+          addBtnPopHidden.classList.remove("hidden");
+          overlay.classList.remove("hidden");
+
+          let closeEventPop = document.querySelector("#close-event-btn");
+          if (closeEventPop) {
+            closeEventPop.addEventListener('click',() => {
+              addBtnPopHidden.classList.add("hidden");
+              addBtnPopHidden.classList.remove("flex");
+              overlay.classList.add("hidden");
+            });
+          }
+
+
+
+          // ++++++++++++++++++++++++++++++
+
+
+          let eventNewBtn = document.querySelector("#add-btn-click");
+        if (eventNewBtn) {
+          eventNewBtn.addEventListener('click', async () => {
+
+            let btnErrorOne = document.querySelector("#btn-error-one");
+            let btnErrorTwo = document.querySelector("#btn-error-two");
+
+            let newBtnName = document.querySelector("#new-btn-name");
+            let newBtnLink = document.querySelector("#new-btn-link");
+
+            if (newBtnName.value === '' || newBtnName.value === null || newBtnLink.value === '' || newBtnLink.value === null) {
+              if (newBtnName.value === '' || newBtnName.value === null) {
+          
+                btnErrorOne.innerHTML = "*Button name is required"
+              } else {
+                btnErrorOne.classList.add("hidden")
+              }
+            
+              if (newBtnLink.value === '' || newBtnLink.value === null) {
+            
+                btnErrorTwo.innerHTML = "*Button URL is required"
+              } else {
+                btnErrorTwo.classList.add("hidden")
+              }
+            } else {
+
+              try {
+
+                var eventPopId = sessionStorage.getItem("event ID");
+                console.log(eventPopId)
+
+
+                const btnRef = await addDoc(collection(db, "Events", eventPopId, "buttons"), {
+                  btnName: newBtnName.value,
+                  btnURL: newBtnLink.value,
+                  eventBtnID: eventPopId,
+                });
+
+                addBtnPopHidden.classList.add("hidden");
+                addBtnPopHidden.classList.remove("flex");
+                alert("New Button Added!")
+                location.reload();
+              } catch(e) {
+                console.log(e)
+              }
+
+            }
+          });
+
+        }
+
+
+          // ++++++++++++++++++++++++++++++
+
+
+          });
+          }
+
 
         
+          
 
 
       }
     });
   }
+      
 
-        
+
 
 });
 
@@ -986,8 +1137,6 @@ querySnapshott.forEach(async(doccc) => {
 
         const querySnapshotot = await getDocs(q);
         querySnapshotot.forEach((docx) => {
-          // doc.data() is never undefined for query doc snapshots
-          console.log(docx.id, " => ", docx.data());
 
           let attendContainer = document.querySelector("#attend-container");
 
@@ -1066,7 +1215,7 @@ let pollPop = document.querySelector("#poll-pop");
       addOption.addEventListener('click', () => {
         count++;
 
-        if (count>18){
+        if (count>20){
           addOption.disabled = true;
           addOption.classList.add("hidden");
         } else {
@@ -1156,23 +1305,6 @@ let pollPop = document.querySelector("#poll-pop");
               
             }
 
-            // const subbDdocRef = await addDoc(collection(db, "Events", eventPopId, "polls", docRef.id, "options"), {
-            //   pollOption: l,
-            //   voters: [],
-            // });
-
-           
-
-            // let newOptionOne = document.querySelector(`input1-id`);
-
-            
-            //   const subDoccRef = await addDoc(collection(db, "Events", eventPopId, "polls", docRef.id, "options"), {
-            //     pollOption: newOptionOne.value,
-            //     voters: [],
-            //   });
-            
-              
-
           alert("Event Added Successfully")
           // location.reload();
         } catch (e) {
@@ -1189,8 +1321,6 @@ let pollPop = document.querySelector("#poll-pop");
 
 const querySnapshotxx = await getDocs(collection(db, "Events", eventPopId, "polls"));
 querySnapshotxx.forEach(async(doc) => {
-  // doc.data() is never undefined for query doc snapshots
-  // console.log(doc.id, " => ", doc.data());
 
   let pollContainer = document.querySelector("#poll-container");
 
@@ -1221,32 +1351,11 @@ querySnapshotxx.forEach(async(doc) => {
         
         </div>
         
+        <button id=${doc.id}-votes class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">View Votes</button>
         <button id=${doc.id}-edit class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Poll</button>
         </div>
         `;
         
         pollContainer.appendChild(pollBlock);
-        const querySnapshotxx = await getDocs(collection(db, "Events", eventPopId, "polls", doc.id, "options"));
-        querySnapshotxx.forEach((docy) => {
-        
-        let poption = document.querySelector("#poption");
-        if (poption) {
-          let popt = document.createElement("div");
-
-          popt.classList.add("my-2")
-          popt.innerHTML = `
-      
-        <p class="bg-darkblue cursor-pointer md:col-start-10 col-span-12 hover:bg-blue text-white rounded-md w-[55%] px-2 py-1"> ${docy.data().pollOption} </p>
-        
-        `;
-        
-        
-
-        poption.appendChild(popt);
-      }
-
-    });
-
-    
   }
 });

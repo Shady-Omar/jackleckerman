@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["Login.html", "Signup.html", "coordinators.html", "votes.html", "attendees.html", "polls.html", "events.html","./src/main.css", "./src/index.js",, "./src/main.js", "./dist/bundle.js"],
+  content: ["index.html", "events.html","coordinators.html", "chat.html", "chatroom.html","votes.html", "attendees.html", "polls.html", "events.html","./src/main.css", "./src/index.js",, "./src/main.js", "./dist/bundle.js"],
   theme: {
     extend: {},
     colors: {
@@ -14,7 +14,9 @@ module.exports = {
       navy: '#1F2937',
       green: "#047857",
       darkgreen: "#065F46",
+      yellow: "#FBBF24"
     }
   },
-  plugins: [],
+  plugins: [
+  ],
 };

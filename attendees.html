@@ -21,11 +21,10 @@
               <img src="images/icon-close.svg" alt="close" class="close hidden cursor-pointer"> -->
             </div>
             <div class="hidden rounded-md flex flex-col justify-center items-center z-10 top-[14%] w-[90%] lg:flex lg:flex-row lg:w-1/2 lg:relative lg:justify-center">
-              <ul id="nav" class="hidden lg:flex flex-col w-3/4 items-center justify-center text-center my-8 lg:flex-row lg:w-[75%] lg:my-0 lg:justify-between">
+              <ul id="nav" class="hidden lg:flex flex-col w-3/4 items-center justify-center text-center my-8 lg:flex-row lg:w-[50%] lg:my-0 lg:justify-between">
                 <a href="index.html"><li>Log out</li></a>
                 <a href="events.html"><li class="active">Events</li></a>
                 <a href="coordinator.html"><li>Coordinators</li></a>
-                <a href="#"><li>Chat Rooms</li></a>
               </ul>
             </div>
           </div>
@@ -35,8 +34,42 @@
     <main class="w-full flex flex-col justify-start items-center min-w-375">
       <div id="bg" class="max-w-5xl w-full flex flex-col justify-start items-center lg:max-w-screen-2xl overflow-hidden bg-slate-200">
         <section id="sec-one" class="w-full flex flex-col justify-center items-center">
+          
+          <form class="w-[50%]">
+            <div class="flex w-full relative">
+                <label for="search-dropdown" class="mb-2 text-sm font-medium text-grey sr-only">Your Email</label>
+                <button id="dropdown-button" data-dropdown-toggle="dropdown" class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-white bg-navy border border-grey rounded-l-lg hover:bg-grey focus:ring-4 focus:outline-none focus:ring-gray-100" type="button">All categories <svg aria-hidden="true" class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></button>
+                <div id="dropdown" class="z-10 hidden absolute top-14 bg-grey divide-y divide-grey rounded-lg shadow w-44 ">
+                    <ul class="py-2 text-sm text-white dark:text-gray-200" aria-labelledby="dropdown-button">
+                    <lio>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Name</button>
+                    </lio>
+                    <lio>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Email</button>
+                    </lio>
+                    <lio>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Job Title</button>
+                    </lio>
+                    <lio>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Company</button>
+                    </lio>
+                    <lio>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Country</button>
+                    </lio>
+                    </ul>
+                </div>
+                <div class="relative w-full">
+                    <input type="search" onkeyup="mySearch()" id="search-dropdown" class="block p-2.5 w-full z-20 text-sm text-grey bg-white rounded-r-lg border-l-grey border-l-2 border border-grey focus:ring-blue-500 focus:border-blue-500" placeholder="Search ..." required>
+                    
+                </div>
+            </div>
+        </form>
+
+
           <div class=" flex flex-col justify-center items-start w-[90%] sm:py-8">
             
+            
+
             
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
                 <table id="attend-container" class="w-full text-sm text-left text-white">
@@ -60,6 +93,9 @@
                             <th scope="col" class="px-6 py-3">
                                 Country
                             </th>
+                            <th scope="col" class="px-6 py-3">
+                                
+                            </th>
                         </tr>
                     </thead>
                 </table>
@@ -71,5 +107,82 @@
       </div>
     </main>
     <script src="dist/bundle.js"></script>
+    <script>
+      let drpdwnBtn = document.querySelector("#dropdown-button");
+      let drpdwn = document.querySelector("#dropdown");
+      drpdwnBtn.addEventListener('click', () => {
+        drpdwn.classList.toggle('hidden');
+      })
+
+      let catBtn = document.getElementsByTagName("lio");
+      let catNum = 0;
+        if (catBtn) {
+  
+          catBtn[0].addEventListener('click', () => {
+          
+            drpdwnBtn.textContent = "Name"
+            drpdwn.classList.add('hidden');
+            catNum = 0;
+          });
+
+          catBtn[1].addEventListener('click', () => {
+          
+            drpdwnBtn.textContent = "Email"
+            drpdwn.classList.add('hidden');
+            catNum = 2;
+          });
+
+          catBtn[2].addEventListener('click', () => {
+          
+            drpdwnBtn.textContent = "Job Title"
+            drpdwn.classList.add('hidden');
+            catNum = 3;
+          });
+
+          catBtn[3].addEventListener('click', () => {
+          
+            drpdwnBtn.textContent = "Company"
+            drpdwn.classList.add('hidden');
+            catNum = 4;
+          });
+
+          catBtn[4].addEventListener('click', () => {
+          
+            drpdwnBtn.textContent = "Country"
+            drpdwn.classList.add('hidden');
+            catNum = 5;
+          });
+            
+          }
+
+
+      function mySearch() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search-dropdown");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("attend-container");
+        tr = table.getElementsByTagName("tr");
+      
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[catNum];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+      </script>
+      <script>
+        if (sessionStorage.getItem("isLogged") == null) {
+          // document.body.innerHTML = '<p class="text-white ml-6 mt-6 text-lg">Access Denied</p>';
+          window.location.href = "index.html"
+        }
+      </script>
   </body>
 </html>

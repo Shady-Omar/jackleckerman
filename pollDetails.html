@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./dist/output.css" rel="stylesheet" />
+    <title>Admin Panel - Votes</title>
+  </head>
+  <body class="bg-black">
+    
+    <main class="w-full flex flex-col justify-start items-center min-w-375">
+      <div id="bg" class="max-w-5xl w-full flex flex-col justify-start items-center lg:max-w-screen-2xl overflow-hidden bg-slate-200">
+        <section id="sec-one" class="w-full flex flex-col justify-center items-center">
+          <div class=" flex flex-col justify-center items-start w-[90%] sm:py-8">
+            
+            
+            <div id="poll-detail" class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+                <h1 id="poll-name" class="text-center text-white font-bold"></h1>
+            </div>
+
+
+          </div>
+        </section>
+      </div>
+    </main>
+    <script src="dist/bundle.js"></script>
+    <script>
+      if (sessionStorage.getItem("isLogged") == null) {
+        // document.body.innerHTML = '<p class="text-white ml-6 mt-6 text-lg">Access Denied</p>';
+        window.location.href = "index.html"
+      }
+    </script>
+  </body>
+</html>

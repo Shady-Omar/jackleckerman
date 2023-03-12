@@ -1,7 +1,7 @@
 let addCoord = document.querySelector("#add-coord");
 let regPop = document.querySelector("#reg-pop");
 let overlay = document.querySelector(".overlay");
-let closeCoordPop = document.querySelector("#close-pop");
+let closeCoordPop = document.querySelector("#close-coord-btn");
 
 addCoord.addEventListener('click', () => {
   regPop.classList.remove("hidden");

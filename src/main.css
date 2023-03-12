@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
 .active {
   position: relative;
 }
@@ -151,4 +155,21 @@ select {
   right: 3px;
   top: -8px;
   cursor: pointer;
+}
+
+#default-search::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+#default-search:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+#default-search::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
+
+#poll-name {
+  font-size: 2.5em;
 }

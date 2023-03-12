@@ -21,11 +21,10 @@
               <img src="images/icon-close.svg" alt="close" class="close hidden cursor-pointer"> -->
             </div>
             <div class="hidden rounded-md flex flex-col justify-center items-center z-10 top-[14%] w-[90%] lg:flex lg:flex-row lg:w-1/2 lg:relative lg:justify-center">
-              <ul id="nav" class="hidden lg:flex flex-col w-3/4 items-center justify-center text-center my-8 lg:flex-row lg:w-[75%] lg:my-0 lg:justify-between">
+              <ul id="nav" class="hidden lg:flex flex-col w-3/4 items-center justify-center text-center my-8 lg:flex-row lg:w-[50%] lg:my-0 lg:justify-between">
                 <a href="index.html"><li>Log out</li></a>
                 <a href="events.html"><li>Events</li></a>
                 <a href="#"><li class="active">Coordinators</li></a>
-                <a href="#"><li>Chat Rooms</li></a>
               </ul>
             </div>
           </div>
@@ -48,9 +47,14 @@
             </div>
           </div>
           <!-- Pop up -->
-          <div id="reg-pop" class="absolute hidden px-4 py-10 bg-white shadow-2xl sm:rounded-3xl sm:p-20 min-w-[406.14px]">
+          <div id="reg-pop" class="hidden items-center justify-center relative">
+
+            <div class=" flex fixed z-10 top-0 left-0 w-full h-full bg-black bg-opacity-60">
+              <div class="extraOutline p-12 bg-white w-[45%] min-w-[45%] max-w-[45%] bg-whtie m-auto rounded-lg">
+           
+
             <div class="max-w-md mx-auto">
-              <div id="close-pop">×</div>
+              <div id="close-pop" class="hidden">×</div>
               <div>
                 <h1 class="text-2xl font-semibold">Add New Coordinator</h1>
               </div>
@@ -80,10 +84,13 @@
 
                   <div class="relative">
                     <button id="add-coord-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Add</button>
+                    <button id="close-coord-btn" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
           </div>
           <div class="overlay hidden"></div>
         </section>
@@ -91,35 +98,11 @@
     </main>
     <script src="src/main.js"></script>
     <script src="dist/bundle.js"></script>
-    
-    <!-- <script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js">
+    <script>
+      if (sessionStorage.getItem("isLogged") == null) {
+        // document.body.innerHTML = '<p class="text-white ml-6 mt-6 text-lg">Access Denied</p>';
+        window.location.href = "index.html"
+      }
     </script>
-    <script type="text/javascript">
-
-      (function(){
-          emailjs.init("F_Io2W4ApCRvQJTbo");
-      })();
-
-
-      let fname = document.querySelector('#fsname');
-      let lname = document.querySelector('#scname');
-      let email = document.querySelector('#email');
-
-      function SendMail() {
-      var params = {
-        from_name : `${fname.value} ${lname.value}`,
-        email_id: email.value,
-        password: pass
-      }
-      emailjs.send('service_p8wkknm', 'template_n8eujco', params, "F_Io2W4ApCRvQJTbo")
-        .then(function(response) {
-          console.log('SUCCESS!', response.status, response.text);
-        }, function(error) {
-          console.log('FAILED...', error);
-        });
-      }
-    </script> -->
-
   </body>
 </html>

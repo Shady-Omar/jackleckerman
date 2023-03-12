@@ -1,8 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc, updateDoc, writeBatch, doc, deleteDoc, connectFirestoreEmulator, query, where, setDoc, runTransaction } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, serverTimestamp, getCountFromServer, onSnapshot, orderBy, writeBatch, doc, deleteDoc, connectFirestoreEmulator, query, where, setDoc, runTransaction } from "firebase/firestore";
 import emailjs from '@emailjs/browser';
 import { read, writeFileXLSX } from "xlsx";
 import XLSX from 'xlsx';
+import axios from 'axios';
+import Mailjet from 'node-mailjet';
+import { base64 } from "@firebase/util";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD-yeq21RPZFZIYhecLaTh1OPkCuM0Z2ms",
@@ -44,6 +47,8 @@ function makepassword(length) {
   return result;
 }
 // /////////////////////
+
+let userEventId = sessionStorage.getItem("event ID");
 
 if (coordBtn) {
   coordBtn.addEventListener('click', async (e) => {
@@ -98,6 +103,81 @@ if (coordBtn) {
  *
  */
 
+ /**
+ *
+ * This call sends a message to one recipient.
+ *
+ */
+
+console.log('fetching...')
+const data = JSON.stringify({
+  "Messages": [
+    {
+      "From": {
+        "Email": "klaudia.jackleckerman@gmail.com",
+        "Name": "Jackleckerman"
+      },
+      "To": [
+        {
+          "Email": email.value,
+          "Name": fname.value + lname.value,
+          // "password": pass.toString(),
+        }
+      ],
+      "Subject": "Jackleckerman test email!",
+      "TextPart": "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
+      "HTMLPart": "<h3>Dear passenger 1, welcome to <a href=\"https://www.mailjet.com/\">Mailjet</a>!</h3><br />May the delivery force be with you!"
+    }
+  ]
+});
+
+const xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function () {
+  if (this.readyState === this.DONE) {
+    console.log(this.responseText);
+  }
+});
+
+xhr.open("POST", "https://api.mailjet.com/v3.1/send");
+xhr.setRequestHeader("Content-Type", "application/json");
+xhr.setRequestHeader("Authorization", "Basic YmI5OGNhM2RmOGE3MDYxNWU3NjlhMGZkZjEyYWRjNDE6YzhiMzFiNWZjOGVkYzZjY2RmMDUzYmVhOTljNmQ5NWU=");
+
+xhr.send(data);
+// const mailjet = Mailjet.apiConnect(
+//   'bb98ca3df8a70615e769a0fdf12adc41',
+//   'c8b31b5fc8edc6ccdf053bea99c6d95e'
+// );
+// const request = mailjet
+// 	.post("send", {'version': 'v3.1'})
+// 	.request({
+// 		"Messages":[
+// 				{
+// 						"From": {
+// 								"Email": "klaudia.jackleckerman@gmail.com",
+// 								"Name": "Jackleckerman"
+// 						},
+// 						"To": [
+// 								{
+// 										"Email": 'ell@petaniweb.com',
+// 										"Name": 'Ilyas'
+// 								}
+// 						],
+// 						"Subject": "Jackleckerman email test!",
+// 						"TextPart": "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
+// 						"HTMLPart": "<h3>Dear passenger 1, welcome to <a href=\"https://www.mailjet.com/\">Mailjet</a>!</h3><br />May the delivery force be with you!"
+// 				}
+// 		]
+// 	})
+// request
+// 	.then((result) => {
+// 		console.log(result.body)
+// 	})
+// 	.catch((err) => {
+// 		console.log(err.statusCode)
+// 	})
+
       // const myModule = require('node-mailjet');
 
       // if (myModule) {
@@ -151,16 +231,24 @@ if (coordBtn) {
       // expect(result.success).to.be(true);
 
       // **************
-
+      
     try {
-      const docRef = await addDoc(collection(db, "coordinators"), {
+      const docRef = await addDoc(collection(db, "excelSheetMembers"), {
         firstName: fname.value,
         lastName: lname.value,
         email: email.value,
         password: pass.toString(),
         changedPassword: false,
-        isAdmin: false
+        rank: 1
       });
+
+      // let coordRef = doc(db, "Events", userEventId, "users", docRef.id);
+      // setDoc(coordRef, {
+      //   name: fname.value,
+      //   lastName: lname.value,
+      //   isAdmin: true
+      // });
+
       alert("Coordinator Added Successfully")
       location.reload();
     } catch (e) {
@@ -209,10 +297,23 @@ if (eventBtn) {
     overlay.classList.add("hidden");
 
     try {
+      let userID = sessionStorage.getItem("User ID");
       const docRef = await addDoc(collection(db, "Events"), {
         eventName: eventName.value,
         eventcolor: eventSelectColor.value,
+        eventOwnerID: userID
       });
+
+      var userEventId = sessionStorage.getItem("event ID");
+      var userEventName = sessionStorage.getItem("UserName");
+
+        const userRef = doc(db, "Events", docRef.id, "users", userID);
+        setDoc(userRef, {
+          name: userEventName || null,
+          rank: 1
+        });
+
+
       alert("Event Added Successfully")
       location.reload();
     } catch (e) {
@@ -222,49 +323,54 @@ if (eventBtn) {
 });
 }
 
-const querySnapshot = await getDocs(collection(db, "coordinators"));
+
+const querySnapshot = await getDocs(collection(db, "excelSheetMembers"));
 querySnapshot.forEach((doc) => {
 
+  if (doc.data().rank != 2) {
 
-  // List for Coordinators Page
-  let listContainer = document.querySelector("#list-container");
-
-  if (listContainer) {
-    let listBlock = document.createElement("div");
-
-  listBlock.innerHTML = `
-  <a class="rounded-xl w-full grid grid-cols-12 bg-grey text-white shadow-xl p-3 gap-2 items-center hover:shadow-lg transition delay-150 duration-300 ease-in-out hover:scale-105 transform" href="#">
-                    
-  <!-- Icon -->
-  <div class="col-span-12 md:col-span-1">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="#FFFFFF">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-    </svg>
-  </div>
+    // List for Coordinators Page
+    let listContainer = document.querySelector("#list-container");
   
-  <!-- Title -->
-  <div class="col-span-11 xl: ml-6">
-    <p class="text-blue-600 font-semibold"> ${doc.data().firstName} ${doc.data().lastName} </p>
-  </div>
+    if (listContainer) {
+      let listBlock = document.createElement("div");
   
-  <!-- Description -->
-  <div class="md:col-start-2 col-span-11 xl: ml-6">
-    <p class="text-sm text-gray-800 font-light"> ${doc.data().email} </p>
-  </div>
+    listBlock.innerHTML = `
+    <a class="rounded-xl w-full grid grid-cols-12 bg-grey text-white shadow-xl p-3 gap-2 items-center hover:shadow-lg transition delay-150 duration-300 ease-in-out hover:scale-105 transform" href="#">
+                      
+    <!-- Icon -->
+    <div class="col-span-12 md:col-span-1">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="#FFFFFF">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+      </svg>
+    </div>
+    
+    <!-- Title -->
+    <div class="col-span-11 xl: ml-6">
+      <p class="text-blue-600 font-semibold"> ${doc.data().firstName} ${doc.data().lastName} </p>
+    </div>
+    
+    <!-- Description -->
+    <div class="md:col-start-2 col-span-11 xl: ml-6">
+      <p class="text-sm text-gray-800 font-light"> ${doc.data().email} </p>
+    </div>
+    
+  </a>
+    `;
   
-</a>
-  `;
-
-  listContainer.appendChild(listBlock);
+    listContainer.appendChild(listBlock);
+    }
   }
 
   
 });
 
+var adminID = sessionStorage.getItem("User ID");
+const qx = query(collection(db, "Events"), where("eventOwnerID", "==", adminID));
 
-
-const querySnapshots = await getDocs(collection(db, "Events"));
+const querySnapshots = await getDocs(qx);
 querySnapshots.forEach((doctwo) => {
+
 
 
   // List for Events Page
@@ -288,7 +394,7 @@ querySnapshots.forEach((doctwo) => {
 
       <!-- Title -->
       <div class="col-span-11 xl: ml-6">
-        <p class="text-blue-600 font-semibold"> ${doctwo.data().eventName} </p>
+        <p class="font-semibold"> ${doctwo.data().eventName} </p>
       </div>
 
       
@@ -393,7 +499,7 @@ querySnapshots.forEach((doctwo) => {
 
 
                 if(!found) {
-                    await addDoc(collection(db, "excelSheetMembers"), {
+                    const reff = await addDoc(collection(db, "excelSheetMembers"), {
                     Name: rows[i][0] || null,
                     Surname: rows[i][1] || null,
                     email: rows[i][2] || null,
@@ -403,6 +509,17 @@ querySnapshots.forEach((doctwo) => {
                     Password: pass.toString() || null,
                     eventId: eventIds || null,
                     changedPassword: false,
+                    rank: 2
+                  });
+
+                  var userEventId = sessionStorage.getItem("event ID");
+                  console.log(reff.id)
+
+                  let chatRef = doc(db, "Events", userEventId, "users", reff.id);
+                  setDoc(chatRef, {
+                    name: rows[i][0] || null,
+                    surname: rows[i][1] || null,
+                    rank: 2
                   });
                 }
 
@@ -449,10 +566,6 @@ querySnapshots.forEach((doctwo) => {
 
             } 
 
-
-            
-
-
           };
           reader.readAsBinaryString(f);
         })
@@ -470,12 +583,13 @@ querySnapshots.forEach((doctwo) => {
     let uploadUser = document.querySelector(`#${doctwo.id}-adduser`);
     if (uploadUser) {
         uploadUser.addEventListener('click', () => {
-
+          sessionStorage.setItem("event ID", `${doctwo.id}`);
         let addPop = document.querySelector("#add-user");
         if(addPop) {
         let addUserPopUp = document.createElement("div");
         addUserPopUp.setAttribute('class', `${doctwo.id}`);
-
+        
+        
         addUserPopUp.innerHTML = `
         
         <div id="add-user-pop" class="hidden items-center justify-center absolute top-[5rem]">
@@ -561,6 +675,7 @@ querySnapshots.forEach((doctwo) => {
 
         if (upldBtn) {
           upldBtn.addEventListener('click', async() => {
+                
 
                 let username = document.querySelector("#name");
                 let surname = document.querySelector("#surname");
@@ -647,7 +762,7 @@ querySnapshots.forEach((doctwo) => {
     
     
                     if(!found) {
-                        await addDoc(collection(db, "excelSheetMembers"), {
+                        const reff = await addDoc(collection(db, "excelSheetMembers"), {
                         Name: username.value,
                         Surname: surname.value,
                         email: userEmail.value,
@@ -657,7 +772,18 @@ querySnapshots.forEach((doctwo) => {
                         Password: pass.toString() || null,
                         eventId: eventIds || null,
                         changedPassword: false,
+                        rank: 2
                       });
+                        var userEventId = sessionStorage.getItem("event ID");
+                        console.log(reff.id)
+
+                        let chatRef = doc(db, "Events", userEventId, "users", reff.id);
+                        setDoc(chatRef, {
+                          name: username.value,
+                          surname: surname.value,
+                          rank: 2
+                        });
+                    
                     }
     
     
@@ -697,7 +823,8 @@ querySnapshots.forEach((doctwo) => {
                     });
     
                     
-                    console.log("DONE")
+                    alert("User Added Successfully")
+                    location.reload();
                   } catch (e) {
                     console.error("Error adding document: ", e);
                   } 
@@ -710,16 +837,12 @@ querySnapshots.forEach((doctwo) => {
     })
     }
 
-
-    // -----------------------------
-
-
   }
 });
 
 
 
-const querySnapshotss = await getDocs(collection(db, "coordinators"));
+const querySnapshotss = await getDocs(collection(db, "excelSheetMembers"));
 querySnapshotss.forEach((doc) => {
   // doc.data() is never undefined for query doc snapshots
 
@@ -748,7 +871,12 @@ querySnapshotss.forEach((doc) => {
         }
 
       } else {
-        window.location.href = "events.html";
+        sessionStorage.setItem("User ID", doc.id);
+        sessionStorage.setItem("UserName", `${doc.data().firstName} ${doc.data().lastName}`);
+        sessionStorage.setItem("isLogged", `True`);
+        
+        window.location.href = `events.html`;
+
       }
     } )
   }
@@ -895,9 +1023,6 @@ querySnapshotsx.forEach((doccc) => {
 
 });
 
-
-// +++++++++++++++++++
-
 const querySnapshott = await getDocs(collection(db, "Events"));
 querySnapshott.forEach(async(doccc) => {
   // doc.data() is never undefined for query doc snapshots
@@ -934,7 +1059,7 @@ querySnapshott.forEach(async(doccc) => {
               </div>
 
               <div id=${doccc.id}-chat>
-                <a href="#" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
+                <a href="chat.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
                 <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Chat</h5>
                 </a>
               </div>
@@ -959,9 +1084,6 @@ querySnapshott.forEach(async(doccc) => {
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
 
-
-
-
           let addOptBtn = document.querySelector(`#${doccc.id}-add-opt`)
           let newBtn = document.createElement("div");
           newBtn.innerHTML = `
@@ -970,7 +1092,6 @@ querySnapshott.forEach(async(doccc) => {
           </a>
           `
           addOptBtn.before(newBtn)
-
 
         });
 
@@ -1051,10 +1172,6 @@ querySnapshott.forEach(async(doccc) => {
           }
 
 
-
-          // ++++++++++++++++++++++++++++++
-
-
           let eventNewBtn = document.querySelector("#add-btn-click");
         if (eventNewBtn) {
           eventNewBtn.addEventListener('click', async () => {
@@ -1106,72 +1223,99 @@ querySnapshott.forEach(async(doccc) => {
 
         }
 
-
-          // ++++++++++++++++++++++++++++++
-
-
           });
           }
-
-
-        
-          
-
 
       }
     });
   }
-      
-
-
 
 });
 
 
-// let eventPopId = optBtn.getAttribute('id').replace("-option", "")
-        // console.log(eventPopId)
+  var eventPopId = sessionStorage.getItem("event ID");
+  const q = query(collection(db, "excelSheetMembers"), where("eventId", "array-contains", eventPopId));
 
-        var eventPopId = sessionStorage.getItem("event ID");
-        console.log(eventPopId);
-        const q = query(collection(db, "excelSheetMembers"), where("eventId", "array-contains", eventPopId));
+  const querySnapshotot = await getDocs(q);
+  querySnapshotot.forEach(async(docx) => {
 
-        const querySnapshotot = await getDocs(q);
-        querySnapshotot.forEach((docx) => {
+    if (docx.data().Name != "Name" && "name") {
 
-          let attendContainer = document.querySelector("#attend-container");
-
-          if (attendContainer) {
-            let attendList = document.createElement("tbody");
-            // attendList.setAttribute('class', `${doccc.id}`);
-
-            attendList.innerHTML = `
-            <tr class="bg-navy border-b border-grey">
-              <td scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
-                  ${docx.data().Name}
-              </td>
-              <td class="px-6 py-4">
-                ${docx.data().Surname}
-              </td>
-              <td class="px-6 py-4">
-                  ${docx.data().email}
-              </td>
-              <td class="px-6 py-4">
-                  ${docx.data().jobTitle}
-              </td>
-              <td class="px-6 py-4">
-                  ${docx.data().Company}
-              </td>
-              <td class="px-6 py-4">
-                  ${docx.data().Country}
-              </td>
-              
-          </tr>
-            `
-            attendContainer.appendChild(attendList);
-          }
+      let attendContainer = document.querySelector("#attend-container");
+  
+      if (attendContainer) {
+        let attendList = document.createElement("tbody");
+        // attendList.setAttribute('class', `${doccc.id}`);
+  
+        attendList.innerHTML = `
+        <tr class="bg-navy border-b border-grey">
+          <td scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
+              ${docx.data().Name}
+          </td>
+          <td class="px-6 py-4">
+            ${docx.data().Surname}
+          </td>
+          <td class="px-6 py-4">
+              ${docx.data().email}
+          </td>
+          <td class="px-6 py-4">
+              ${docx.data().jobTitle}
+          </td>
+          <td class="px-6 py-4">
+              ${docx.data().Company}
+          </td>
+          <td class="px-6 py-4">
+              ${docx.data().Country}
+          </td>
+          <td id=${docx.id}-invite class="px-6 py-4">
+            <button id=${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Invite To Meeting</button>
+          </td>
           
+      </tr>
+        `
+        attendContainer.appendChild(attendList);
+      }
+    }
 
+    
+    let inviteContainer = document.querySelector(`#${docx.id}-invite`)
+    let inviteBTn = document.querySelector(`#${docx.id}`)
+    let adminName = sessionStorage.getItem("UserName")
+    if (inviteBTn) {
+      inviteBTn.addEventListener('click', async() => {
+
+        const docRef = await addDoc(collection(db, "Events", eventPopId, "meetings"), {
+          datetime: serverTimestamp(),
+          senderID: adminID,
+          receiverID: docx.id,
+          receiver_username: `${docx.data().Name} ${docx.data().Surname}`,
+          sender_username: adminName,
+          status: 0,
         });
+
+        inviteContainer.innerHTML = `
+          <p class="text-yellow">User invited to meeting</p>
+        `
+      })
+
+      const q = query(collection(db, "Events", eventPopId, "meetings"), where("receiverID", "==", docx.id));
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        // console.log(doc.id, " => ", doc.data());
+        
+
+        inviteContainer.innerHTML = `
+          <p class="text-yellow">User invited to meeting</p>
+        `
+
+      });
+
+    }
+
+
+  });
 
 
 // Polls : 
@@ -1287,11 +1431,13 @@ let pollPop = document.querySelector("#poll-pop");
             const subDocRef = await addDoc(collection(db, "Events", eventPopId, "polls", docRef.id, "options"), {
               pollOption: optionOne.value,
               voters: [],
+              pollID: docRef.id,
             });
 
             const subbDocRef = await addDoc(collection(db, "Events", eventPopId, "polls", docRef.id, "options"), {
               pollOption: optionTwo.value,
               voters: [],
+              pollID: docRef.id,
             });
 
             for (let i = 0; i< idList.length; i++) {
@@ -1300,13 +1446,14 @@ let pollPop = document.querySelector("#poll-pop");
                 const subbDocRef = await addDoc(collection(db, "Events", eventPopId, "polls", docRef.id, "options"), {
                   pollOption: idd,
                   voters: [],
+                  pollID: docRef.id,
                 });
               }
               
             }
 
           alert("Event Added Successfully")
-          // location.reload();
+          location.reload();
         } catch (e) {
           console.error("Error adding document: ", e);
         }
@@ -1317,45 +1464,290 @@ let pollPop = document.querySelector("#poll-pop");
 
 // List for Polls Page
 
+let pollBlok = document.querySelector(".poll-block");
+
+if (pollBlok) {
+
+  let listInt = [];
+  let listSum = [];
+  
+  const querySnapshotxxx = await getDocs(collection(db, "Events", eventPopId, "polls"));
+  querySnapshotxxx.forEach(async(doc) => {
+  
+    const q = query(collection(db, "Events", eventPopId, "polls", doc.id, "options" ));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async(docc) => {
+      // doc.data() is never undefined for query doc snapshots
+      // console.log(doc.id, " => ", doc.data());
+  
+      let optionVoters = docc.data().voters.length;
+      listInt.push(optionVoters);
+  
+      
+    });
+    let sum = 0
+    const s = listInt.reduce((partialSum, a) => partialSum + a, 0);
+    listSum.push(s);
+    listInt = []
+    sum = 0;
+  });
+  let z = 0;
+  
+  
+  const querySnapshotxx = await getDocs(collection(db, "Events", eventPopId, "polls"));
+  querySnapshotxx.forEach(async(doc) => {
+  
+    let pollContainer = document.querySelector("#poll-container");
+  
+    if (pollContainer) {
+  
+      
+      let pollBlock = document.createElement("div");
+      
+      pollBlock.setAttribute('id', `${doc.id}`);
+      
+      pollBlock.innerHTML = `
+      <a href="pollDetails.html">
+      <div class="up-click rounded-xl w-full grid grid-cols-12 bg-grey text-white shadow-xl p-3 gap-2 items-center hover:shadow-lg transition delay-150 duration-300 ease-in-out hover:scale-105 transform" href="#">
+                        
+      <!-- Icon -->
+      <div class="col-span-12 md:col-span-1">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="#FFFFFF">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+      </svg>
+      </div>
+      
+      <!-- Title -->
+      <div class="col-span-11 xl: ml-6">
+          <p class="text-blue-600 font-semibold"> ${doc.data().pollName} </p>
+          </div>
+          
+          <!-- Description -->
+          <div id="poption-${doc.id}" class="md:col-start-2 col-span-11 xl: ml-2">
+  
+          </div>
+          <button id=${doc.id}-edit class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Poll</button>
+          </div>
+          </a>
+          `;
+          
+          pollContainer.appendChild(pollBlock);
+  
+          const q = query(collection(db, "Events", eventPopId, "polls", doc.id, "options"));
+  
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach(async(docc) => {
+            // doc.data() is never undefined for query doc snapshots
+            // console.log(doc.id, " => ", doc.data());
+  
+            let popt = document.querySelector(`#poption-${doc.id}`);
+            let optBar = document.createElement("div")
+            optBar.setAttribute('class', 'my-2');
+            optBar.setAttribute('id', `${docc.id}`);
+  
+            let percent = ((docc.data().voters.length / listSum[z]) * 100);
+            percent = Math.round(percent)
+  
+            optBar.innerHTML = `
+            <div class="w-full bg-navy rounded-full dark:bg-gray-700 relative">
+              <p class="absolute text-sm text-center left-[45%] font-semibold">${docc.data().pollOption} <br/> ${isNaN(percent)?0:percent}%</p>
+              <div class="bg-blue text-xs font-medium text-white text-center p-5 leading-none rounded-full" style="width: ${isNaN(percent) || percent == 0 ?1:percent}%"></div>
+            </div>
+            `
+            
+            popt.appendChild(optBar);
+            
+          });
+          
+          z++
+          if (pollBlock) {
+            let pollIDs = pollBlock.getAttribute('id')
+            pollBlock.addEventListener('click', () => {
+              sessionStorage.setItem("poll ID", pollIDs);
+            });
+          }
+    }
+  });
+
+  
+}
 
 
-const querySnapshotxx = await getDocs(collection(db, "Events", eventPopId, "polls"));
-querySnapshotxx.forEach(async(doc) => {
+var PollDocID = sessionStorage.getItem("poll ID");
+//   console.log(PollDocID)
 
-  let pollContainer = document.querySelector("#poll-container");
-
-  if (pollContainer) {
-
+let pollDet = document.querySelector("#poll-detail");
+  if (pollDet) {
     
-    let pollBlock = document.createElement("div");
+
+    let listInt = [];
+    let listSum = [];
     
-    pollBlock.setAttribute('id', `${doc.id}`);
+    const querySnapshotxxx = await getDocs(collection(db, "Events", eventPopId, "polls"));
+    querySnapshotxxx.forEach(async(doc) => {
     
-    pollBlock.innerHTML = `
-    <div class="up-click rounded-xl w-full grid grid-cols-12 bg-grey text-white shadow-xl p-3 gap-2 items-center hover:shadow-lg transition delay-150 duration-300 ease-in-out hover:scale-105 transform" href="#">
-                      
-    <!-- Icon -->
-    <div class="col-span-12 md:col-span-1">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="#FFFFFF">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-    </svg>
-    </div>
+      const q = query(collection(db, "Events", eventPopId, "polls", doc.id, "options" ));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(async(docc) => {
+        // doc.data() is never undefined for query doc snapshots
+        // console.log(doc.id, " => ", doc.data());
     
-    <!-- Title -->
-    <div class="col-span-11 xl: ml-6">
-        <p class="text-blue-600 font-semibold"> ${doc.data().pollName} </p>
-        </div>
+        let optionVoters = docc.data().voters.length;
+        listInt.push(optionVoters);
+    
         
-        <!-- Description -->
-        <div id="poption" class="md:col-start-2 col-span-11 xl: ml-2">
+      });
+      let sum = 0
+      const s = listInt.reduce((partialSum, a) => partialSum + a, 0);
+      listSum.push(s);
+      listInt = []
+      sum = 0;
+    });
+    let z = 0;
+
+
+
+    const querySnapshot = await getDocs(collection(db, "Events", eventPopId, "polls"));
+    querySnapshot.forEach(async(doc) => {
+      // doc.data() is never undefined for query doc snapshots
+
+      if (doc.id == PollDocID) {
+        let pollNameDet = document.querySelector("#poll-name");
+        pollNameDet.innerHTML = `${doc.data().pollName}`
         
-        </div>
-        
-        <button id=${doc.id}-votes class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">View Votes</button>
-        <button id=${doc.id}-edit class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Poll</button>
-        </div>
-        `;
-        
-        pollContainer.appendChild(pollBlock);
+
+        const q = query(collection(db, "Events", eventPopId, "polls", PollDocID, "options"));
+  
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach(async(docc) => {
+            // doc.data() is never undefined for query doc snapshots
+            // console.log(doc.id, " => ", doc.data());
+  
+            let optBar = document.createElement("div")
+            optBar.setAttribute('class', 'my-2');
+            optBar.setAttribute('id', `${docc.id}`);
+  
+            let percent = ((docc.data().voters.length / listSum[z]) * 100);
+            percent = Math.round(percent)
+  
+            optBar.innerHTML = `
+            <div class="w-full bg-navy rounded-full relative my-10 flex items-center">
+              <p class="absolute text-lg text-white text-center left-[48%] font-semibold">${docc.data().pollOption} <br/> ${isNaN(percent)?0:percent}%</p>
+              <div class="bg-blue text-xs font-medium text-white text-center p-8 leading-none rounded-full" style="width: ${isNaN(percent) || percent == 0 ?1:percent}%"></div>
+            </div>
+            `
+            
+            pollDet.appendChild(optBar);
+            
+          });
+          
+          z++
+
+      }
+    });
   }
-});
+
+
+
+let chatUserList = document.querySelector("#user-list");
+if (chatUserList) {
+const querySnapshoyt = await getDocs(collection(db, "Events", eventPopId, "users"));
+querySnapshoyt.forEach((doc) => {
+  // doc.data() is never undefined for query doc snapshots
+  // console.log(doc.id, " => ", doc.data());
+  
+  
+
+    if (doc.id != adminID) {
+      let user = document.createElement("div");
+      user.innerHTML = `
+      
+
+      <div id=${doc.id}>
+        <a href="chatroom.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border transition-colors border-navy rounded-lg shadow hover:bg-grey">
+        <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${doc.data().name}</h5>
+        </a>
+      </div>
+      `
+
+      if(user) {
+        user.addEventListener('click', () => {
+          sessionStorage.setItem("chatUser", `${doc.id}`);
+        });
+      }
+
+
+      chatUserList.appendChild(user)
+    }
+    
+    
+  });
+}
+
+
+
+var eventPopId = sessionStorage.getItem("event ID");
+var chatUser = sessionStorage.getItem("chatUser");
+
+let chatContainer = document.querySelector("#chat-msgs");
+if (chatContainer) {
+const qe = query(collection(db, "Events", eventPopId, "users", chatUser, "chats"), orderBy("datetime"));
+const unsubscribe = onSnapshot(qe, (querySnapshot) => {
+  chatContainer.innerHTML = ``;
+  querySnapshot.forEach((doc) => {
+
+      if (doc.data().senderId == adminID) {
+
+        let msgSent = document.createElement("div");
+        msgSent.setAttribute('class', 'flex justify-end mb-4 mr-4');
+        msgSent.setAttribute('id', 'msg-sender');
+        msgSent.innerHTML = `
+        <div class="mr-2 py-3 px-4 bg-blue rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white">
+          ${doc.data().text}
+        </div>
+        `
+        chatContainer.appendChild(msgSent);
+      } else if (doc.data().senderId == chatUser){
+
+        let msgSent = document.createElement("div");
+        msgSent.setAttribute('class', 'flex justify-start mb-4 ml-4');
+        msgSent.setAttribute('id', 'msg-receiver');
+        msgSent.innerHTML = `
+        <div class="ml-2 py-3 px-4 bg-grey rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white">
+          ${doc.data().text}
+        </div>
+        `
+        chatContainer.appendChild(msgSent);
+        
+      }
+      
+      
+    });
+  });
+}
+
+
+let msgInput = document.querySelector("#msg-input");
+let sendBtn = document.querySelector("#send-msg");
+if (sendBtn) {
+  sendBtn.addEventListener('click', async () => {
+
+    if (msgInput.value != "" || null) {
+      await addDoc(collection(db, "Events", eventPopId, "users", chatUser, "chats"), {
+        datetime: serverTimestamp(),
+        reciverId: chatUser,
+        senderId: adminID,
+        text: msgInput.value
+      });
+      await addDoc(collection(db, "Events", eventPopId, "users", adminID, "chats"), {
+        datetime: serverTimestamp(),
+        reciverId: chatUser,
+        senderId: adminID,
+        text: msgInput.value
+      });
+      window.scrollBy(0, 1000000);
+      msgInput.value = ""
+    }
+  })
+}
+

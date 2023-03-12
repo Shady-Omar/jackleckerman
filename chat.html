@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./dist/output.css" rel="stylesheet" />
+    <title>Admin Panel - Chat</title>
+  </head>
+  <body class="bg-black">
+    <header class="w-full flex flex-col justify-start items-center min-w-375 shadow-2xl bg-darkblue">
+      <div class="max-w-5xl w-full flex flex-col justify-start items-center relative lg:max-w-screen-2xl">
+        <!-- Creating the navgation bar -->
+        <nav class="flex flex-row items-center justify-center w-full z-20 text-white font-semibold">
+          <div id="content-nav" class="w-[90%] flex flex-row items-center justify-between my-8 lg:my-6">
+            <div id="logo-side" class="flex flex-row justify-between items-center w-1/2">
+              <a href="events.html">Admin Panel</a>
+            </div>
+            <div id="menu" class="z-10 lg:hidden">
+              <!-- <img src="images/icon-hamburger.svg" alt="burger" class="menu cursor-pointer">
+              <img src="images/icon-close.svg" alt="close" class="close hidden cursor-pointer"> -->
+            </div>
+            <div class="hidden rounded-md flex flex-col justify-center items-center z-10 top-[14%] w-[90%] lg:flex lg:flex-row lg:w-1/2 lg:relative lg:justify-center">
+              <ul id="nav" class="hidden lg:flex flex-col w-3/4 items-center justify-center text-center my-8 lg:flex-row lg:w-[50%] lg:my-0 lg:justify-between">
+                <a href="index.html"><li>Log out</li></a>
+                <a href="events.html"><li class="active">Events</li></a>
+                <a href="coordinator.html"><li>Coordinators</li></a>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <main class="w-full flex flex-col justify-start items-center min-w-375">
+      <div id="bg" class="max-w-5xl w-full flex flex-col justify-start items-center lg:max-w-screen-2xl overflow-hidden bg-slate-200">
+        <section id="sec-one" class="w-full flex flex-col justify-center items-center">
+          <div class=" flex flex-col justify-center items-start w-[90%] pb-4">
+            <div id="user-list" class="grid gap-[1rem] grid-cols-4">
+
+              
+            </div>
+
+          </div>
+        </section>
+      </div>
+    </main>
+    <script src="dist/bundle.js"></script>
+    <script>
+      if (sessionStorage.getItem("isLogged") == null) {
+        // document.body.innerHTML = '<p class="text-white ml-6 mt-6 text-lg">Access Denied</p>';
+        window.location.href = "index.html"
+      }
+    </script>
+  </body>
+</html>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="./dist/output.css" rel="stylesheet" />
-    <title>Admin Panel - Votes</title>
+    <title>Admin Panel - Chat Room</title>
   </head>
   <body class="bg-black">
     <header class="w-full flex flex-col justify-start items-center min-w-375 shadow-2xl bg-darkblue">
@@ -14,18 +14,17 @@
         <nav class="flex flex-row items-center justify-center w-full z-20 text-white font-semibold">
           <div id="content-nav" class="w-[90%] flex flex-row items-center justify-between my-8 lg:my-6">
             <div id="logo-side" class="flex flex-row justify-between items-center w-1/2">
-              <a href="#">Admin Panel</a>
+              <a href="events.html">Admin Panel</a>
             </div>
             <div id="menu" class="z-10 lg:hidden">
               <!-- <img src="images/icon-hamburger.svg" alt="burger" class="menu cursor-pointer">
               <img src="images/icon-close.svg" alt="close" class="close hidden cursor-pointer"> -->
             </div>
             <div class="hidden rounded-md flex flex-col justify-center items-center z-10 top-[14%] w-[90%] lg:flex lg:flex-row lg:w-1/2 lg:relative lg:justify-center">
-              <ul id="nav" class="hidden lg:flex flex-col w-3/4 items-center justify-center text-center my-8 lg:flex-row lg:w-[75%] lg:my-0 lg:justify-between">
+              <ul id="nav" class="hidden lg:flex flex-col w-3/4 items-center justify-center text-center my-8 lg:flex-row lg:w-[50%] lg:my-0 lg:justify-between">
                 <a href="index.html"><li>Log out</li></a>
                 <a href="events.html"><li class="active">Events</li></a>
                 <a href="coordinator.html"><li>Coordinators</li></a>
-                <a href="#"><li>Chat Rooms</li></a>
               </ul>
             </div>
           </div>
@@ -35,41 +34,47 @@
     <main class="w-full flex flex-col justify-start items-center min-w-375">
       <div id="bg" class="max-w-5xl w-full flex flex-col justify-start items-center lg:max-w-screen-2xl overflow-hidden bg-slate-200">
         <section id="sec-one" class="w-full flex flex-col justify-center items-center">
-          <div class=" flex flex-col justify-center items-start w-[90%] sm:py-8">
-            
-            
-            <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
-                <table id="attend-container" class="w-full text-sm text-left text-white">
-                    <thead class="text-xs text-white uppercase bg-navy">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">
-                                Name
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Surname
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Email
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Job Title
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Company
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Country
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
+          <div id="fix-one" style="overscroll-behavior: none; padding-bottom: 1rem;" class="w-full">
+            <div id="chat-msgs" class="mt-20 mb-16">
+              
             </div>
-
-
+          </div>
+      
+          <div class="fixed w-full flex justify-between bg-navy" style="bottom: 0px;">
+            <textarea
+              id="msg-input"
+              class="flex-grow m-2 py-2 px-4 mr-1 rounded-full border border-gray-300 bg-gray-200 resize-none"
+              rows="1"
+              placeholder="Message..."
+              style="outline: none;"
+            ></textarea>
+            <button id="send-msg" class="m-2" style="outline: none;">
+              <svg
+                class="svg-inline--fa text-blue hover:text-grey transition-colors fa-paper-plane fa-w-16 w-12 h-12 py-2 mr-2"
+                aria-hidden="true"
+                focusable="false"
+                data-prefix="fas"
+                data-icon="paper-plane"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+              >
+                <path
+                  fill="currentColor"
+                  d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"
+                />
+              </svg>
+            </button>
           </div>
         </section>
       </div>
     </main>
     <script src="dist/bundle.js"></script>
+    <script>
+      if (sessionStorage.getItem("isLogged") == null) {
+        // document.body.innerHTML = '<p class="text-white ml-6 mt-6 text-lg">Access Denied</p>';
+        window.location.href = "index.html"
+      }
+    </script>
   </body>
 </html>

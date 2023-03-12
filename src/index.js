@@ -83,17 +83,17 @@ if (coordBtn) {
     let pass = [];
     pass.push(makepassword(10));
 
-      // var params = {
-      //   from_name : `${fname.value} ${lname.value}`,
-      //   email_id: email.value,
-      //   password: pass.toString()
-      // }
-      // emailjs.send('service_p8wkknm', 'template_n8eujco', params, "F_Io2W4ApCRvQJTbo")
-      //   .then(function(response) {
-      //     console.log('SUCCESS!', response.status, response.text);
-      //   }, function(error) {
-      //     console.log('FAILED...', error);
-      //   });
+      var params = {
+        from_name : `${fname.value} ${lname.value}`,
+        email_id: email.value,
+        password: pass.toString()
+      }
+      emailjs.send('service_p8wkknm', 'template_n8eujco', params, "F_Io2W4ApCRvQJTbo")
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+        }, function(error) {
+          console.log('FAILED...', error);
+        });
 
       //MailJet:
       
@@ -109,42 +109,42 @@ if (coordBtn) {
  *
  */
 
-console.log('fetching...')
-const data = JSON.stringify({
-  "Messages": [
-    {
-      "From": {
-        "Email": "klaudia.jackleckerman@gmail.com",
-        "Name": "Jackleckerman"
-      },
-      "To": [
-        {
-          "Email": email.value,
-          "Name": fname.value + lname.value,
-          // "password": pass.toString(),
-        }
-      ],
-      "Subject": "Jackleckerman test email!",
-      "TextPart": "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
-      "HTMLPart": "<h3>Dear passenger 1, welcome to <a href=\"https://www.mailjet.com/\">Mailjet</a>!</h3><br />May the delivery force be with you!"
-    }
-  ]
-});
+// console.log('fetching...')
+// const data = JSON.stringify({
+//   "Messages": [
+//     {
+//       "From": {
+//         "Email": "klaudia.jackleckerman@gmail.com",
+//         "Name": "Jackleckerman"
+//       },
+//       "To": [
+//         {
+//           "Email": email.value,
+//           "Name": fname.value + lname.value,
+//           // "password": pass.toString(),
+//         }
+//       ],
+//       "Subject": "Jackleckerman test email!",
+//       "TextPart": "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
+//       "HTMLPart": "<h3>Dear passenger 1, welcome to <a href=\"https://www.mailjet.com/\">Mailjet</a>!</h3><br />May the delivery force be with you!"
+//     }
+//   ]
+// });
 
-const xhr = new XMLHttpRequest();
-xhr.withCredentials = true;
+// const xhr = new XMLHttpRequest();
+// xhr.withCredentials = true;
 
-xhr.addEventListener("readystatechange", function () {
-  if (this.readyState === this.DONE) {
-    console.log(this.responseText);
-  }
-});
+// xhr.addEventListener("readystatechange", function () {
+//   if (this.readyState === this.DONE) {
+//     console.log(this.responseText);
+//   }
+// });
 
-xhr.open("POST", "https://api.mailjet.com/v3.1/send");
-xhr.setRequestHeader("Content-Type", "application/json");
-xhr.setRequestHeader("Authorization", "Basic YmI5OGNhM2RmOGE3MDYxNWU3NjlhMGZkZjEyYWRjNDE6YzhiMzFiNWZjOGVkYzZjY2RmMDUzYmVhOTljNmQ5NWU=");
+// xhr.open("POST", "https://api.mailjet.com/v3.1/send");
+// xhr.setRequestHeader("Content-Type", "application/json");
+// xhr.setRequestHeader("Authorization", "Basic YmI5OGNhM2RmOGE3MDYxNWU3NjlhMGZkZjEyYWRjNDE6YzhiMzFiNWZjOGVkYzZjY2RmMDUzYmVhOTljNmQ5NWU=");
 
-xhr.send(data);
+// xhr.send(data);
 // const mailjet = Mailjet.apiConnect(
 //   'bb98ca3df8a70615e769a0fdf12adc41',
 //   'c8b31b5fc8edc6ccdf053bea99c6d95e'

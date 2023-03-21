@@ -409,8 +409,8 @@ querySnapshots.forEach((doctwo) => {
                 const notFoundQuery = query(usersRef);
                 const notFoundQuerySnapShot = await getDocs(notFoundQuery);
 
-                let found = false
-                let docRefDuplicate
+                let found = false;
+                let docRefDuplicate;
                 notFoundQuerySnapShot.forEach((document) => {
                 if(document.data().email == rows[i][2]) {
                   found = true
@@ -436,7 +436,12 @@ querySnapshots.forEach((doctwo) => {
                 }
                   var userEventId = sessionStorage.getItem("event ID");
                   
-                  let refNotDuplicate = found ? reff.id : docRefDuplicate
+                  // console.log(found);
+                  // console.log(reff.id);
+                  // console.log(docRefDuplicate);
+
+                  let refNotDuplicate = found ? docRefDuplicate : reff.id;
+
                   let chatRef = doc(db, "Events", userEventId, "users", refNotDuplicate);
                   setDoc(chatRef, {
                     name: rows[i][0] || null,
@@ -676,15 +681,17 @@ querySnapshots.forEach((doctwo) => {
                     const notFoundQuery = query(usersRef);
                     const notFoundQuerySnapShot = await getDocs(notFoundQuery);
     
-                    let found = false
+                    let found = false;
+                    let docRefDuplicate;
                     notFoundQuerySnapShot.forEach((document) => {
                     if(document.data().email == userEmail.value) {
-                      found = true
+                      found = true;
+                      docRefDuplicate = document.id;
                     }
                       
                     });
     
-    
+                    let reff;
                     if(!found) {
                         const reff = await addDoc(collection(db, "excelSheetMembers"), {
                         Name: username.value,
@@ -698,17 +705,19 @@ querySnapshots.forEach((doctwo) => {
                         changedPassword: false,
                         rank: 2
                       });
-                        var userEventId = sessionStorage.getItem("event ID");
-                        console.log(reff.id)
-
-                        let chatRef = doc(db, "Events", userEventId, "users", reff.id);
-                        setDoc(chatRef, {
-                          name: username.value,
-                          surname: surname.value,
-                          rank: 2
-                        });
-                    
+                      
                     }
+
+                    var userEventId = sessionStorage.getItem("event ID");
+
+                    let refNotDuplicate = found ? docRefDuplicate : reff.id;
+
+                    let chatRef = doc(db, "Events", userEventId, "users", refNotDuplicate);
+                    setDoc(chatRef, {
+                      name: username.value,
+                      surname: surname.value,
+                      rank: 2
+                    });
     
     
                     const foundQuery = query(usersRef, where("email", "==", userEmail.value));
@@ -1586,8 +1595,9 @@ querySnapshoyt.forEach((doc) => {
   // doc.data() is never undefined for query doc snapshots
   // console.log(doc.id, " => ", doc.data());
 
-    if (doc.id != adminID) {
+    if (doc.id != adminID && doc.data().name != "Name") {
       let user = document.createElement("div");
+      
       user.innerHTML = `
       
 
@@ -1622,7 +1632,7 @@ querySnapshoyt.forEach((doc) => {
   // doc.data() is never undefined for query doc snapshots
   // console.log(doc.id, " => ", doc.data());
 
-    if (doc.id != adminID) {
+    if (doc.id != adminID && doc.data().name != "Name") {
       let user = document.createElement("div");
       user.innerHTML = `
       

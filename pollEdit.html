@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="./dist/output.css" rel="stylesheet" />
-    <title>Admin Panel - Chat</title>
+    <title>Admin Panel - Edit Poll</title>
   </head>
   <body class="bg-black">
     <header class="w-full flex flex-col justify-start items-center min-w-375 shadow-2xl bg-darkblue">
@@ -14,7 +14,7 @@
         <nav class="flex flex-row items-center justify-center w-full z-20 text-white font-semibold">
           <div id="content-nav" class="w-[90%] flex flex-row items-center justify-between my-8 lg:my-6">
             <div id="logo-side" class="flex flex-row justify-between items-center w-1/2">
-              <a href="events.html">Admin Panel</a>
+              <a href="#">Admin Panel</a>
             </div>
             <div id="menu" class="z-10 lg:hidden">
               <!-- <img src="images/icon-hamburger.svg" alt="burger" class="menu cursor-pointer">
@@ -34,18 +34,36 @@
     <main class="w-full flex flex-col justify-start items-center min-w-375">
       <div id="bg" class="max-w-5xl w-full flex flex-col justify-start items-center lg:max-w-screen-2xl overflow-hidden bg-slate-200">
         <section id="sec-one" class="w-full flex flex-col justify-center items-center">
-          <div class=" flex flex-col justify-center items-start w-[90%] pb-4">
-            <h1 class="text-white font-bold text-3xl mb-10">Recent Chat:</h1>
-            <div id="recent-list" class="grid gap-[1rem] grid-cols-4">
-              
-            </div>
+          <div class=" flex flex-col justify-center items-center w-[90%] sm:py-8">
 
-            <h1 class="text-white font-bold text-3xl my-10">Contacts:</h1>
-            <div id="contact-list" class="grid gap-[1rem] grid-cols-4">
-              
+            <!-- Pop up -->
+  
+            <div id="poll-edit" class="items-center justify-center relative">
+              <div class=" flex relative justify-center w-full h-full">
+                <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
+                    <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
+    
+                    <div id="edit-form" class="py-8 pb-2 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                      
+    
+                    </div>
+                    <div class="relative my-4">
+                      <button id="edit-poll-btn" class="bg-darkblue hover:bg-blue text-white rounded-md w-full px-2 py-1">Confirm Edit</button>
+                    </div>
+                    <div class="relative">
+                      <button id="edit-poll-btn" class="bg-red hover:bg-blue text-white rounded-md w-full px-2 py-1">Delete Poll</button>
+                    </div>
+    
+                    </div>
+                </div>
+              </div>
             </div>
-
+            
+            <!--  -->
           </div>
+          
+          <!-- ......................... -->
+          <div class="overlay hidden"></div>
         </section>
       </div>
     </main>

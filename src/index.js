@@ -3,9 +3,6 @@ import { getFirestore, collection, getDocs, addDoc, updateDoc, serverTimestamp, 
 import emailjs from '@emailjs/browser';
 import { read, writeFileXLSX } from "xlsx";
 import XLSX from 'xlsx';
-import axios from 'axios';
-import Mailjet from 'node-mailjet';
-import { base64 } from "@firebase/util";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD-yeq21RPZFZIYhecLaTh1OPkCuM0Z2ms",
@@ -48,8 +45,6 @@ function makepassword(length) {
 }
 // /////////////////////
 
-let userEventId = sessionStorage.getItem("event ID");
-
 if (coordBtn) {
   coordBtn.addEventListener('click', async (e) => {
 
@@ -83,17 +78,17 @@ if (coordBtn) {
     let pass = [];
     pass.push(makepassword(10));
 
-      var params = {
-        from_name : `${fname.value} ${lname.value}`,
-        email_id: email.value,
-        password: pass.toString()
-      }
-      emailjs.send('service_p8wkknm', 'template_n8eujco', params, "F_Io2W4ApCRvQJTbo")
-        .then(function(response) {
-          console.log('SUCCESS!', response.status, response.text);
-        }, function(error) {
-          console.log('FAILED...', error);
-        });
+      // var params = {
+      //   from_name : `${fname.value} ${lname.value}`,
+      //   email_id: email.value,
+      //   password: pass.toString()
+      // }
+      // emailjs.send('service_p8wkknm', 'template_n8eujco', params, "F_Io2W4ApCRvQJTbo")
+      //   .then(function(response) {
+      //     console.log('SUCCESS!', response.status, response.text);
+      //   }, function(error) {
+      //     console.log('FAILED...', error);
+      //   });
 
       //MailJet:
       
@@ -102,81 +97,6 @@ if (coordBtn) {
  * Run:
  *
  */
- 
- /**
- *
- * This call sends a message to one recipient.
- *
- */
-
-// console.log('fetching...')
-// const data = JSON.stringify({
-//   "Messages": [
-//     {
-//       "From": {
-//         "Email": "klaudia.jackleckerman@gmail.com",
-//         "Name": "Jackleckerman"
-//       },
-//       "To": [
-//         {
-//           "Email": email.value,
-//           "Name": fname.value + lname.value,
-//           // "password": pass.toString(),
-//         }
-//       ],
-//       "Subject": "Jackleckerman test email!",
-//       "TextPart": "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
-//       "HTMLPart": "<h3>Dear passenger 1, welcome to <a href=\"https://www.mailjet.com/\">Mailjet</a>!</h3><br />May the delivery force be with you!"
-//     }
-//   ]
-// });
-
-// const xhr = new XMLHttpRequest();
-// xhr.withCredentials = true;
-
-// xhr.addEventListener("readystatechange", function () {
-//   if (this.readyState === this.DONE) {
-//     console.log(this.responseText);
-//   }
-// });
-
-// xhr.open("POST", "https://api.mailjet.com/v3.1/send");
-// xhr.setRequestHeader("Content-Type", "application/json");
-// xhr.setRequestHeader("Authorization", "Basic YmI5OGNhM2RmOGE3MDYxNWU3NjlhMGZkZjEyYWRjNDE6YzhiMzFiNWZjOGVkYzZjY2RmMDUzYmVhOTljNmQ5NWU=");
-
-// xhr.send(data);
-// const mailjet = Mailjet.apiConnect(
-//   'bb98ca3df8a70615e769a0fdf12adc41',
-//   'c8b31b5fc8edc6ccdf053bea99c6d95e'
-// );
-// const request = mailjet
-// 	.post("send", {'version': 'v3.1'})
-// 	.request({
-// 		"Messages":[
-// 				{
-// 						"From": {
-// 								"Email": "klaudia.jackleckerman@gmail.com",
-// 								"Name": "Jackleckerman"
-// 						},
-// 						"To": [
-// 								{
-// 										"Email": 'ell@petaniweb.com',
-// 										"Name": 'Ilyas'
-// 								}
-// 						],
-// 						"Subject": "Jackleckerman email test!",
-// 						"TextPart": "Dear passenger 1, welcome to Mailjet! May the delivery force be with you!",
-// 						"HTMLPart": "<h3>Dear passenger 1, welcome to <a href=\"https://www.mailjet.com/\">Mailjet</a>!</h3><br />May the delivery force be with you!"
-// 				}
-// 		]
-// 	})
-// request
-// 	.then((result) => {
-// 		console.log(result.body)
-// 	})
-// 	.catch((err) => {
-// 		console.log(err.statusCode)
-// 	})
 
       // const myModule = require('node-mailjet');
 
@@ -231,7 +151,7 @@ if (coordBtn) {
       // expect(result.success).to.be(true);
 
       // **************
-      
+
     try {
       const docRef = await addDoc(collection(db, "excelSheetMembers"), {
         firstName: fname.value,
@@ -1267,9 +1187,13 @@ querySnapshott.forEach(async(doccc) => {
           <td class="px-6 py-4">
               ${docx.data().Country}
           </td>
-          <td id=${docx.id}-invite class="px-6 py-4">
-            <button id=${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Invite To Meeting</button>
-          </td>
+          <td id=II-${docx.id}-invite class="px-6 py-4">
+          <button id=II-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Invite To Meeting</button>
+        </td>
+
+        <td id=CC-${docx.id}-chat class="px-6 py-4">
+          <a href="chat.html"><button id=CC-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-5 mr-2 mb-2">Chat</button></a>
+        </td>
           
       </tr>
         `
@@ -1278,8 +1202,8 @@ querySnapshott.forEach(async(doccc) => {
     }
 
     
-    let inviteContainer = document.querySelector(`#${docx.id}-invite`)
-    let inviteBTn = document.querySelector(`#${docx.id}`)
+    let inviteContainer = document.querySelector(`#II-${docx.id}-invite`)
+    let inviteBTn = document.querySelector(`#II-${docx.id}`)
     let adminName = sessionStorage.getItem("UserName")
     if (inviteBTn) {
       inviteBTn.addEventListener('click', async() => {
@@ -1507,7 +1431,7 @@ if (pollBlok) {
       pollBlock.setAttribute('id', `${doc.id}`);
       
       pollBlock.innerHTML = `
-      <a href="pollDetails.html">
+      
       <div class="up-click rounded-xl w-full grid grid-cols-12 bg-grey text-white shadow-xl p-3 gap-2 items-center hover:shadow-lg transition delay-150 duration-300 ease-in-out hover:scale-105 transform" href="#">
                         
       <!-- Icon -->
@@ -1523,16 +1447,16 @@ if (pollBlok) {
           </div>
           
           <!-- Description -->
-          <div id="poption-${doc.id}" class="md:col-start-2 col-span-11 xl: ml-2">
+          <a href="pollDetails.html" id="poption-${doc.id}" class="md:col-start-2 col-span-11 xl: ml-2">
   
-          </div>
-          <button id=${doc.id}-edit class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Poll</button>
-          </div>
           </a>
+          <a href="pollEdit.html" id=edit-${doc.id} class="bg-black md:col-start-10 text-center col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Poll</a>
+          </div>
+          
           `;
           
           pollContainer.appendChild(pollBlock);
-  
+
           const q = query(collection(db, "Events", eventPopId, "polls", doc.id, "options"));
   
           const querySnapshot = await getDocs(q);
@@ -1568,8 +1492,6 @@ if (pollBlok) {
           }
     }
   });
-
-  
 }
 
 
@@ -1649,14 +1571,16 @@ let pollDet = document.querySelector("#poll-detail");
 
 
 
-let chatUserList = document.querySelector("#user-list");
-if (chatUserList) {
-const querySnapshoyt = await getDocs(collection(db, "Events", eventPopId, "users"));
+
+let chatRecentList = document.querySelector("#recent-list");
+if (chatRecentList) {
+
+  const q = query(collection(db, "Events", eventPopId, "users"), orderBy("datetime"));
+
+const querySnapshoyt = await getDocs(q);
 querySnapshoyt.forEach((doc) => {
   // doc.data() is never undefined for query doc snapshots
   // console.log(doc.id, " => ", doc.data());
-  
-  
 
     if (doc.id != adminID) {
       let user = document.createElement("div");
@@ -1677,7 +1601,43 @@ querySnapshoyt.forEach((doc) => {
       }
 
 
-      chatUserList.appendChild(user)
+      chatRecentList.appendChild(user)
+    }
+    
+    
+  });
+}
+
+let chatContactList = document.querySelector("#contact-list");
+if (chatContactList) {
+
+  const q = query(collection(db, "Events", eventPopId, "users"));
+
+const querySnapshoyt = await getDocs(q);
+querySnapshoyt.forEach((doc) => {
+  // doc.data() is never undefined for query doc snapshots
+  // console.log(doc.id, " => ", doc.data());
+
+    if (doc.id != adminID) {
+      let user = document.createElement("div");
+      user.innerHTML = `
+      
+
+      <div id=${doc.id}>
+        <a href="chatroom.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border transition-colors border-navy rounded-lg shadow hover:bg-grey">
+        <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${doc.data().name}</h5>
+        </a>
+      </div>
+      `
+
+      if(user) {
+        user.addEventListener('click', () => {
+          sessionStorage.setItem("chatUser", `${doc.id}`);
+        });
+      }
+
+
+      chatContactList.appendChild(user)
     }
     
     
@@ -1745,9 +1705,62 @@ if (sendBtn) {
         senderId: adminID,
         text: msgInput.value
       });
+
+      const chatRefDoc = doc(db, "Events", eventPopId, "users", chatUser);
+      await updateDoc(chatRefDoc, {
+        datetime: serverTimestamp()
+      });
+
+      const chatAdminDoc = doc(db, "Events", eventPopId, "users", adminID);
+      await updateDoc(chatAdminDoc, {
+        datetime: serverTimestamp()
+      });
+
       window.scrollBy(0, 1000000);
       msgInput.value = ""
     }
   })
 }
 
+
+// Editing Polls :
+
+let editForm = document.querySelector("#edit-form");
+
+if (editForm) {
+
+  const querySnapshot = await getDocs(collection(db, "Events", eventPopId, "polls"));
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    // console.log(doc.id, " => ", doc.data());
+
+    if (doc.id == PollDocID) {
+      editForm.innerHTML = `
+      <div class="relative">
+        <input autocomplete="off" required id="edit-poll-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Poll Name" value="${doc.data().pollName}" />
+        <label for="edit-poll-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Poll Name</label>
+      </div>
+      `
+    }
+  });
+
+
+  const querySnapshotx = await getDocs(collection(db, "Events", eventPopId, "polls", PollDocID, "options"));
+  querySnapshotx.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    console.log(doc.id, " => ", doc.data());
+
+    let optionInput = document.createElement('div');
+    optionInput.setAttribute('class', "relative");
+    optionInput.innerHTML = `
+    <input autocomplete="off" required id="poll-opt-one" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Option" value="${doc.data().pollOption}"/>
+    <label for="poll-opt-one" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Option</label>
+    `
+
+    editForm.appendChild(optionInput);
+    
+  });
+
+
+
+};

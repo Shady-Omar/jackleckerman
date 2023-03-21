@@ -18,7 +18,8 @@
   "main": "tailwind.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "npm rebuild && webpack --mode development --progress",
+    "prod": "npm rebuild && webpack --mode production --progress"
   },
   "keywords": [],
   "author": "",

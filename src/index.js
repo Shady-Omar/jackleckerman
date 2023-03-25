@@ -1005,7 +1005,8 @@ querySnapshott.forEach(async(doccc) => {
 
               </div>
               <div class="relative mb-10">
-                <button id="close-opt-btn" class="bg-red hover:bg-black text-white rounded-md px-10 py-1">Close</button>
+                <button id="close-opt-btn" class="bg-red hover:bg-black text-white rounded-md px-10 py-1 mr-2">Close</button>
+                <button id="edit-opt-btn" class="bg-green hover:bg-black text-white rounded-md px-10 py-1 ml-2">Edit</button>
               </div>
           </div>
         </div>
@@ -1015,18 +1016,146 @@ querySnapshott.forEach(async(doccc) => {
         const q = query(collection(db, "Events", eventPopId, "buttons"), where("eventBtnID", "==", eventPopId));
       
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
+        querySnapshot.forEach((ddoc) => {
 
           let addOptBtn = document.querySelector(`#${doccc.id}-add-opt`)
           let newBtn = document.createElement("div");
+          newBtn.setAttribute('class', "relative")
           newBtn.innerHTML = `
-          <a href="https://${doc.data().btnURL}/" target="_blank" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
-          <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${doc.data().btnName}</h5>
+        
+
+          <a href="https://${ddoc.data().btnURL}/" target="_blank" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
+            <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
           </a>
           `
           addOptBtn.before(newBtn)
 
+          let editBtns = document.querySelector("#edit-opt-btn");
+          
+          editBtns.addEventListener('click', () => {
+
+            newBtn.innerHTML = `
+            <div id="close-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
+              <img src="../imgs/close-red-icon.svg" alt="close" class="cursor-pointer">
+            </div>
+            <div id="edit-${ddoc.id}" class="absolute -top-1 p-[2px] w-5 bg-blue rounded-full right-6 hover:bg-darkblue transition-colors">
+              <img src="../imgs/icons8-edit.svg" alt="close" class="cursor-pointer">
+            </div>
+              
+              <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
+              <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+              </div>
+              `
+              let closeBtns = document.querySelector(`#close-${ddoc.id}`)
+              closeBtns.addEventListener('click', async() => {
+    
+                if (window.confirm("Do you really want to delete this Button?")) {
+                  try {
+                    await deleteDoc(doc(db, "Events", eventPopId, "buttons", ddoc.id));
+                    alert("Button Deleted Successfully")
+                    location.reload();
+                  } catch (e){
+                    console.log(e)
+                  }
+                }
+    
+              });
+
+              let editBtns = document.querySelector(`#edit-${ddoc.id}`)
+              editBtns.addEventListener('click', async() => {
+    
+                // **************
+
+                let editbtnpop = document.querySelector("#edit-btn-pop");
+                let editBtnPopUp = document.createElement("div");
+    
+              editBtnPopUp.innerHTML = `
+              
+              <div id="edit-btn-popup" class="hidden items-center justify-center relative">
+                <div class=" flex fixed z-10 top-0 w-full h-full bg-black bg-opacity-60">
+                  <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
+                      <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
+    
+                      <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                        <div class="relative">
+                          <input autocomplete="off" required id="edit-btn-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button Name" value="${ddoc.data().btnName}" />
+                          <label for="edit-btn-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button Name</label>
+                        </div>
+    
+                        <div id="btn-error-one"></div>
+    
+                        <div class="relative">
+                          <input autocomplete="off" required pattern="https://.*" id="edit-btn-link" name="name" type="url" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button URL" value="${ddoc.data().btnURL}" />
+                          <label for="edit-btn-link" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button URL</label>
+                        </div>
+                        
+    
+                        <div id="btn-error-two"></div>
+    
+                        <div class="relative">
+                          <button id="edit-btn-click" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">add</button>
+                          <button id="close-edit-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                        </div>
+                      </div>
+    
+                      </div>
+                  </div>
+                </div>
+              </div>
+              `
+              editbtnpop.appendChild(editBtnPopUp);
+    
+              let overlay = document.querySelector(".overlay");
+              let editBtnPopHidden = document.querySelector("#edit-btn-popup");
+              editBtnPopHidden.classList.add("flex");
+              editBtnPopHidden.classList.remove("hidden");
+              overlay.classList.remove("hidden");
+    
+              let closeEventPop = document.querySelector("#close-edit-btn");
+              if (closeEventPop) {
+                closeEventPop.addEventListener('click',() => {
+                  editBtnPopHidden.classList.add("hidden");
+                  editBtnPopHidden.classList.remove("flex");
+                  overlay.classList.add("hidden");
+                });
+              }
+    
+
+              let editBtnName = document.querySelector("#edit-btn-name");
+              let editBtnURL = document.querySelector("#edit-btn-link");
+
+              let editBtnClick = document.querySelector("#edit-btn-click");
+
+
+              editBtnClick.addEventListener('click', async() => {
+
+                if (window.confirm("Confirm Edits ?")) {
+                  try {
+                  
+                    const pollEditRef = doc(db, "Events", eventPopId, "buttons", ddoc.id);
+                    await updateDoc(pollEditRef, {
+                      btnName: editBtnName.value,
+                      btnURL: editBtnURL.value,
+                    });
+            
+                    location.reload();
+                  } catch (error) {
+                    console.error(error)
+                  }
+                }
+              })
+
+
+                // **************
+    
+              });
+
+            })
+
+          
+
         });
+
 
 
         let overlay = document.querySelector(".overlay");
@@ -1205,7 +1334,7 @@ querySnapshott.forEach(async(doccc) => {
         </td>
 
         <td id=CC-${docx.id}-chat class="px-6 py-4">
-          <a href="chat.html"><button id=CC-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-5 mr-2 mb-2">Chat</button></a>
+          <a href="chatroom.html"><button id=CC-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-5 mr-2 mb-2">Chat</button></a>
         </td>
           
       </tr>
@@ -1214,6 +1343,14 @@ querySnapshott.forEach(async(doccc) => {
       }
     }
 
+    let goChatBtn = document.querySelector(`#CC-${docx.id}-chat`);
+
+    if (goChatBtn) {
+
+      goChatBtn.addEventListener('click', () => {
+        sessionStorage.setItem("chatUser", `${docx.id}`);
+      });
+    }
     
     let inviteContainer = document.querySelector(`#II-${docx.id}-invite`)
     let inviteBTn = document.querySelector(`#II-${docx.id}`)
@@ -1389,7 +1526,7 @@ let pollPop = document.querySelector("#poll-pop");
               
             }
 
-          alert("Event Added Successfully")
+          alert("Poll Added Successfully")
           location.reload();
         } catch (e) {
           console.error("Error adding document: ", e);
@@ -1547,7 +1684,7 @@ let pollDet = document.querySelector("#poll-detail");
       // doc.data() is never undefined for query doc snapshots
 
       if (doc.id == PollDocID) {
-        let pollNameDet = document.querySelector("#poll-name");
+        let pollNameDet = document.querySelector("#poll-name-det");
         pollNameDet.innerHTML = `${doc.data().pollName}`
         
 
@@ -1743,6 +1880,9 @@ let editForm = document.querySelector("#edit-form");
 
 if (editForm) {
 
+
+  let pollIdEdit = [];
+
   const querySnapshot = await getDocs(collection(db, "Events", eventPopId, "polls"));
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
@@ -1761,20 +1901,74 @@ if (editForm) {
 
   const querySnapshotx = await getDocs(collection(db, "Events", eventPopId, "polls", PollDocID, "options"));
   querySnapshotx.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-    console.log(doc.id, " => ", doc.data());
 
     let optionInput = document.createElement('div');
     optionInput.setAttribute('class', "relative");
     optionInput.innerHTML = `
-    <input autocomplete="off" required id="poll-opt-one" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Option" value="${doc.data().pollOption}"/>
-    <label for="poll-opt-one" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Option</label>
+    <input autocomplete="off" required id="${doc.id}" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Option" value="${doc.data().pollOption}"/>
+    <label for="${doc.id}" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Option</label>
     `
 
     editForm.appendChild(optionInput);
     
+    pollIdEdit.push(`${doc.id}`);
+
   });
 
 
+  // Delete Poll:
+  
+  let deletePoll = document.querySelector("#delete-poll-btn");
+  
+  if (deletePoll) {
+    deletePoll.addEventListener('click', async() => {
+      
+  
+      if (window.confirm("Do you really want to delete this Poll?")) {
+        try {
+          await deleteDoc(doc(db, "Events", eventPopId, "polls", PollDocID));
+          alert("Event Deleted")
+          history.back();
+        } catch (e){
+          console.log(e)
+        }
+      }
+    });
+  }
+  
+  // *********
+  
+  let editPollName = document.querySelector("#edit-poll-name");
+  let editPollBtn = document.querySelector("#edit-poll-btn");
+  
+  if (editPollName) {
+    editPollBtn.addEventListener('click', async() => {
 
+      if (window.confirm("Confirm Edits ?")) {
+        try {
+        
+          const pollEditRef = doc(db, "Events", eventPopId, "polls", PollDocID);
+          await updateDoc(pollEditRef, {
+            pollName: editPollName.value,
+          });
+  
+          for (let i = 0; i < pollIdEdit.length; i++) {
+  
+            let optId = document.querySelector(`#${pollIdEdit[i]}`)
+  
+            const pollEditOpt = doc(db, "Events", eventPopId, "polls", PollDocID, "options", pollIdEdit[i]);
+  
+            await updateDoc(pollEditOpt, {
+              pollOption: optId.value || null,
+            });
+          }
+  
+          history.back();
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+    });
+  }
 };

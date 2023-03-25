@@ -217,21 +217,41 @@ if (eventBtn) {
     overlay.classList.add("hidden");
 
     try {
-      let userID = sessionStorage.getItem("User ID");
+      let userID = localStorage.getItem("User ID");
       const docRef = await addDoc(collection(db, "Events"), {
         eventName: eventName.value,
         eventcolor: eventSelectColor.value,
         eventOwnerID: userID
       });
 
-      var userEventId = sessionStorage.getItem("event ID");
-      var userEventName = sessionStorage.getItem("UserName");
+      var userEventId = localStorage.getItem("event ID");
+      var userEventName = localStorage.getItem("UserName");
 
-        const userRef = doc(db, "Events", docRef.id, "users", userID);
-        setDoc(userRef, {
-          name: userEventName || null,
-          rank: 1
-        });
+      const userRef = doc(db, "Events", docRef.id, "users", userID);
+      setDoc(userRef, {
+        name: userEventName || null,
+        rank: 1
+      });
+
+      await addDoc(collection(db, "Events", docRef.id, "buttons"), {
+        btnName: "Attendees",
+        btnURL: "attendees.html",
+        eventBtnID: docRef.id,
+        hidden: false,
+      });
+      await addDoc(collection(db, "Events", docRef.id, "buttons"), {
+        btnName: "Polls",
+        btnURL: "polls.html",
+        eventBtnID: docRef.id,
+        hidden: false,
+      });
+      await addDoc(collection(db, "Events", docRef.id, "buttons"), {
+        btnName: "Chats",
+        btnURL: "chat.html",
+        eventBtnID: docRef.id,
+        hidden: false,
+      });
+
 
 
       alert("Event Added Successfully")
@@ -285,7 +305,7 @@ querySnapshot.forEach((doc) => {
   
 });
 
-var adminID = sessionStorage.getItem("User ID");
+var adminID = localStorage.getItem("User ID");
 const qx = query(collection(db, "Events"), where("eventOwnerID", "==", adminID));
 
 const querySnapshots = await getDocs(qx);
@@ -434,7 +454,7 @@ querySnapshots.forEach((doctwo) => {
                     rank: 2
                   });
                 }
-                  var userEventId = sessionStorage.getItem("event ID");
+                  var userEventId = localStorage.getItem("event ID");
                   
                   // console.log(found);
                   // console.log(reff.id);
@@ -512,7 +532,7 @@ querySnapshots.forEach((doctwo) => {
     let uploadUser = document.querySelector(`#${doctwo.id}-adduser`);
     if (uploadUser) {
         uploadUser.addEventListener('click', () => {
-          sessionStorage.setItem("event ID", `${doctwo.id}`);
+          localStorage.setItem("event ID", `${doctwo.id}`);
         let addPop = document.querySelector("#add-user");
         if(addPop) {
         let addUserPopUp = document.createElement("div");
@@ -708,7 +728,7 @@ querySnapshots.forEach((doctwo) => {
                       
                     }
 
-                    var userEventId = sessionStorage.getItem("event ID");
+                    var userEventId = localStorage.getItem("event ID");
 
                     let refNotDuplicate = found ? docRefDuplicate : reff.id;
 
@@ -804,9 +824,9 @@ querySnapshotss.forEach((doc) => {
         }
 
       } else {
-        sessionStorage.setItem("User ID", doc.id);
-        sessionStorage.setItem("UserName", `${doc.data().firstName} ${doc.data().lastName}`);
-        sessionStorage.setItem("isLogged", `True`);
+        localStorage.setItem("User ID", doc.id);
+        localStorage.setItem("UserName", `${doc.data().firstName} ${doc.data().lastName}`);
+        localStorage.setItem("isLogged", `True`);
         
         window.location.href = `events.html`;
 
@@ -971,7 +991,7 @@ querySnapshott.forEach(async(doccc) => {
         let optionPopUp = document.createElement("div");
         optionPopUp.setAttribute('class', `${doccc.id}`);
         let ids = optionPopUp.getAttribute('class')
-        sessionStorage.setItem("event ID", ids);
+        localStorage.setItem("event ID", ids);
 
         optionPopUp.innerHTML = `
         
@@ -979,24 +999,6 @@ querySnapshott.forEach(async(doccc) => {
         <div  class=" flex fixed z-10 top-0 w-full h-full bg-navy bg-opacity-60 flex-col items-center ">
         <div  class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg grid gap-[1rem] grid-cols-4">
                 
-              <div id=${doccc.id}-attend>
-                <a href="attendees.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
-                <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Attendees</h5>
-                </a>
-              </div>
-              
-              <div id=${doccc.id}-poll>
-                <a href="polls.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
-                <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Polls</h5>
-                </a>
-              </div>
-
-              <div id=${doccc.id}-chat>
-                <a href="chat.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
-                <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Chat</h5>
-                </a>
-              </div>
-
               <div id=${doccc.id}-add-opt>
                 <a href="#" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-green border border-green rounded-lg shadow hover:bg-darkgreen">
                 <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Add Option</h5>
@@ -1007,12 +1009,13 @@ querySnapshott.forEach(async(doccc) => {
               <div class="relative mb-10">
                 <button id="close-opt-btn" class="bg-red hover:bg-black text-white rounded-md px-10 py-1 mr-2">Close</button>
                 <button id="edit-opt-btn" class="bg-green hover:bg-black text-white rounded-md px-10 py-1 ml-2">Edit</button>
+                <button id="hide-opt-btn" class="bg-blue hover:bg-black text-white rounded-md px-10 py-1 ml-2">Hide</button>
               </div>
           </div>
         </div>
         `
         optPop.appendChild(optionPopUp);
-        var eventPopId = sessionStorage.getItem("event ID");
+        var eventPopId = localStorage.getItem("event ID");
         const q = query(collection(db, "Events", eventPopId, "buttons"), where("eventBtnID", "==", eventPopId));
       
         const querySnapshot = await getDocs(q);
@@ -1024,131 +1027,168 @@ querySnapshott.forEach(async(doccc) => {
           newBtn.innerHTML = `
         
 
-          <a href="https://${ddoc.data().btnURL}/" target="_blank" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
+          <a href="${ddoc.data().btnURL}" target="_self" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
             <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
           </a>
           `
           addOptBtn.before(newBtn)
 
+
+          let hideBtns = document.querySelector("#hide-opt-btn");
+          hideBtns.addEventListener('click', () => {
+
+            newBtn.innerHTML = `
+            <div id="hide-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
+              <img src="../imgs/visibility-eye-svgrepo-com.svg" alt="close" class="cursor-pointer">
+            </div>
+              
+            <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
+              <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+            </div>
+            `
+
+            let hideIcon = document.querySelector(`#hide-${ddoc.id}`);
+
+            hideIcon.addEventListener('click', async() => {
+              
+              newBtn.classList.toggle('opacity-30');
+
+
+                const hideRef = doc(db, "Events", eventPopId, "buttons", ddoc.id);
+                await updateDoc(hideRef, {
+                  hidden: newBtn.getAttribute('class') == "relative opacity-30",
+                });
+
+            });
+
+          });
+
+
           let editBtns = document.querySelector("#edit-opt-btn");
           
           editBtns.addEventListener('click', () => {
 
-            newBtn.innerHTML = `
-            <div id="close-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
-              <img src="../imgs/close-red-icon.svg" alt="close" class="cursor-pointer">
-            </div>
-            <div id="edit-${ddoc.id}" class="absolute -top-1 p-[2px] w-5 bg-blue rounded-full right-6 hover:bg-darkblue transition-colors">
-              <img src="../imgs/icons8-edit.svg" alt="close" class="cursor-pointer">
-            </div>
-              
-              <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
-              <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+            if (ddoc.data().btnName != "Chats" && ddoc.data().btnName != "Polls" && ddoc.data().btnName != "Attendees") {
+
+              newBtn.innerHTML = `
+              <div id="close-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
+                <img src="../imgs/close-red-icon.svg" alt="close" class="cursor-pointer">
               </div>
-              `
-              let closeBtns = document.querySelector(`#close-${ddoc.id}`)
-              closeBtns.addEventListener('click', async() => {
-    
-                if (window.confirm("Do you really want to delete this Button?")) {
-                  try {
-                    await deleteDoc(doc(db, "Events", eventPopId, "buttons", ddoc.id));
-                    alert("Button Deleted Successfully")
-                    location.reload();
-                  } catch (e){
-                    console.log(e)
+              <div id="edit-${ddoc.id}" class="absolute -top-1 p-[2px] w-5 bg-blue rounded-full right-6 hover:bg-darkblue transition-colors">
+                <img src="../imgs/icons8-edit.svg" alt="close" class="cursor-pointer">
+              </div>
+                
+                <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
+                <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+                </div>
+                `
+                let closeBtns = document.querySelector(`#close-${ddoc.id}`)
+                closeBtns.addEventListener('click', async() => {
+      
+                  if (window.confirm("Do you really want to delete this Button?")) {
+                    try {
+                      await deleteDoc(doc(db, "Events", eventPopId, "buttons", ddoc.id));
+                      alert("Button Deleted Successfully")
+                      location.reload();
+                    } catch (e){
+                      console.log(e)
+                    }
                   }
-                }
-    
-              });
-
-              let editBtns = document.querySelector(`#edit-${ddoc.id}`)
-              editBtns.addEventListener('click', async() => {
-    
-                // **************
-
-                let editbtnpop = document.querySelector("#edit-btn-pop");
-                let editBtnPopUp = document.createElement("div");
-    
-              editBtnPopUp.innerHTML = `
-              
-              <div id="edit-btn-popup" class="hidden items-center justify-center relative">
-                <div class=" flex fixed z-10 top-0 w-full h-full bg-black bg-opacity-60">
-                  <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
-                      <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
-    
-                      <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                        <div class="relative">
-                          <input autocomplete="off" required id="edit-btn-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button Name" value="${ddoc.data().btnName}" />
-                          <label for="edit-btn-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button Name</label>
+      
+                });
+  
+                let editBtns = document.querySelector(`#edit-${ddoc.id}`)
+                editBtns.addEventListener('click', async() => {
+      
+                  // **************
+  
+                  let editbtnpop = document.querySelector("#edit-btn-pop");
+                  let editBtnPopUp = document.createElement("div");
+      
+                editBtnPopUp.innerHTML = `
+                
+                <div id="edit-btn-popup" class="hidden items-center justify-center relative">
+                  <div class=" flex fixed z-10 top-0 w-full h-full bg-black bg-opacity-60">
+                    <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
+                        <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
+      
+                        <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                          <div class="relative">
+                            <input autocomplete="off" required id="edit-btn-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button Name" value="${ddoc.data().btnName}" />
+                            <label for="edit-btn-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button Name</label>
+                          </div>
+      
+                          <div id="btn-error-one"></div>
+      
+                          <div class="relative">
+                            <input autocomplete="off" required pattern="https://.*" id="edit-btn-link" name="name" type="url" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button URL" value="${ddoc.data().btnURL}" />
+                            <label for="edit-btn-link" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button URL</label>
+                          </div>
+                          
+      
+                          <div id="btn-error-two"></div>
+      
+                          <div class="relative">
+                            <button id="edit-btn-click" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">add</button>
+                            <button id="close-edit-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                          </div>
                         </div>
-    
-                        <div id="btn-error-one"></div>
-    
-                        <div class="relative">
-                          <input autocomplete="off" required pattern="https://.*" id="edit-btn-link" name="name" type="url" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button URL" value="${ddoc.data().btnURL}" />
-                          <label for="edit-btn-link" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button URL</label>
+      
                         </div>
-                        
-    
-                        <div id="btn-error-two"></div>
-    
-                        <div class="relative">
-                          <button id="edit-btn-click" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">add</button>
-                          <button id="close-edit-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
-                        </div>
-                      </div>
-    
-                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              `
-              editbtnpop.appendChild(editBtnPopUp);
-    
-              let overlay = document.querySelector(".overlay");
-              let editBtnPopHidden = document.querySelector("#edit-btn-popup");
-              editBtnPopHidden.classList.add("flex");
-              editBtnPopHidden.classList.remove("hidden");
-              overlay.classList.remove("hidden");
-    
-              let closeEventPop = document.querySelector("#close-edit-btn");
-              if (closeEventPop) {
-                closeEventPop.addEventListener('click',() => {
-                  editBtnPopHidden.classList.add("hidden");
-                  editBtnPopHidden.classList.remove("flex");
-                  overlay.classList.add("hidden");
-                });
-              }
-    
-
-              let editBtnName = document.querySelector("#edit-btn-name");
-              let editBtnURL = document.querySelector("#edit-btn-link");
-
-              let editBtnClick = document.querySelector("#edit-btn-click");
-
-
-              editBtnClick.addEventListener('click', async() => {
-
-                if (window.confirm("Confirm Edits ?")) {
-                  try {
-                  
-                    const pollEditRef = doc(db, "Events", eventPopId, "buttons", ddoc.id);
-                    await updateDoc(pollEditRef, {
-                      btnName: editBtnName.value,
-                      btnURL: editBtnURL.value,
-                    });
-            
-                    location.reload();
-                  } catch (error) {
-                    console.error(error)
-                  }
+                `
+                editbtnpop.appendChild(editBtnPopUp);
+      
+                let overlay = document.querySelector(".overlay");
+                let editBtnPopHidden = document.querySelector("#edit-btn-popup");
+                editBtnPopHidden.classList.add("flex");
+                editBtnPopHidden.classList.remove("hidden");
+                overlay.classList.remove("hidden");
+      
+                let closeEventPop = document.querySelector("#close-edit-btn");
+                if (closeEventPop) {
+                  closeEventPop.addEventListener('click',() => {
+                    editBtnPopHidden.classList.add("hidden");
+                    editBtnPopHidden.classList.remove("flex");
+                    overlay.classList.add("hidden");
+                  });
                 }
-              })
+      
+  
+                let editBtnName = document.querySelector("#edit-btn-name");
+                let editBtnURL = document.querySelector("#edit-btn-link");
+  
+                let editBtnClick = document.querySelector("#edit-btn-click");
+  
+  
+                editBtnClick.addEventListener('click', async() => {
+  
+                  if (window.confirm("Confirm Edits ?")) {
+                    try {
+                    
+                      const pollEditRef = doc(db, "Events", eventPopId, "buttons", ddoc.id);
+                      await updateDoc(pollEditRef, {
+                        btnName: editBtnName.value,
+                        btnURL: editBtnURL.value,
+                      });
+              
+                      location.reload();
+                    } catch (error) {
+                      console.error(error)
+                    }
+                  }
+                })
+  
+  
+                  // **************
+      
+                });
 
 
-                // **************
-    
-              });
+            }
+
 
             })
 
@@ -1262,7 +1302,7 @@ querySnapshott.forEach(async(doccc) => {
 
               try {
 
-                var eventPopId = sessionStorage.getItem("event ID");
+                var eventPopId = localStorage.getItem("event ID");
                 console.log(eventPopId)
 
 
@@ -1295,7 +1335,7 @@ querySnapshott.forEach(async(doccc) => {
 });
 
 
-  var eventPopId = sessionStorage.getItem("event ID");
+  var eventPopId = localStorage.getItem("event ID");
   const q = query(collection(db, "excelSheetMembers"), where("eventId", "array-contains", eventPopId));
 
   const querySnapshotot = await getDocs(q);
@@ -1330,14 +1370,18 @@ querySnapshott.forEach(async(doccc) => {
               ${docx.data().Country}
           </td>
           <td id=II-${docx.id}-invite class="px-6 py-4">
-          <button id=II-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2">Invite To Meeting</button>
-        </td>
+          <button id=II-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-2.5 max-h-[60px]">Invite To Meeting</button>
+          </td>
 
-        <td id=CC-${docx.id}-chat class="px-6 py-4">
-          <a href="chatroom.html"><button id=CC-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-5 mr-2 mb-2">Chat</button></a>
-        </td>
-          
-      </tr>
+          <td id=CC-${docx.id}-chat class="px-6 py-4">
+            <a href="chatroom.html"><button id=CC-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-5 max-h-[60px]">Chat</button></a>
+          </td>
+
+          <td id=CC-${docx.id}-addBtn class="px-6 py-4">
+            <button id=CC-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-2.5 max-h-[60px]">Add Button</button>
+          </td>
+            
+        </tr>
         `
         attendContainer.appendChild(attendList);
       }
@@ -1348,13 +1392,13 @@ querySnapshott.forEach(async(doccc) => {
     if (goChatBtn) {
 
       goChatBtn.addEventListener('click', () => {
-        sessionStorage.setItem("chatUser", `${docx.id}`);
+        localStorage.setItem("chatUser", `${docx.id}`);
       });
     }
     
     let inviteContainer = document.querySelector(`#II-${docx.id}-invite`)
     let inviteBTn = document.querySelector(`#II-${docx.id}`)
-    let adminName = sessionStorage.getItem("UserName")
+    let adminName = localStorage.getItem("UserName")
     if (inviteBTn) {
       inviteBTn.addEventListener('click', async() => {
 
@@ -1637,7 +1681,7 @@ if (pollBlok) {
           if (pollBlock) {
             let pollIDs = pollBlock.getAttribute('id')
             pollBlock.addEventListener('click', () => {
-              sessionStorage.setItem("poll ID", pollIDs);
+              localStorage.setItem("poll ID", pollIDs);
             });
           }
     }
@@ -1645,7 +1689,7 @@ if (pollBlok) {
 }
 
 
-var PollDocID = sessionStorage.getItem("poll ID");
+var PollDocID = localStorage.getItem("poll ID");
 //   console.log(PollDocID)
 
 let pollDet = document.querySelector("#poll-detail");
@@ -1747,7 +1791,7 @@ querySnapshoyt.forEach((doc) => {
 
       if(user) {
         user.addEventListener('click', () => {
-          sessionStorage.setItem("chatUser", `${doc.id}`);
+          localStorage.setItem("chatUser", `${doc.id}`);
         });
       }
 
@@ -1783,7 +1827,7 @@ querySnapshoyt.forEach((doc) => {
 
       if(user) {
         user.addEventListener('click', () => {
-          sessionStorage.setItem("chatUser", `${doc.id}`);
+          localStorage.setItem("chatUser", `${doc.id}`);
         });
       }
 
@@ -1797,8 +1841,8 @@ querySnapshoyt.forEach((doc) => {
 
 
 
-var eventPopId = sessionStorage.getItem("event ID");
-var chatUser = sessionStorage.getItem("chatUser");
+var eventPopId = localStorage.getItem("event ID");
+var chatUser = localStorage.getItem("chatUser");
 
 let chatContainer = document.querySelector("#chat-msgs");
 if (chatContainer) {

@@ -71,7 +71,7 @@
     </main>
     <script src="dist/bundle.js"></script>
     <script>
-      if (sessionStorage.getItem("isLogged") == null) {
+      if (localStorage.getItem("isLogged") == null) {
         // document.body.innerHTML = '<p class="text-white ml-6 mt-6 text-lg">Access Denied</p>';
         window.location.href = "index.html"
       }

@@ -1024,6 +1024,11 @@ querySnapshott.forEach(async(doccc) => {
           let addOptBtn = document.querySelector(`#${doccc.id}-add-opt`)
           let newBtn = document.createElement("div");
           newBtn.setAttribute('class', "relative")
+
+          if (ddoc.data().hidden == true) {
+            newBtn.classList.add('opacity-30');
+          }
+
           newBtn.innerHTML = `
         
 
@@ -1036,6 +1041,10 @@ querySnapshott.forEach(async(doccc) => {
 
           let hideBtns = document.querySelector("#hide-opt-btn");
           hideBtns.addEventListener('click', () => {
+
+            if (ddoc.data().hidden == true) {
+              newBtn.classList.add('opacity-30');
+            }
 
             newBtn.innerHTML = `
             <div id="hide-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
@@ -1335,6 +1344,8 @@ querySnapshott.forEach(async(doccc) => {
 });
 
 
+let userID = localStorage.getItem("chatUser");
+
   var eventPopId = localStorage.getItem("event ID");
   const q = query(collection(db, "excelSheetMembers"), where("eventId", "array-contains", eventPopId));
 
@@ -1387,12 +1398,22 @@ querySnapshott.forEach(async(doccc) => {
       }
     }
 
+    let addBtnUser = document.querySelector(`#CC-${docx.id}-addBtn`);
+    if (addBtnUser) {
+
+      addBtnUser.addEventListener('click', async() => {
+        localStorage.setItem("chatUser", docx.id);
+
+      });
+    }
+
     let goChatBtn = document.querySelector(`#CC-${docx.id}-chat`);
 
     if (goChatBtn) {
 
       goChatBtn.addEventListener('click', () => {
         localStorage.setItem("chatUser", `${docx.id}`);
+        
       });
     }
     
@@ -2016,3 +2037,392 @@ if (editForm) {
     });
   }
 };
+
+
+
+const querySnapshoot = await getDocs(collection(db, "Events", eventPopId, "users"));
+querySnapshoot.forEach(async(docx) => {
+  // doc.data() is never undefined for query doc snapshots
+  console.log(docx.id, " => ", docx.data());
+
+  let clkAddBtn = document.querySelector(`#CC-${docx.id}-addBtn`);
+
+  if (clkAddBtn) {
+
+    clkAddBtn.addEventListener('click', async() => {
+      localStorage.setItem("chatUser", docx.id);
+      let cc = localStorage.getItem("chatUser");
+      // **********
+
+      let addbtnPop = document.querySelector("#add-btn-pop");
+    
+      if (addbtnPop) {
+      let optionPopUp = document.createElement("div");
+
+      optionPopUp.innerHTML = `
+      
+      <div id="opt-event-pop" class="hidden items-center justify-center relative">
+        <div  class=" flex fixed z-10 top-0 w-full h-full bg-navy bg-opacity-60 flex-col items-center ">
+          <div id="add-btn-block" class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg grid gap-[1rem] grid-cols-4">
+              
+            <div id=${userID}-add-opt class="cursor-pointer">
+              <div href="#" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-green border border-green rounded-lg shadow hover:bg-darkgreen">
+                <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Add Option</h5>
+              </div>
+            </div>
+
+          </div>
+          <div class="relative mb-10">
+            <button id="close-addUser-btn" class="bg-red hover:bg-black text-white rounded-md px-10 py-1">Close</button>
+            <button id="edit-addUser-btn" class="bg-green hover:bg-black text-white rounded-md px-10 py-1 mx-2">Edit</button>
+            <button id="hide-addUser-btn" class="bg-blue hover:bg-black text-white rounded-md px-10 py-1">Hide</button>
+          </div>
+        </div>
+      </div>
+      `
+      addbtnPop.appendChild(optionPopUp);
+
+        // *************
+        
+        const quu = query(collection(db, "Events", eventPopId, "users", cc, "userBtns"), where("userBtnID", "==", cc));
+      
+        const querySnapshottt = await getDocs(quu);
+        querySnapshottt.forEach((ddoc) => {
+
+          console.log(chatUser)
+          
+          let addUserBtn = document.querySelector(`#${chatUser}-add-opt`)
+          
+          if (addUserBtn) {
+
+            let newBtn = document.createElement("div");
+          newBtn.setAttribute('class', "relative")
+
+          if (ddoc.data().hidden == true) {
+            newBtn.classList.add('opacity-30');
+          }
+
+          newBtn.innerHTML = `
+
+
+          <a href="${ddoc.data().btnURL}" target="_self" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
+            <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+          </a>
+          `
+          addUserBtn.before(newBtn)
+
+
+          let hideBtns = document.querySelector("#hide-addUser-btn");
+          hideBtns.addEventListener('click', () => {
+
+            if (ddoc.data().hidden == true) {
+              newBtn.classList.add('opacity-30');
+            }
+
+            newBtn.innerHTML = `
+            <div id="hide-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
+              <img src="../imgs/visibility-eye-svgrepo-com.svg" alt="close" class="cursor-pointer">
+            </div>
+              
+            <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
+              <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+            </div>
+            `
+
+            let hideIcon = document.querySelector(`#hide-${ddoc.id}`);
+
+            hideIcon.addEventListener('click', async() => {
+              
+              newBtn.classList.toggle('opacity-30');
+
+
+                const hideRef = doc(db, "Events", eventPopId, "users", cc, "userBtns", ddoc.id);
+                await updateDoc(hideRef, {
+                  hidden: newBtn.getAttribute('class') == "relative opacity-30",
+                });
+
+            });
+
+          });
+
+
+          let editBtns = document.querySelector("#edit-addUser-btn");
+          
+          editBtns.addEventListener('click', () => {
+
+            if (ddoc.data().btnName != "Chats" && ddoc.data().btnName != "Polls" && ddoc.data().btnName != "Attendees") {
+
+              newBtn.innerHTML = `
+              <div id="delete-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
+                <img src="../imgs/close-red-icon.svg" alt="close" class="cursor-pointer">
+              </div>
+              <div id="edit-${ddoc.id}" class="absolute -top-1 p-[2px] w-5 bg-blue rounded-full right-6 hover:bg-darkblue transition-colors">
+                <img src="../imgs/icons8-edit.svg" alt="close" class="cursor-pointer">
+              </div>
+                
+                <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
+                <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+                </div>
+                `
+                let closeBtns = document.querySelector(`#delete-${ddoc.id}`)
+                closeBtns.addEventListener('click', async() => {
+
+                  if (window.confirm("Do you really want to delete this Button?")) {
+                    try {
+                      await deleteDoc(doc(db, "Events", eventPopId, "users", cc, "userBtns", ddoc.id));
+                      alert("Button Deleted Successfully")
+                      location.reload();
+                    } catch (e){
+                      console.log(e)
+                    }
+                  }
+
+                });
+
+                let editBtns = document.querySelector(`#edit-${ddoc.id}`)
+                editBtns.addEventListener('click', async() => {
+
+                  // **************
+
+                  let editbtnpop = document.querySelector("#edit-btn-pop");
+                  let editBtnPopUp = document.createElement("div");
+
+                editBtnPopUp.innerHTML = `
+                
+                <div id="edit-btn-popup" class="hidden items-center justify-center relative">
+                  <div class=" flex fixed z-10 top-0 w-full h-full bg-black bg-opacity-60">
+                    <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
+                        <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
+
+                        <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                          <div class="relative">
+                            <input autocomplete="off" required id="edit-btn-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button Name" value="${ddoc.data().btnName}" />
+                            <label for="edit-btn-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button Name</label>
+                          </div>
+
+                          <div id="btn-error-one"></div>
+
+                          <div class="relative">
+                            <input autocomplete="off" required pattern="https://.*" id="edit-btn-link" name="name" type="url" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button URL" value="${ddoc.data().btnURL}" />
+                            <label for="edit-btn-link" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button URL</label>
+                          </div>
+                          
+
+                          <div id="btn-error-two"></div>
+
+                          <div class="relative">
+                            <button id="edit-btn-click" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">add</button>
+                            <button id="close-edit-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                          </div>
+                        </div>
+
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                `
+                editbtnpop.appendChild(editBtnPopUp);
+
+                let overlay = document.querySelector(".overlay");
+                let editBtnPopHidden = document.querySelector("#edit-btn-popup");
+                editBtnPopHidden.classList.add("flex");
+                editBtnPopHidden.classList.remove("hidden");
+                overlay.classList.remove("hidden");
+
+                let closeEventPop = document.querySelector("#close-edit-btn");
+                if (closeEventPop) {
+                  closeEventPop.addEventListener('click',() => {
+                    editBtnPopHidden.classList.add("hidden");
+                    editBtnPopHidden.classList.remove("flex");
+                    overlay.classList.add("hidden");
+                  });
+                }
+
+
+                let editBtnName = document.querySelector("#edit-btn-name");
+                let editBtnURL = document.querySelector("#edit-btn-link");
+
+                let editBtnClick = document.querySelector("#edit-btn-click");
+
+
+                editBtnClick.addEventListener('click', async() => {
+
+                  if (window.confirm("Confirm Edits ?")) {
+                    try {
+                    
+                      const pollEditRef = doc(db, "Events", eventPopId, "users", cc, "userBtns", ddoc.id);
+                      await updateDoc(pollEditRef, {
+                        btnName: editBtnName.value,
+                        btnURL: editBtnURL.value,
+                      });
+              
+                      location.reload();
+                    } catch (error) {
+                      console.error(error)
+                    }
+                  }
+                })
+
+
+                  // **************
+
+                });
+
+
+            }
+
+
+            })
+
+          }
+
+          
+
+        });
+
+        // *************
+
+
+      let overlay = document.querySelector(".overlay");
+      let optpopHidden = document.querySelector("#opt-event-pop");
+      if (optpopHidden) {
+
+        optpopHidden.classList.add("flex");
+        optpopHidden.classList.remove("hidden");
+        overlay.classList.remove("hidden");
+      }
+
+      let closeOptPop = document.querySelector("#close-addUser-btn");
+      if (closeOptPop) {
+        closeOptPop.addEventListener('click',() => {
+          optionPopUp.remove()
+          overlay.classList.add("hidden");
+        });
+      }
+
+      let addbtn = document.querySelector(`#${userID}-add-opt`);
+      if (addbtn) {
+        addbtn.addEventListener('click',() => {
+
+          let addbtnpop = document.querySelector("#add-btn-pop");
+          let addBtnPopUp = document.createElement("div");
+
+        addBtnPopUp.innerHTML = `
+        
+        <div id="add-btn-popup" class="hidden items-center justify-center relative">
+          <div class=" flex fixed z-10 top-0 w-full h-full bg-black bg-opacity-60">
+            <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
+                <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
+
+                <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                  <div class="relative">
+                    <input autocomplete="off" required id="new-btn-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button Name" />
+                    <label for="new-btn-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button Name</label>
+                  </div>
+
+                  <div id="btn-error-one"></div>
+
+                  <div class="relative">
+                    <input autocomplete="off" required pattern="https://.*" id="new-btn-link" name="name" type="url" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Button URL" />
+                    <label for="new-btn-link" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Button URL</label>
+                  </div>
+                  
+
+                  <div id="btn-error-two"></div>
+
+                  <div class="relative">
+                    <button id="user-btn-click" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">add</button>
+                    <button id="close-event-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                  </div>
+                </div>
+
+                </div>
+            </div>
+          </div>
+        </div>
+        `
+        addbtnpop.appendChild(addBtnPopUp);
+
+        let overlay = document.querySelector(".overlay");
+        let addBtnPopHidden = document.querySelector("#add-btn-popup");
+        addBtnPopHidden.classList.add("flex");
+        addBtnPopHidden.classList.remove("hidden");
+        overlay.classList.remove("hidden");
+
+        let closeEventPop = document.querySelector("#close-event-btn");
+        if (closeEventPop) {
+          closeEventPop.addEventListener('click',() => {
+            addBtnPopHidden.classList.add("hidden");
+            addBtnPopHidden.classList.remove("flex");
+            overlay.classList.add("hidden");
+          });
+        }
+
+
+        let eventNewBtn = document.querySelector("#user-btn-click");
+      if (eventNewBtn) {
+        eventNewBtn.addEventListener('click', async () => {
+
+          let btnErrorOne = document.querySelector("#btn-error-one");
+          let btnErrorTwo = document.querySelector("#btn-error-two");
+
+          let newBtnName = document.querySelector("#new-btn-name");
+          let newBtnLink = document.querySelector("#new-btn-link");
+
+          if (newBtnName.value === '' || newBtnName.value === null || newBtnLink.value === '' || newBtnLink.value === null) {
+            if (newBtnName.value === '' || newBtnName.value === null) {
+        
+              btnErrorOne.innerHTML = "*Button name is required"
+            } else {
+              btnErrorOne.classList.add("hidden")
+            }
+          
+            if (newBtnLink.value === '' || newBtnLink.value === null) {
+          
+              btnErrorTwo.innerHTML = "*Button URL is required"
+            } else {
+              btnErrorTwo.classList.add("hidden")
+            }
+          } else {
+
+            try {
+
+              var eventPopId = localStorage.getItem("event ID");
+              console.log(eventPopId)
+
+
+              await addDoc(collection(db, "Events", eventPopId, "users", chatUser, "userBtns"), {
+                btnName: newBtnName.value,
+                btnURL: newBtnLink.value,
+                userBtnID: userID,
+                hidden: false,
+              });
+
+              addBtnPopHidden.classList.add("hidden");
+              addBtnPopHidden.classList.remove("flex");
+              alert("New Button Added!")
+              location.reload();
+            } catch(e) {
+              console.log(e)
+            }
+
+          }
+        });
+
+      }
+
+        });
+        }
+
+    }
+
+
+      // **********
+
+    });
+  }
+
+
+  
+
+});

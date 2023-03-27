@@ -2042,8 +2042,6 @@ if (editForm) {
 
 const querySnapshoot = await getDocs(collection(db, "Events", eventPopId, "users"));
 querySnapshoot.forEach(async(docx) => {
-  // doc.data() is never undefined for query doc snapshots
-  console.log(docx.id, " => ", docx.data());
 
   let clkAddBtn = document.querySelector(`#CC-${docx.id}-addBtn`);
 
@@ -2088,8 +2086,6 @@ querySnapshoot.forEach(async(docx) => {
       
         const querySnapshottt = await getDocs(quu);
         querySnapshottt.forEach((ddoc) => {
-
-          console.log(chatUser)
           
           let addUserBtn = document.querySelector(`#${chatUser}-add-opt`)
           
@@ -2426,3 +2422,18 @@ querySnapshoot.forEach(async(docx) => {
   
 
 });
+
+
+let CoordinatorBtn = document.querySelector(".admin");
+
+if (CoordinatorBtn) {
+  const querySnapshoxxt = await getDocs(collection(db, "excelSheetMembers"));
+  querySnapshoxxt.forEach(async(doc) => {
+  
+    if (adminID === doc.id && doc.data().rank === 0) {
+      CoordinatorBtn.classList.remove("hidden");
+    }
+  
+  });
+
+}

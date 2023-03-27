@@ -836,6 +836,20 @@ querySnapshotss.forEach((doc) => {
 
 });
 
+// Admin Checker:
+
+let CoordinatorBtn = document.querySelector(".admin");
+
+
+const querySnapshoxxt = await getDocs(collection(db, "excelSheetMembers"));
+querySnapshoxxt.forEach(async(doc) => {
+
+  if (adminID === doc.id && doc.data().rank === 0) {
+    CoordinatorBtn.classList.remove("hidden");
+  }
+
+});
+
 
 const querySnapshotsx = await getDocs(collection(db, "Events"));
 querySnapshotsx.forEach((doccc) => {
@@ -2424,14 +2438,3 @@ querySnapshoot.forEach(async(docx) => {
 });
 
 
-let CoordinatorBtn = document.querySelector(".admin");
-
-
-const querySnapshoxxt = await getDocs(collection(db, "excelSheetMembers"));
-querySnapshoxxt.forEach(async(doc) => {
-
-  if (adminID === doc.id && doc.data().rank === 0) {
-    CoordinatorBtn.classList.remove("hidden");
-  }
-
-});

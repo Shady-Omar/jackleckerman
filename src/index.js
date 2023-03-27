@@ -2426,14 +2426,12 @@ querySnapshoot.forEach(async(docx) => {
 
 let CoordinatorBtn = document.querySelector(".admin");
 
-if (CoordinatorBtn) {
-  const querySnapshoxxt = await getDocs(collection(db, "excelSheetMembers"));
-  querySnapshoxxt.forEach(async(doc) => {
-  
-    if (adminID === doc.id && doc.data().rank === 0) {
-      CoordinatorBtn.classList.remove("hidden");
-    }
-  
-  });
 
-}
+const querySnapshoxxt = await getDocs(collection(db, "excelSheetMembers"));
+querySnapshoxxt.forEach(async(doc) => {
+
+  if (adminID === doc.id && doc.data().rank === 0) {
+    CoordinatorBtn.classList.remove("hidden");
+  }
+
+});

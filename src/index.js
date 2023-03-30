@@ -78,17 +78,17 @@ if (coordBtn) {
     let pass = [];
     pass.push(makepassword(10));
 
-      // var params = {
-      //   from_name : `${fname.value} ${lname.value}`,
-      //   email_id: email.value,
-      //   password: pass.toString()
-      // }
-      // emailjs.send('service_p8wkknm', 'template_n8eujco', params, "F_Io2W4ApCRvQJTbo")
-      //   .then(function(response) {
-      //     console.log('SUCCESS!', response.status, response.text);
-      //   }, function(error) {
-      //     console.log('FAILED...', error);
-      //   });
+      var params = {
+        from_name : `${fname.value} ${lname.value}`,
+        email_id: email.value,
+        password: pass.toString()
+      }
+      emailjs.send('service_r39ml1j', 'template_kjtoerl', params, "_oAoi1a5ARfpe6IsI")
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+        }, function(error) {
+          console.log('FAILED...', error);
+        });
 
       //MailJet:
       
@@ -1041,6 +1041,8 @@ querySnapshott.forEach(async(doccc) => {
 
           if (ddoc.data().hidden == true) {
             newBtn.classList.add('opacity-30');
+
+            
           }
 
           newBtn.innerHTML = `
@@ -2551,10 +2553,14 @@ querySnapshooot.forEach(async(docx) => {
 
               if (window.confirm("Confirm Edits ?")) {
                 try {
-                  const confirmRef = doc(db, "excelSheetMembers", cc);
-    
-                  // Set the "capital" field of the city 'DC'
-                  await updateDoc(confirmRef, {
+                  const confirmRefEvent = doc(db, "Events", eventPopId, "users", cc);
+                  await updateDoc(confirmRefEvent, {
+                    name: attendName.value,
+                    surname: attendSur.value,
+                  });
+
+                  const confirmRefExcel = doc(db, "excelSheetMembers", cc);
+                  await updateDoc(confirmRefExcel, {
                     Name: attendName.value,
                     Surname: attendSur.value,
                     email: attendEmail.value,
@@ -2562,6 +2568,8 @@ querySnapshooot.forEach(async(docx) => {
                     Company: attendCompany.value,
                     Country: attendCountry.value,
                   });
+
+                
                   location.reload();
                 } catch (error) {
                   console.error(error)
@@ -2579,6 +2587,7 @@ querySnapshooot.forEach(async(docx) => {
 
               if (window.confirm("Do you really want to delete this User?")) {
                 try {
+                  await deleteDoc(doc(db, "Events", eventPopId, "users", cc));
                   await deleteDoc(doc(db, "excelSheetMembers", cc));
                   alert("Button Deleted Successfully")
                   location.reload();

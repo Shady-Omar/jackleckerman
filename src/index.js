@@ -1375,34 +1375,46 @@ let userID = localStorage.getItem("chatUser");
         // attendList.setAttribute('class', `${doccc.id}`);
   
         attendList.innerHTML = `
-        <tr class="bg-navy border-b border-grey">
-          <td scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
+        <tr id=row-${docx.id} class="bg-navy border-b border-grey">
+          <td scope="row" class="px-3 py-4 font-medium text-white whitespace-nowrap">
+            <button id=editAttend-${docx.id}
+              class="flex space-x-2 items-center px-4 py-2 bg-green hover:bg-darkgreen rounded-full drop-shadow-md">
+                <svg class="fill-white" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20"
+                  viewBox="0 0 50 50">
+                  <path
+                    d="M 46.574219 3.425781 C 45.625 2.476563 44.378906 2 43.132813 2 C 41.886719 2 40.640625 2.476563 39.691406 3.425781 C 39.691406 3.425781 39.621094 3.492188 39.53125 3.585938 C 39.523438 3.59375 39.511719 3.597656 39.503906 3.605469 L 4.300781 38.804688 C 4.179688 38.929688 4.089844 39.082031 4.042969 39.253906 L 2.035156 46.742188 C 1.941406 47.085938 2.039063 47.453125 2.292969 47.707031 C 2.484375 47.898438 2.738281 48 3 48 C 3.085938 48 3.171875 47.988281 3.257813 47.964844 L 10.746094 45.957031 C 10.917969 45.910156 11.070313 45.820313 11.195313 45.695313 L 46.394531 10.5 C 46.40625 10.488281 46.410156 10.472656 46.417969 10.460938 C 46.507813 10.371094 46.570313 10.308594 46.570313 10.308594 C 48.476563 8.40625 48.476563 5.324219 46.574219 3.425781 Z M 45.160156 4.839844 C 46.277344 5.957031 46.277344 7.777344 45.160156 8.894531 C 44.828125 9.222656 44.546875 9.507813 44.304688 9.75 L 40.25 5.695313 C 40.710938 5.234375 41.105469 4.839844 41.105469 4.839844 C 41.644531 4.296875 42.367188 4 43.132813 4 C 43.898438 4 44.617188 4.300781 45.160156 4.839844 Z M 5.605469 41.152344 L 8.847656 44.394531 L 4.414063 45.585938 Z">
+                  </path>
+                </svg>
+              <span class="text-white text-md">Edit</span>
+            </button>
+          </td>
+          <td id=name-${docx.id} scope="row" class="px-6 py-4 overflow-ellipsis font-medium text-white whitespace-nowrap max-w-[160px]" style="overflow-wrap: break-word;">
               ${docx.data().Name}
           </td>
-          <td class="px-6 py-4">
+          <td id=sur-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
             ${docx.data().Surname}
           </td>
-          <td class="px-6 py-4">
+          <td id=email-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
               ${docx.data().email}
           </td>
-          <td class="px-6 py-4">
+          <td id=job-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
               ${docx.data().jobTitle}
           </td>
-          <td class="px-6 py-4">
+          <td id=company-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
               ${docx.data().Company}
           </td>
-          <td class="px-6 py-4">
+          <td id=country-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
               ${docx.data().Country}
           </td>
-          <td id=II-${docx.id}-invite class="px-6 py-4">
+          <td id=II-${docx.id}-invite class="px-3 py-4">
           <button id=II-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-2.5 max-h-[60px]">Invite To Meeting</button>
           </td>
 
-          <td id=CC-${docx.id}-chat class="px-6 py-4">
+          <td id=CC-${docx.id}-chat class="px-3 py-4">
             <a href="chatroom.html"><button id=CC-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-5 max-h-[60px]">Chat</button></a>
           </td>
 
-          <td id=CC-${docx.id}-addBtn class="px-6 py-4">
+          <td id=CC-${docx.id}-addBtn class="px-3 py-4">
             <button id=CC-${docx.id} type="button" class="text-white bg-blue hover:bg-darkblue font-medium rounded-lg text-sm px-5 py-2.5 max-h-[60px]">Add Button</button>
           </td>
             
@@ -1410,6 +1422,16 @@ let userID = localStorage.getItem("chatUser");
         `
         attendContainer.appendChild(attendList);
       }
+    }
+
+    let editBtnUser = document.querySelector(`#editAttend-${docx.id}`);
+    if (editBtnUser) {
+
+      editBtnUser.addEventListener('click', async() => {
+        localStorage.setItem("chatUser", docx.id);
+
+        
+      });
     }
 
     let addBtnUser = document.querySelector(`#CC-${docx.id}-addBtn`);
@@ -2425,6 +2447,152 @@ querySnapshoot.forEach(async(docx) => {
         }
 
     }
+
+
+      // **********
+
+    });
+  }
+
+
+  
+
+});
+
+const querySnapshooot = await getDocs(collection(db, "Events", eventPopId, "users"));
+querySnapshooot.forEach(async(docx) => {
+
+  let clkAddBtn = document.querySelector(`#editAttend-${docx.id}`);
+
+  if (clkAddBtn) {
+
+    clkAddBtn.addEventListener('click', async() => {
+      localStorage.setItem("chatUser", docx.id);
+      let cc = localStorage.getItem("chatUser");
+      // **********
+
+      const querySnapshot = await getDocs(collection(db, "excelSheetMembers"));
+      querySnapshot.forEach((docy) => {
+        // doc.data() is never undefined for query doc snapshots
+        
+        if (docy.id === cc) {
+          // console.log(doc.id, " => ", doc.data());
+          let attendRow = document.querySelector(`#row-${docx.id}`)
+          attendRow.innerHTML = `
+          
+          
+          <td scope="row" class="px-3 py-4 font-medium text-white whitespace-nowrap">
+            <button id=cancel-${docx.id}
+              class="flex space-x-2 items-center px-4 py-2 bg-blue hover:bg-black rounded-full drop-shadow-md">
+              <span class="text-white text-md">Cancel</span>
+            </button>
+          </td>
+          <td id=name-${docx.id} scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
+            <input type="text" name="attend-name" id="attend-name-${docx.id}" value="${docy.data().Name}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          </td>
+          <td id=sur-${docx.id} class="px-3 py-4">
+          <input type="text" name="attend-sur" id="attend-sur-${docx.id}" value="${docy.data().Surname}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          </td>
+          <td id=email-${docx.id} class="px-3 py-4">
+          <input type="text" name="attend-email" id="attend-email-${docx.id}" value="${docy.data().email}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          </td>
+          <td id=job-${docx.id} class="px-3 py-4">
+          <input type="text" name="attend-job" id="attend-job-${docx.id}" value="${docy.data().jobTitle}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          </td>
+          <td id=company-${docx.id} class="px-3 py-4">
+          <input type="text" name="attend-company" id="attend-company-${docx.id}" value="${docy.data().Company}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          </td>
+          <td id=country-${docx.id} class="px-3 py-4">
+          <input type="text" name="attend-country" id="attend-country-${docx.id}" value="${docy.data().Country}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          </td>
+          
+          <td id=CC-${docx.id}-confirm class="px-1 py-4">
+          <button id=confirm-${docx.id}
+          class="flex w-full text-center justify-center space-x-2 items-center px-4 py-2 bg-green hover:bg-darkgreen rounded-full drop-shadow-md">
+          <span class="text-white text-md">confirm</span>
+          </button>
+          </td>
+          
+          <td id=CC-${docx.id}-Delete class="px-1 py-4">
+          <button id=Delete-${docx.id}
+          class="flex w-full text-center justify-center space-x-2 items-center px-4 py-2 bg-red hover:bg-black rounded-full drop-shadow-md">
+          <span class="text-white text-md">Delete</span>
+          </button>
+          </td>
+          
+          <td class="px-3 py-4">
+          
+          </td>
+          `
+          
+
+          let cancelEdits = document.querySelector(`#cancel-${docx.id}`);
+
+          if (cancelEdits) {
+            cancelEdits.addEventListener('click', () => {
+
+            location.reload();
+            })
+
+          }
+
+          let confirmEdits = document.querySelector(`#CC-${docx.id}-confirm`);
+
+          let attendName = document.querySelector(`#attend-name-${docx.id}`);
+          let attendSur = document.querySelector(`#attend-sur-${docx.id}`);
+          let attendEmail = document.querySelector(`#attend-email-${docx.id}`);
+          let attendJob = document.querySelector(`#attend-job-${docx.id}`);
+          let attendCompany = document.querySelector(`#attend-company-${docx.id}`);
+          let attendCountry = document.querySelector(`#attend-country-${docx.id}`);
+
+          if (confirmEdits) {
+            confirmEdits.addEventListener('click', async() => {
+
+
+              if (window.confirm("Confirm Edits ?")) {
+                try {
+                  const confirmRef = doc(db, "excelSheetMembers", cc);
+    
+                  // Set the "capital" field of the city 'DC'
+                  await updateDoc(confirmRef, {
+                    Name: attendName.value,
+                    Surname: attendSur.value,
+                    email: attendEmail.value,
+                    jobTitle: attendJob.value,
+                    Company: attendCompany.value,
+                    Country: attendCountry.value,
+                  });
+                  location.reload();
+                } catch (error) {
+                  console.error(error)
+                }
+              }
+            })
+
+          }
+
+
+          let deleteEdits = document.querySelector(`#CC-${docx.id}-Delete`);
+
+          if (deleteEdits) {
+            deleteEdits.addEventListener('click', async() => {
+
+              if (window.confirm("Do you really want to delete this User?")) {
+                try {
+                  await deleteDoc(doc(db, "excelSheetMembers", cc));
+                  alert("Button Deleted Successfully")
+                  location.reload();
+                } catch (e){
+                  console.log(e)
+                }
+              }
+            })
+
+          }
+
+        }
+
+      });
 
 
       // **********

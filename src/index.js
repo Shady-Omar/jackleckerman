@@ -338,10 +338,10 @@ querySnapshots.forEach((doctwo) => {
       </div>
 
       
-      <button id=${doctwo.id}-excel class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Add users with excel sheet</button>
-      <button id=${doctwo.id}-adduser class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Add users manually</button>
-      <button id=${doctwo.id}-edit class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Event</button>
-      <button id=${doctwo.id}-option class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Options</button>
+      <button id=excel-${doctwo.id} class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Add users with excel sheet</button>
+      <button id=adduser-${doctwo.id} class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Add users manually</button>
+      <button id=edit-${doctwo.id} class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Event</button>
+      <button id=option-${doctwo.id} class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Options</button>
       
       </div>
       `;
@@ -411,6 +411,8 @@ querySnapshots.forEach((doctwo) => {
             var worksheet = workbook.Sheets[first_sheet_name];
             var rows = XLSX.utils.sheet_to_json(worksheet, {header:1});
 
+            localStorage.setItem("event ID", doctwo.id);
+
             for (let i = 0; i < rows.length -1 ; i++) {
 
               let pass = [];
@@ -441,7 +443,7 @@ querySnapshots.forEach((doctwo) => {
 
                 let reff;
                 if(!found) {
-                     reff = await addDoc(collection(db, "excelSheetMembers"), {
+                    reff = await addDoc(collection(db, "excelSheetMembers"), {
                     Name: rows[i][0] || null,
                     Surname: rows[i][1] || null,
                     email: rows[i][2] || null,
@@ -456,12 +458,11 @@ querySnapshots.forEach((doctwo) => {
                 }
                   var userEventId = localStorage.getItem("event ID");
                   
-                  // console.log(found);
+                  console.log(userEventId);
                   // console.log(reff.id);
                   // console.log(docRefDuplicate);
 
                   let refNotDuplicate = found ? docRefDuplicate : reff.id;
-
                   let chatRef = doc(db, "Events", userEventId, "users", refNotDuplicate);
                   setDoc(chatRef, {
                     name: rows[i][0] || null,
@@ -515,6 +516,9 @@ querySnapshots.forEach((doctwo) => {
 
             } 
 
+            alert("Users Added Successfully");
+            location.reload()
+
           };
           reader.readAsBinaryString(f);
         })
@@ -529,7 +533,7 @@ querySnapshots.forEach((doctwo) => {
 
     // -----------------------------
     
-    let uploadUser = document.querySelector(`#${doctwo.id}-adduser`);
+    let uploadUser = document.querySelector(`#adduser-${doctwo.id}`);
     if (uploadUser) {
         uploadUser.addEventListener('click', () => {
           localStorage.setItem("event ID", `${doctwo.id}`);
@@ -625,6 +629,8 @@ querySnapshots.forEach((doctwo) => {
         if (upldBtn) {
           upldBtn.addEventListener('click', async() => {
                 
+                localStorage.setItem("event ID", doctwo.id);
+
 
                 let username = document.querySelector("#name");
                 let surname = document.querySelector("#surname");
@@ -675,21 +681,21 @@ querySnapshots.forEach((doctwo) => {
 
                   if (jobtitle.value === '' || jobtitle.value === null) {
                 
-                    userErrorFour.innerHTML = "*Email Address is required"
+                    userErrorFour.innerHTML = "*job title is required"
                   } else {
                     userErrorFour.classList.add("hidden")
                   }
 
                   if (company.value === '' || company.value === null) {
                 
-                    userErrorFive.innerHTML = "*Email Address is required"
+                    userErrorFive.innerHTML = "*company name is required"
                   } else {
                     userErrorFive.classList.add("hidden")
                   }
 
                   if (country.value === '' || country.value === null) {
                 
-                    userErrorSix.innerHTML = "*Email Address is required"
+                    userErrorSix.innerHTML = "*country is required"
                   } else {
                     userErrorSix.classList.add("hidden")
                   }
@@ -855,7 +861,7 @@ const querySnapshotsx = await getDocs(collection(db, "Events"));
 querySnapshotsx.forEach((doccc) => {
   // doc.data() is never undefined for query doc snapshots
 
-  let editBtn = document.querySelector(`#${doccc.id}-edit`)
+  let editBtn = document.querySelector(`#edit-${doccc.id}`)
 
   if (editBtn) {
     editBtn.addEventListener('click', () => {
@@ -994,7 +1000,7 @@ const querySnapshott = await getDocs(collection(db, "Events"));
 querySnapshott.forEach(async(doccc) => {
   // doc.data() is never undefined for query doc snapshots
 
-  let optBtn = document.querySelector(`#${doccc.id}-option`)
+  let optBtn = document.querySelector(`#option-${doccc.id}`)
 
   if (optBtn) {
     optBtn.addEventListener('click', async () => {
@@ -1013,7 +1019,7 @@ querySnapshott.forEach(async(doccc) => {
         <div  class=" flex fixed z-10 top-0 w-full h-full bg-navy bg-opacity-60 flex-col items-center ">
         <div  class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg grid gap-[1rem] grid-cols-4">
                 
-              <div id=${doccc.id}-add-opt>
+              <div id=add-opt-${doccc.id}>
                 <a href="#" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-green border border-green rounded-lg shadow hover:bg-darkgreen">
                 <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Add Option</h5>
                 </a>
@@ -1035,7 +1041,7 @@ querySnapshott.forEach(async(doccc) => {
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((ddoc) => {
 
-          let addOptBtn = document.querySelector(`#${doccc.id}-add-opt`)
+          let addOptBtn = document.querySelector(`#add-opt-${doccc.id}`)
           let newBtn = document.createElement("div");
           newBtn.setAttribute('class', "relative")
 
@@ -1240,7 +1246,7 @@ querySnapshott.forEach(async(doccc) => {
           });
         }
 
-        let addbtn = document.querySelector(`#${doccc.id}-add-opt`);
+        let addbtn = document.querySelector(`#add-opt${doccc.id}`);
         if (addbtn) {
           addbtn.addEventListener('click',() => {
 
@@ -1727,7 +1733,7 @@ if (pollBlok) {
   
             optBar.innerHTML = `
             <div class="w-full bg-navy rounded-full dark:bg-gray-700 relative">
-              <p class="absolute text-sm text-center left-[45%] font-semibold">${docc.data().pollOption} <br/> ${isNaN(percent)?0:percent}%</p>
+              <p class="absolute text-sm text-center font-semibold text-poll overflow-ellipsis">${docc.data().pollOption} <br/> ${isNaN(percent)?0:percent}%</p>
               <div class="bg-blue text-xs font-medium text-white text-center p-5 leading-none rounded-full" style="width: ${isNaN(percent) || percent == 0 ?1:percent}%"></div>
             </div>
             `
@@ -1807,7 +1813,7 @@ let pollDet = document.querySelector("#poll-detail");
   
             optBar.innerHTML = `
             <div class="w-full bg-navy rounded-full relative my-10 flex items-center">
-              <p class="absolute text-lg text-white text-center left-[48%] font-semibold">${docc.data().pollOption} <br/> ${isNaN(percent)?0:percent}%</p>
+              <p class="absolute text-lg text-white text-center text-poll font-semibold">${docc.data().pollOption} <br/> ${isNaN(percent)?0:percent}%</p>
               <div class="bg-blue text-xs font-medium text-white text-center p-8 leading-none rounded-full" style="width: ${isNaN(percent) || percent == 0 ?1:percent}%"></div>
             </div>
             `
@@ -1984,6 +1990,49 @@ let editForm = document.querySelector("#edit-form");
 if (editForm) {
 
 
+  let idList = [];
+    let addOption = document.querySelector("#edit-add-opt-btn");
+    if (addOption) {
+
+      var count = 2;
+      addOption.addEventListener('click', () => {
+        count++;
+
+        if (count>20){
+          addOption.disabled = true;
+          addOption.classList.add("hidden");
+        } else {
+          
+            let newOpt = document.createElement("div");
+            // let form = document.querySelector("#form");
+            newOpt.classList.add("relative");
+            // newOpt.setAttribute("id", `${count}-id`)
+    
+            newOpt.innerHTML = `
+            <input autocomplete="off" required id=input${count}-id name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Option" />
+            <label for=input${count}-id class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Option ${count}</label>
+            `
+            editForm.appendChild(newOpt);
+        }
+
+        let dd = document.querySelector(`#input${count}-id`);
+        let ww = dd.getAttribute("id");
+        // if (dd) {
+
+        //   console.log(dd.value)
+        // }
+
+       
+        idList.push(ww)
+
+        console.log(idList);
+        console.log(count);
+        
+      })
+      
+      
+    }
+
   let pollIdEdit = [];
 
   const querySnapshot = await getDocs(collection(db, "Events", eventPopId, "polls"));
@@ -2008,7 +2057,7 @@ if (editForm) {
     let optionInput = document.createElement('div');
     optionInput.setAttribute('class', "relative");
     optionInput.innerHTML = `
-    <input autocomplete="off" required id="${doc.id}" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Option" value="${doc.data().pollOption}"/>
+    <input autocomplete="off" required id="edit-input-${doc.id}" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Option" value="${doc.data().pollOption}"/>
     <label for="${doc.id}" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Option</label>
     `
 
@@ -2057,13 +2106,31 @@ if (editForm) {
   
           for (let i = 0; i < pollIdEdit.length; i++) {
   
-            let optId = document.querySelector(`#${pollIdEdit[i]}`)
+            let optId = document.querySelector(`#edit-input-${pollIdEdit[i]}`)
   
             const pollEditOpt = doc(db, "Events", eventPopId, "polls", PollDocID, "options", pollIdEdit[i]);
   
             await updateDoc(pollEditOpt, {
               pollOption: optId.value || null,
             });
+
+            
+            
+            if (optId.value == "" || optId.value == null) {
+              await deleteDoc(pollEditOpt);
+            }
+          }
+
+          for (let i = 0; i< idList.length; i++) {
+            let idd = document.getElementById(idList[i]).value;
+            if (idd != "" && idd != null) {
+              await addDoc(collection(db, "Events", eventPopId, "polls", PollDocID, "options"), {
+                pollOption: idd,
+                voters: [],
+                pollID: PollDocID,
+              });
+            }
+            
           }
   
           history.back();
@@ -2467,8 +2534,10 @@ querySnapshooot.forEach(async(docx) => {
   let clkAddBtn = document.querySelector(`#editAttend-${docx.id}`);
 
   if (clkAddBtn) {
+    console.log("hi")
 
     clkAddBtn.addEventListener('click', async() => {
+
       localStorage.setItem("chatUser", docx.id);
       let cc = localStorage.getItem("chatUser");
       // **********
@@ -2490,22 +2559,28 @@ querySnapshooot.forEach(async(docx) => {
             </button>
           </td>
           <td id=name-${docx.id} scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
-            <input type="text" name="attend-name" id="attend-name-${docx.id}" value="${docy.data().Name}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+            <input required type="text" name="attend-name" id="attend-name-${docx.id}" value="${docy.data().Name}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+            <div id="user-error-one"></div>
           </td>
           <td id=sur-${docx.id} class="px-3 py-4">
           <input type="text" name="attend-sur" id="attend-sur-${docx.id}" value="${docy.data().Surname}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          <div id="user-error-two"></div>
           </td>
           <td id=email-${docx.id} class="px-3 py-4">
           <input type="text" name="attend-email" id="attend-email-${docx.id}" value="${docy.data().email}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          <div id="user-error-three"></div>
           </td>
           <td id=job-${docx.id} class="px-3 py-4">
           <input type="text" name="attend-job" id="attend-job-${docx.id}" value="${docy.data().jobTitle}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          <div id="user-error-four"></div>
           </td>
           <td id=company-${docx.id} class="px-3 py-4">
           <input type="text" name="attend-company" id="attend-company-${docx.id}" value="${docy.data().Company}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          <div id="user-error-five"></div>
           </td>
           <td id=country-${docx.id} class="px-3 py-4">
           <input type="text" name="attend-country" id="attend-country-${docx.id}" value="${docy.data().Country}" class="text-black max-w-[110px] rounded-md h-4 p-4 overflow-ellipsis">
+          <div id="user-error-six"></div>
           </td>
           
           <td id=CC-${docx.id}-confirm class="px-1 py-4">
@@ -2547,34 +2622,90 @@ querySnapshooot.forEach(async(docx) => {
           let attendCompany = document.querySelector(`#attend-company-${docx.id}`);
           let attendCountry = document.querySelector(`#attend-country-${docx.id}`);
 
+
+          let userErrorOne = document.querySelector("#user-error-one")
+          let userErrorTwo = document.querySelector("#user-error-two")
+          let userErrorThree = document.querySelector("#user-error-three")
+          let userErrorFour = document.querySelector("#user-error-four")
+          let userErrorFive = document.querySelector("#user-error-five")
+          let userErrorSix = document.querySelector("#user-error-six")
+
           if (confirmEdits) {
             confirmEdits.addEventListener('click', async() => {
 
-
-              if (window.confirm("Confirm Edits ?")) {
-                try {
-                  const confirmRefEvent = doc(db, "Events", eventPopId, "users", cc);
-                  await updateDoc(confirmRefEvent, {
-                    name: attendName.value,
-                    surname: attendSur.value,
-                  });
-
-                  const confirmRefExcel = doc(db, "excelSheetMembers", cc);
-                  await updateDoc(confirmRefExcel, {
-                    Name: attendName.value,
-                    Surname: attendSur.value,
-                    email: attendEmail.value,
-                    jobTitle: attendJob.value,
-                    Company: attendCompany.value,
-                    Country: attendCountry.value,
-                  });
-
-                
-                  location.reload();
-                } catch (error) {
-                  console.error(error)
+              if (attendName.value === '' || attendName.value === null ||attendSur.value === '' || attendSur.value === null || attendEmail.value === '' || attendEmail.value === null || attendJob.value === '' || attendJob.value === null || attendCompany.value === '' || attendCompany.value === null || attendCountry.value === '' || attendCountry.value === null) {
+                if (attendName.value === '' || attendName.value === null) {
+            
+                  userErrorOne.innerHTML = "*Name is required"
+                } else {
+                  userErrorOne.classList.add("hidden")
                 }
+              
+                if (attendSur.value === '' || attendSur.value === null) {
+              
+                  userErrorTwo.innerHTML = "*Surname is required"
+                } else {
+                  userErrorTwo.classList.add("hidden")
+                }
+              
+                if (attendEmail.value === '' || attendEmail.value === null) {
+              
+                  userErrorThree.innerHTML = "*Email Address is required"
+                } else {
+                  userErrorThree.classList.add("hidden")
+                }
+
+                if (attendJob.value === '' || attendJob.value === null) {
+              
+                  userErrorFour.innerHTML = "*job title is required"
+                } else {
+                  userErrorFour.classList.add("hidden")
+                }
+
+                if (attendCompany.value === '' || attendCompany.value === null) {
+              
+                  userErrorFive.innerHTML = "*company name is required"
+                } else {
+                  userErrorFive.classList.add("hidden")
+                }
+
+                if (attendCountry.value === '' || attendCountry.value === null) {
+              
+                  userErrorSix.innerHTML = "*country is required"
+                } else {
+                  userErrorSix.classList.add("hidden")
+                }
+              } else {
+
+
+                if (window.confirm("Confirm Edits ?")) {
+                  try {
+                    const confirmRefEvent = doc(db, "Events", eventPopId, "users", cc);
+                    await updateDoc(confirmRefEvent, {
+                      name: attendName.value,
+                      surname: attendSur.value,
+                    });
+  
+                    const confirmRefExcel = doc(db, "excelSheetMembers", cc);
+                    await updateDoc(confirmRefExcel, {
+                      Name: attendName.value,
+                      Surname: attendSur.value,
+                      email: attendEmail.value,
+                      jobTitle: attendJob.value,
+                      Company: attendCompany.value,
+                      Country: attendCountry.value,
+                    });
+  
+                  
+                    location.reload();
+                  } catch (error) {
+                    console.error(error)
+                  }
+                }
+
               }
+
+
             })
 
           }
@@ -2584,12 +2715,24 @@ querySnapshooot.forEach(async(docx) => {
 
           if (deleteEdits) {
             deleteEdits.addEventListener('click', async() => {
-
+              const docRef = doc(db, 'excelSheetMembers', cc);
               if (window.confirm("Do you really want to delete this User?")) {
                 try {
                   await deleteDoc(doc(db, "Events", eventPopId, "users", cc));
-                  await deleteDoc(doc(db, "excelSheetMembers", cc));
-                  alert("Button Deleted Successfully")
+                  const myList = docy.data().eventId;
+                  const index = myList.indexOf(`${eventPopId}`);
+
+                  if (index > -1) {
+                    myList.splice(index, 1);
+                  }
+                  updateDoc(docRef, { eventId: myList })
+                    .then(() => {
+                      console.log('Document successfully updated!');
+                    })
+                    .catch((error) => {
+                      console.error('Error updating document: ', error);
+                    });
+                  alert("User Deleted Successfully")
                   location.reload();
                 } catch (e){
                   console.log(e)

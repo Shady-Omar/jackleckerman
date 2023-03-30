@@ -353,7 +353,7 @@ querySnapshots.forEach((doctwo) => {
 
     eventContainer.appendChild(eventBlock);
     
-    let uploadExcel = document.querySelector(`#x-${doctwo.id}-excel`);
+    let uploadExcel = document.querySelector(`#excel-${doctwo.id}`);
     if (uploadExcel) {
         uploadExcel.addEventListener('click', () => {
 

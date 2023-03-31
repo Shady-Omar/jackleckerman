@@ -1704,6 +1704,12 @@ select {
   padding: 0 5rem;
 }
 
+.text-btn {
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+}
+
 .hover\:scale-105:hover {
   --tw-scale-x: 1.05;
   --tw-scale-y: 1.05;

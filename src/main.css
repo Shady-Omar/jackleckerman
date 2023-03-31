@@ -180,3 +180,9 @@ select {
   overflow: hidden;
   padding: 0 5rem;
 }
+
+.text-btn {
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+}

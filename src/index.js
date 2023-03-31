@@ -936,7 +936,7 @@ querySnapshotsx.forEach((doccc) => {
             if (window.confirm("Do you really want to delete this event?")) {
               try {
                 await deleteDoc(doc(db, "Events", eventID))
-                alert("Event Deleted")
+                alert("Event Deleted Successfully!")
                 location.reload();
               } catch (e){
                 console.log(e)
@@ -1054,8 +1054,8 @@ querySnapshott.forEach(async(doccc) => {
           newBtn.innerHTML = `
         
 
-          <a href="${ddoc.data().btnURL}" target="_self" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
-            <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+          <a href="${ddoc.data().btnURL}" target="_blank" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
+            <h5 class="mb-2 text-2xl text-btn text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
           </a>
           `
           addOptBtn.before(newBtn)
@@ -1070,7 +1070,7 @@ querySnapshott.forEach(async(doccc) => {
 
             newBtn.innerHTML = `
             <div id="hide-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
-              <img src="../imgs/visibility-eye-svgrepo-com.svg" alt="close" class="cursor-pointer">
+              <img src="./imgs/visibility-eye-svgrepo-com.svg" alt="close" class="cursor-pointer">
             </div>
               
             <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
@@ -1103,10 +1103,10 @@ querySnapshott.forEach(async(doccc) => {
 
               newBtn.innerHTML = `
               <div id="close-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
-                <img src="../imgs/close-red-icon.svg" alt="close" class="cursor-pointer">
+                <img src="./imgs/close-red-icon.svg" alt="close" class="cursor-pointer">
               </div>
               <div id="edit-${ddoc.id}" class="absolute -top-1 p-[2px] w-5 bg-blue rounded-full right-6 hover:bg-darkblue transition-colors">
-                <img src="../imgs/icons8-edit.svg" alt="close" class="cursor-pointer">
+                <img src="./imgs/icons8-edit.svg" alt="close" class="cursor-pointer">
               </div>
                 
                 <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
@@ -1246,7 +1246,7 @@ querySnapshott.forEach(async(doccc) => {
           });
         }
 
-        let addbtn = document.querySelector(`#add-opt${doccc.id}`);
+        let addbtn = document.querySelector(`#add-opt-${doccc.id}`);
         if (addbtn) {
           addbtn.addEventListener('click',() => {
 
@@ -1625,7 +1625,7 @@ let pollPop = document.querySelector("#poll-pop");
 
             for (let i = 0; i< idList.length; i++) {
               let idd = document.getElementById(idList[i]).value;
-              if (idd != null) {
+              if (idd != "" && idd != null) {
                 const subbDocRef = await addDoc(collection(db, "Events", eventPopId, "polls", docRef.id, "options"), {
                   pollOption: idd,
                   voters: [],
@@ -2079,7 +2079,7 @@ if (editForm) {
       if (window.confirm("Do you really want to delete this Poll?")) {
         try {
           await deleteDoc(doc(db, "Events", eventPopId, "polls", PollDocID));
-          alert("Event Deleted")
+          alert("Poll Deleted Successfully!")
           history.back();
         } catch (e){
           console.log(e)
@@ -2096,48 +2096,54 @@ if (editForm) {
   if (editPollName) {
     editPollBtn.addEventListener('click', async() => {
 
-      if (window.confirm("Confirm Edits ?")) {
-        try {
-        
-          const pollEditRef = doc(db, "Events", eventPopId, "polls", PollDocID);
-          await updateDoc(pollEditRef, {
-            pollName: editPollName.value,
-          });
-  
-          for (let i = 0; i < pollIdEdit.length; i++) {
-  
-            let optId = document.querySelector(`#edit-input-${pollIdEdit[i]}`)
-  
-            const pollEditOpt = doc(db, "Events", eventPopId, "polls", PollDocID, "options", pollIdEdit[i]);
-  
-            await updateDoc(pollEditOpt, {
-              pollOption: optId.value || null,
+      if (editPollName.value == '' || editPollName.value == null) {
+        alert("Poll name is required");
+      } else {
+        if (window.confirm("Confirm Edits ?")) {
+          try {
+          
+            const pollEditRef = doc(db, "Events", eventPopId, "polls", PollDocID);
+            await updateDoc(pollEditRef, {
+              pollName: editPollName.value,
             });
-
-            
-            
-            if (optId.value == "" || optId.value == null) {
-              await deleteDoc(pollEditOpt);
-            }
-          }
-
-          for (let i = 0; i< idList.length; i++) {
-            let idd = document.getElementById(idList[i]).value;
-            if (idd != "" && idd != null) {
-              await addDoc(collection(db, "Events", eventPopId, "polls", PollDocID, "options"), {
-                pollOption: idd,
-                voters: [],
-                pollID: PollDocID,
+    
+            for (let i = 0; i < pollIdEdit.length; i++) {
+    
+              let optId = document.querySelector(`#edit-input-${pollIdEdit[i]}`)
+    
+              const pollEditOpt = doc(db, "Events", eventPopId, "polls", PollDocID, "options", pollIdEdit[i]);
+    
+              await updateDoc(pollEditOpt, {
+                pollOption: optId.value || null,
               });
-            }
-            
-          }
   
-          history.back();
-        } catch (error) {
-          console.error(error)
+              
+              
+              if (optId.value == "" || optId.value == null) {
+                await deleteDoc(pollEditOpt);
+              }
+            }
+  
+            for (let i = 0; i< idList.length; i++) {
+              let idd = document.getElementById(idList[i]).value;
+              if (idd != "" && idd != null) {
+                await addDoc(collection(db, "Events", eventPopId, "polls", PollDocID, "options"), {
+                  pollOption: idd,
+                  voters: [],
+                  pollID: PollDocID,
+                });
+              }
+              
+            }
+    
+            history.back();
+          } catch (error) {
+            console.error(error)
+          }
         }
+
       }
+
 
     });
   }
@@ -2206,8 +2212,8 @@ querySnapshoot.forEach(async(docx) => {
           newBtn.innerHTML = `
 
 
-          <a href="${ddoc.data().btnURL}" target="_self" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
-            <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
+          <a href="${ddoc.data().btnURL}" target="_blank" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border border-navy rounded-lg shadow hover:bg-black">
+            <h5 class="mb-2 text-2xl text-center text-btn font-bold tracking-tight text-white">${ddoc.data().btnName}</h5>
           </a>
           `
           addUserBtn.before(newBtn)
@@ -2222,7 +2228,7 @@ querySnapshoot.forEach(async(docx) => {
 
             newBtn.innerHTML = `
             <div id="hide-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
-              <img src="../imgs/visibility-eye-svgrepo-com.svg" alt="close" class="cursor-pointer">
+              <img src="./imgs/visibility-eye-svgrepo-com.svg" alt="close" class="cursor-pointer">
             </div>
               
             <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
@@ -2255,10 +2261,10 @@ querySnapshoot.forEach(async(docx) => {
 
               newBtn.innerHTML = `
               <div id="delete-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
-                <img src="../imgs/close-red-icon.svg" alt="close" class="cursor-pointer">
+                <img src="./imgs/close-red-icon.svg" alt="close" class="cursor-pointer">
               </div>
               <div id="edit-${ddoc.id}" class="absolute -top-1 p-[2px] w-5 bg-blue rounded-full right-6 hover:bg-darkblue transition-colors">
-                <img src="../imgs/icons8-edit.svg" alt="close" class="cursor-pointer">
+                <img src="./imgs/icons8-edit.svg" alt="close" class="cursor-pointer">
               </div>
                 
                 <div class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-black border border-black rounded-lg shadow">
@@ -2534,7 +2540,6 @@ querySnapshooot.forEach(async(docx) => {
   let clkAddBtn = document.querySelector(`#editAttend-${docx.id}`);
 
   if (clkAddBtn) {
-    console.log("hi")
 
     clkAddBtn.addEventListener('click', async() => {
 

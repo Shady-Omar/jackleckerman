@@ -817,6 +817,10 @@ video {
   height: 2rem;
 }
 
+.h-screen {
+  height: 100vh;
+}
+
 .max-h-\[60px\] {
   max-height: 60px;
 }

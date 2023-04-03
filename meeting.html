@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="./dist/output.css" rel="stylesheet" />
-    <title>Admin Panel - Attendees</title>
+    <title>Admin Panel - Meetings</title>
   </head>
   <body class="bg-black">
     <header class="w-full flex flex-col justify-start items-center min-w-375 shadow-2xl bg-darkblue">
@@ -42,19 +42,19 @@
                 <div id="dropdown" class="z-10 hidden absolute top-14 bg-grey divide-y divide-grey rounded-lg shadow w-44 ">
                     <ul class="py-2 text-sm text-white dark:text-gray-200" aria-labelledby="dropdown-button">
                     <lio>
-                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Name</button>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">User Invited</button>
                     </lio>
                     <lio>
-                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Email</button>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Invited by</button>
                     </lio>
                     <lio>
-                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Job Title</button>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Table Number</button>
                     </lio>
                     <lio>
-                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Company</button>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Date</button>
                     </lio>
                     <lio>
-                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Country</button>
+                        <button type="button" class="cat-btn inline-flex w-full px-4 py-2 hover:bg-navy">Status</button>
                     </lio>
                     </ul>
                 </div>
@@ -72,38 +72,23 @@
 
             
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
-                <table id="attend-container" class="w-full text-sm text-left text-white">
+                <table id="meeting-container" class="w-full text-sm text-left text-white">
                     <thead class="text-xs text-white uppercase bg-navy">
                         <tr>
-                            <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                
-                            </th>
                             <th scope="col" class="px-6 py-3 max-w-[160px]">
-                                Name
+                                User Invited
                             </th>
                             <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                Surname
+                                Invited by
                             </th>
                             <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                Email
+                                Table Number
                             </th>
                             <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                Job Title
+                                Date
                             </th>
                             <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                Company
-                            </th>
-                            <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                Country
-                            </th>
-                            <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                
-                            </th>
-                            <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                
-                            </th>
-                            <th scope="col" class="px-3 py-3 max-w-[160px]">
-                                
+                                Status
                             </th>
                         </tr>
                     </thead>
@@ -111,19 +96,6 @@
             </div>
             
 
-          </div>
-
-          <!-- add btn pop -->
-          <div id="add-btn-pop">
-            
-          </div>
-          <!-- edit options pop -->
-          <div id="edit-btn-pop">
-            
-          </div>
-          <!-- meeting pop -->
-          <div id="meeting-btn-pop">
-            
           </div>
           <div class="overlay hidden"></div>
         </section>
@@ -138,42 +110,42 @@
       })
 
       let catBtn = document.getElementsByTagName("lio");
-      let catNum = 1;
+      let catNum = 0;
         if (catBtn) {
   
           catBtn[0].addEventListener('click', () => {
           
-            drpdwnBtn.textContent = "Name"
+            drpdwnBtn.textContent = "User Invited"
             drpdwn.classList.add('hidden');
-            catNum = 1;
+            catNum = 0;
           });
 
           catBtn[1].addEventListener('click', () => {
           
-            drpdwnBtn.textContent = "Email"
+            drpdwnBtn.textContent = "Invited by"
             drpdwn.classList.add('hidden');
-            catNum = 3;
+            catNum = 1;
           });
 
           catBtn[2].addEventListener('click', () => {
           
-            drpdwnBtn.textContent = "Job Title"
+            drpdwnBtn.textContent = "Table Number"
             drpdwn.classList.add('hidden');
-            catNum = 4;
+            catNum = 2;
           });
 
           catBtn[3].addEventListener('click', () => {
           
-            drpdwnBtn.textContent = "Company"
+            drpdwnBtn.textContent = "Date"
             drpdwn.classList.add('hidden');
-            catNum = 5;
+            catNum = 3;
           });
 
           catBtn[4].addEventListener('click', () => {
           
-            drpdwnBtn.textContent = "Country"
+            drpdwnBtn.textContent = "Status"
             drpdwn.classList.add('hidden');
-            catNum = 6;
+            catNum = 4;
           });
             
           }
@@ -184,7 +156,7 @@
         var input, filter, table, tr, td, i, txtValue;
         input = document.getElementById("search-dropdown");
         filter = input.value.toUpperCase();
-        table = document.getElementById("attend-container");
+        table = document.getElementById("meeting-container");
         tr = table.getElementsByTagName("tr");
       
         // Loop through all table rows, and hide those who don't match the search query

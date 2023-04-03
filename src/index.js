@@ -187,17 +187,92 @@ if (coordBtn) {
 let eventBtn = document.querySelector("#add-event-btn");
 let eventName = document.querySelector("#eventname");
 let eventSelectColor = document.querySelector("#select-event-color");
+let eventTableNum = document.querySelector("#table-event-number");
+let eventMeetingLength = document.querySelector("#meeting-event-length");
+let eventFromDate = document.querySelector("#from-event-date");
+let eventToDate = document.querySelector("#to-event-date");
 let eventPop = document.querySelector("#event-pop");
 let overlay = document.querySelector(".overlay");
 
 let eventErrorOne = document.querySelector("#event-error-one")
 let eventErrorTwo = document.querySelector("#event-error-two")
+let eventErrorThree = document.querySelector("#event-error-three")
+let eventErrorFour = document.querySelector("#event-error-four")
+let eventErrorFive = document.querySelector("#event-error-five")
+let eventErrorSix = document.querySelector("#event-error-six")
 
 if (eventBtn) {
+
+  let idListOne = [];
+  let idListTwo = [];
+  let dateListValues = [];
+    let addDate = document.querySelector("#add-date-btn");
+    if (addDate) {
+
+      var count = 2;
+      addDate.addEventListener('click', () => {
+        count++;
+
+        if (count>20){
+          addDate.disabled = true;
+          addDate.classList.add("hidden");
+        } else {
+          
+            let newOpt = document.createElement("div");
+            let form = document.querySelector("#form");
+            newOpt.classList.add("relative");
+            // newOpt.setAttribute("id", `${count}-id`)
+    
+            newOpt.innerHTML = `
+
+            <div class="relative !my-6">
+              <label for="from-event-date-${count}-id" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">From:</label>
+              <input type="datetime-local" name="meeting-length" id="from-event-date-${count}-id" class="mt-4 border-black border-2 rounded-full w-full px-4">
+            </div>
+            
+
+            <div id="event-error-five"></div>
+            
+            
+            <div class="relative !my-6">
+              <label for="to-event-date-${count}-id" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">To:</label>
+              <input type="datetime-local" name="meeting-length" id="to-event-date-${count}-id" class="mt-4 border-black border-2 rounded-full w-full px-4">
+            </div>
+            `
+            form.appendChild(newOpt);
+        }
+
+        let dd = document.querySelector(`#from-event-date-${count}-id`);
+        let bb = document.querySelector(`#to-event-date-${count}-id`);
+        let ww = dd.getAttribute("id");
+        let mm = bb.getAttribute("id");
+        // if (dd) {
+
+        //   console.log(dd.value)
+        // }
+
+       
+        idListOne.push(ww)
+        idListTwo.push(mm)
+
+        // dateListValues.push(`From: ${dd.value} To: ${bb.value}`)
+
+        // console.log(dateListValues);
+
+        console.log(idListOne);
+        console.log(idListTwo);
+        console.log(count);
+        
+      })
+      
+      
+    }
+
+
   eventBtn.addEventListener('click', async (e) => {
 
 
-  if (eventName.value === '' || eventName.value === null || eventSelectColor.value === '#000000') {
+  if (eventName.value === '' || eventName.value === null || eventSelectColor.value === '#000000' || eventTableNum.value === '' || eventTableNum.value === null || eventMeetingLength.value === '' || eventMeetingLength.value === null || eventFromDate.value === '' || eventFromDate.value === null || eventToDate.value === '' || eventToDate.value === null) {
     if (eventName.value === '' || eventName.value === null) {
 
       eventErrorOne.innerHTML = "*Event name is required"
@@ -211,18 +286,80 @@ if (eventBtn) {
     } else {
       eventErrorTwo.classList.add("hidden")
     }
+
+    if (eventTableNum.value === '' || eventTableNum.value === null) {
+  
+      eventErrorThree.innerHTML = "*Select Number of Tables"
+    } else {
+      eventErrorThree.classList.add("hidden")
+    }
+
+    if (eventMeetingLength.value === '' || eventMeetingLength.value === null) {
+  
+      eventErrorFour.innerHTML = "*Select Length of Meeting"
+    } else {
+      eventErrorFour.classList.add("hidden")
+    }
+
+    if (eventFromDate.value === '' || eventFromDate.value === null) {
+  
+      eventErrorFive.innerHTML = "*Select Date & Time"
+    } else {
+      eventErrorFive.classList.add("hidden")
+    }
+
+    if (eventToDate.value === '' || eventToDate.value === null) {
+  
+      eventErrorSix.innerHTML = "*Select Date & Time"
+    } else {
+      eventErrorSix.classList.add("hidden")
+    }
   } else {
     eventPop.classList.add("hidden");
     eventPop.classList.remove("block");
     overlay.classList.add("hidden");
 
+    function convertDateTo12HourFormat(dateTime) {
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+      const date = new Date(dateTime);
+      const monthName = months[date.getMonth()];
+      const dayNumber = date.getDate();
+      let hours = date.getHours();
+      const minutes = date.getMinutes().toString().padStart(2, "0");
+      const amPm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+    
+      const formattedDate = `${monthName}, ${dayNumber}, ${hours}:${minutes} ${amPm}`;
+      return formattedDate;
+    }
+
+
+    dateListValues.push(`From: ${convertDateTo12HourFormat(eventFromDate.value)}, To: ${convertDateTo12HourFormat(eventToDate.value)}`)
+    
+    for (let i = 0; i< idListOne.length; i++) {
+      let idOne = document.getElementById(idListOne[i]).value;
+      let idTwo = document.getElementById(idListTwo[i]).value;
+      if (idOne != "" && idOne != null && idTwo != "" && idTwo != null) {
+        dateListValues.push(`From: ${convertDateTo12HourFormat(idOne)}, To: ${convertDateTo12HourFormat(idTwo)}`)
+      }
+      
+    }
+
+    
     try {
       let userID = localStorage.getItem("User ID");
       const docRef = await addDoc(collection(db, "Events"), {
         eventName: eventName.value,
         eventcolor: eventSelectColor.value,
+        TableNum: Number(eventTableNum.value),
+        MeetingLength: Number(eventMeetingLength.value),
+        Dates: dateListValues,
         eventOwnerID: userID
-      });
+      })
+
+      
+
 
       var userEventId = localStorage.getItem("event ID");
       var userEventName = localStorage.getItem("UserName");
@@ -252,7 +389,12 @@ if (eventBtn) {
         hidden: false,
       });
 
-
+      await addDoc(collection(db, "Events", docRef.id, "buttons"), {
+        btnName: "Meetings",
+        btnURL: "meeting.html",
+        eventBtnID: docRef.id,
+        hidden: false,
+      });
 
       alert("Event Added Successfully")
       location.reload();
@@ -893,6 +1035,13 @@ querySnapshotsx.forEach((doccc) => {
                   
 
                   <div id="edit-error-two"></div>
+                  
+                  <div class="relative !my-6">
+                    <label for="meeting-edit-length" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Length of Meeting: (in Minutes)</label>
+                    <input type="number" name="meeting-length" id="meeting-edit-length" class="mt-4 border-black border-2 rounded-full w-[28%] px-4" min="1" max="999">
+                  </div>
+
+                  <div id="edit-error-three"></div>
 
                   <div class="relative">
                     <button id="edit-event-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Edit</button>
@@ -951,11 +1100,13 @@ querySnapshotsx.forEach((doccc) => {
 
             let editErrorOne = document.querySelector("#edit-error-one");
             let editErrorTwo = document.querySelector("#edit-error-two");
+            let eventErrorThree = document.querySelector("#edit-error-three");
 
             let editEventName = document.querySelector("#edit-event-name");
             let editEventColor = document.querySelector("#edit-event-color");
+            let editMeetingLength = document.querySelector("#meeting-edit-length");
 
-            if (editEventName.value === '' || editEventName.value === null || editEventColor.value === '#000000') {
+            if (editEventName.value === '' || editEventName.value === null || editEventColor.value === '#000000' || editMeetingLength.value === '' || editMeetingLength.value === null) {
               if (editEventName.value === '' || editEventName.value === null) {
           
                 editErrorOne.innerHTML = "*Event name is required"
@@ -969,6 +1120,14 @@ querySnapshotsx.forEach((doccc) => {
               } else {
                 editErrorTwo.classList.add("hidden")
               }
+
+              if (editMeetingLength.value === '' || editMeetingLength.value === null) {
+  
+                eventErrorThree.innerHTML = "*Select Length of Meeting"
+              } else {
+                eventErrorThree.classList.add("hidden")
+              }
+
             } else {
               let eventID = editEventPopUp.getAttribute('class');
 
@@ -977,7 +1136,8 @@ querySnapshotsx.forEach((doccc) => {
                 const eventRef = doc(db, "Events", eventID);
                 await updateDoc(eventRef, {
                   eventName: editEventName.value,
-                  eventcolor: editEventColor.value
+                  eventcolor: editEventColor.value,
+                  MeetingLength: editMeetingLength.value,
                 });
                 alert("Event Edited")
                 location.reload();
@@ -1018,7 +1178,6 @@ querySnapshott.forEach(async(doccc) => {
         <div id="opt-event-pop" class="hidden items-center justify-center relative">
         <div  class=" flex fixed z-10 top-0 w-full h-full bg-navy bg-opacity-60 flex-col items-center ">
         <div  class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg grid gap-[1rem] grid-cols-4">
-                
               <div id=add-opt-${doccc.id}>
                 <a href="#" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-green border border-green rounded-lg shadow hover:bg-darkgreen">
                 <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Add Option</h5>
@@ -1099,7 +1258,7 @@ querySnapshott.forEach(async(doccc) => {
           
           editBtns.addEventListener('click', () => {
 
-            if (ddoc.data().btnName != "Chats" && ddoc.data().btnName != "Polls" && ddoc.data().btnName != "Attendees") {
+            if (ddoc.data().btnName != "Chats" && ddoc.data().btnName != "Polls" && ddoc.data().btnName != "Attendees" && ddoc.data().btnName != "Meetings") {
 
               newBtn.innerHTML = `
               <div id="close-${ddoc.id}" class="absolute -top-1 w-5 bg-white rounded-full -right-1 hover:bg-black transition-colors">
@@ -1464,21 +1623,116 @@ let userID = localStorage.getItem("chatUser");
     let inviteContainer = document.querySelector(`#II-${docx.id}-invite`)
     let inviteBTn = document.querySelector(`#II-${docx.id}`)
     let adminName = localStorage.getItem("UserName")
+
+    let meetingPop = document.querySelector("#meeting-btn-pop");
     if (inviteBTn) {
       inviteBTn.addEventListener('click', async() => {
 
-        const docRef = await addDoc(collection(db, "Events", eventPopId, "meetings"), {
-          datetime: serverTimestamp(),
-          senderID: adminID,
-          receiverID: docx.id,
-          receiver_username: `${docx.data().Name} ${docx.data().Surname}`,
-          sender_username: adminName,
-          status: 0,
-        });
+        meetingPop.innerHTML = `
+        <div id="invitePop" class=" flex fixed z-10 top-0 left-0 w-full h-full bg-black bg-opacity-60" style="overflow-y: overlay;">
+          <div class="extraOutline p-12 bg-white w-[30%] max-w-[405px] bg-whtie m-auto rounded-lg">
+        
+            <div class="max-w-md mx-auto">
+              <div id="close-event-pop" class="hidden">×</div>
+              <div>
+                <h1 class="text-2xl font-semibold">Invite to Meeting</h1>
+              </div>
+              <div class="divide-y divide-gray-200">
+                <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                  <div class="relative">
+                    <label for="table-num" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Select Table Number:</label>
 
-        inviteContainer.innerHTML = `
-          <p class="text-yellow">User invited to meeting</p>
+                    <select class="mt-4 border-black w-[20%]" name="table-num" id="table-num">
+                    </select>
+                  </div>
+
+                  <div id="meeting-error-one"></div>
+
+                  <div class="relative !my-6">
+                    <label for="date-range" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Select Date Range:</label>
+
+                    <select class="mt-4 border-black w-full" name="date-range" id="date-range">
+                      
+                    </select>
+                  </div>
+                  
+
+                  <div id=meeting-error-two"></div>
+                  
+                </div>
+                <div class="relative border-none">
+                  <button id="invite-event-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Invite</button>
+                  <button id="close-invite-btn" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         `
+
+        if (meetingPop) {
+
+          let closeInvitePop = document.querySelector("#close-invite-btn");
+          let InvitePop = document.querySelector("#invitePop");
+  
+          closeInvitePop.addEventListener('click', () => {
+            InvitePop.remove()
+            overlay.classList.add("hidden");
+          });
+
+          let TableNumSelect = document.querySelector("#table-num");
+          let dateRangeSelect = document.querySelector("#date-range");
+  
+          const querySnapshot = await getDocs(collection(db, "Events"));
+          querySnapshot.forEach((doc) => {
+  
+  
+            if (doc.id === eventPopId) {
+              
+              for (let i = 0; i < doc.data().TableNum; i++) {
+                let tableNumOption = document.createElement("option");
+  
+                tableNumOption.innerHTML = `
+                  <option value="${i + 1}">${i + 1}</option>
+                `
+                TableNumSelect.appendChild(tableNumOption)
+              }
+  
+              for (let i = 0; i < doc.data().Dates.length; i++) {
+                let dateRangeOption = document.createElement("option");
+  
+                dateRangeOption.innerHTML = `
+                  <option value="${doc.data().Dates[i]}">${doc.data().Dates[i]}</option>
+                `
+                dateRangeSelect.appendChild(dateRangeOption)
+              }
+            }
+  
+          });
+  
+          let inviteMeetingBtn = document.querySelector("#invite-event-btn");
+  
+          inviteMeetingBtn.addEventListener('click', async() => {
+  
+            const docRef = await addDoc(collection(db, "Events", eventPopId, "meetings"), {
+              datetime: serverTimestamp(),
+              senderID: adminID,
+              receiverID: docx.id,
+              receiver_username: `${docx.data().Name} ${docx.data().Surname}`,
+              sender_username: adminName,
+              status: 0,
+              TableNum: TableNumSelect.value,
+              Date: dateRangeSelect.value,
+            });
+    
+            alert("User Invited Successfully!");
+            location.reload();
+            
+  
+          });
+        }
+        
+
       })
 
       const q = query(collection(db, "Events", eventPopId, "meetings"), where("receiverID", "==", docx.id));
@@ -2763,3 +3017,56 @@ querySnapshooot.forEach(async(docx) => {
 });
 
 
+const querySnapshotyy = await getDocs(collection(db, "Events", eventPopId, "meetings"));
+querySnapshotyy.forEach((docx) => {
+  // doc.data() is never undefined for query doc snapshots
+  console.log(docx.id, " => ", docx.data());
+
+
+
+  if (docx.data().Name != "Name" && "name") {
+
+    let attendContainer = document.querySelector("#meeting-container");
+
+    if (attendContainer) {
+      let attendList = document.createElement("tbody");
+      // attendList.setAttribute('class', `${doccc.id}`);
+
+      attendList.innerHTML = `
+      <tr id=row-${docx.id} class="bg-navy border-b border-grey">
+        <td id=receiver-${docx.id} scope="row" class="px-6 py-4 overflow-ellipsis font-medium text-white whitespace-nowrap max-w-[160px]" style="overflow-wrap: break-word;">
+            ${docx.data().receiver_username}
+        </td>
+        <td id=sender-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
+          ${docx.data().sender_username}
+        </td>
+        <td id=table-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
+            ${docx.data().TableNum}
+        </td>
+        <td id=date-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
+            ${docx.data().Date}
+        </td>
+        <td id=status-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
+            
+        </td>
+          
+      </tr>
+      `
+      attendContainer.appendChild(attendList);
+
+      let status = document.querySelector(`#status-${docx.id}`);
+      if(status) {
+        if (docx.data().status === 0) {
+          status.innerHTML = `<p class="text-yellow font-bold">Pending</p>`;
+        } else if (docx.data().status === 1) {
+          status.innerHTML = `<p class="text-green font-bold">Accepted</p>`;
+        } else if (docx.data().status === 2) {
+          status.innerHTML = `<p class="text-red font-bold">Declined</p>`;
+        } 
+
+      }
+
+    }
+  }
+
+});

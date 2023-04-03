@@ -97,7 +97,7 @@ button {
   color: red;
 }
 
-#event-error-one, #event-error-two{
+#event-error-one, #event-error-two, #event-error-three, #event-error-four, #event-error-five, #event-error-six{
   font-size: 14px;
   color: red;
 }
@@ -107,7 +107,7 @@ button {
   color: red;
 }
 
-#edit-error-one, #edit-error-two {
+#edit-error-one, #edit-error-two, #edit-error-three {
   font-size: 14px;
   color: red;
 }
@@ -128,7 +128,7 @@ button {
 }
 
 #mrg {
-  margin: 2rem 0 !important;
+  margin: 1.5rem 0 !important;
 }
 
 #sec-one {

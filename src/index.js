@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc, updateDoc, serverTimestamp, getCountFromServer, onSnapshot, orderBy, writeBatch, doc, deleteDoc, connectFirestoreEmulator, query, where, setDoc, runTransaction } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, serverTimestamp, getCountFromServer ,onSnapshot, orderBy, writeBatch, doc, deleteDoc, connectFirestoreEmulator, query, where, setDoc, runTransaction } from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
 import emailjs from '@emailjs/browser';
 import { read, writeFileXLSX } from "xlsx";
 import XLSX from 'xlsx';
@@ -3223,6 +3224,14 @@ querySnapshotyy.forEach((docx) => {
               await updateDoc(doc(db, "Events", eventPopId, "meetings", docx.id), {
                 status: 2
               });
+
+              const functions = getFunctions();
+              const addMessage = httpsCallable(functions, 'sendNotifi');
+              await addMessage({ 
+                recieverId: docx.data().receiverID,
+                message: 'has invited you to a meeting',
+                title: `Meeting invite from ${docx.data().sender_username}`
+              ,})
             }
             alert("Invitation accepted!");
             location.reload();

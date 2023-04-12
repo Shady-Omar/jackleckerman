@@ -10,6 +10,7 @@
     "dotenv": "^16.0.3",
     "dotenv-webpack": "^8.0.1",
     "firebase": "^9.16.0",
+    "moment": "^2.29.4",
     "node-mailjet": "^6.0.2",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.2/xlsx-0.19.2.tgz"
   },

@@ -4,6 +4,9 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import emailjs from '@emailjs/browser';
 import { read, writeFileXLSX } from "xlsx";
 import XLSX from 'xlsx';
+import moment from 'moment';
+moment().format();
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyD-yeq21RPZFZIYhecLaTh1OPkCuM0Z2ms",
@@ -3250,7 +3253,7 @@ querySnapshotyy.forEach((docx) => {
         } else if (docx.data().status === 3) {
           status.innerHTML = `<p class="text-green font-bold">User Accepted the invitation</p>
           <div class="flex flex-row justify-start items-center">
-          <button id="confirm-req-${docx.id}" type="button" class="focus:outline-none text-white bg-green hover:bg-darkgreen focus:ring-4 focus:ring-green font-medium rounded-lg text-sm px-5 py-2.5 mr-4 my-2">Confirm</button>
+          
           <button id="modify-req-${docx.id}" type="button" class="focus:outline-none text-white bg-blue hover:bg-darkblue focus:ring-4 focus:ring-blue font-medium rounded-lg text-sm px-5 py-2.5 my-2">Modifiy</button>
           </div>
           `;
@@ -3316,6 +3319,31 @@ querySnapshotyy.forEach((docx) => {
         if (modifyRequest) {
           let modifyPop = document.querySelector("#modify-btn-pop");
 
+          function extractSegmentsFromDate(input) {
+            const timeRegex = /\d{1,2}:\d{2} (AM|PM)/g;
+            const matches = input.match(timeRegex);
+            const segmentLength = 10 * 60 * 1000; // TODO change this
+            
+            // Parse start and end times
+            const dateFormat = 'h:mm a';
+            const startTime = moment(matches[0], dateFormat);
+            const endTime = moment(matches[1], dateFormat);
+            
+            // Calculate available segments
+            const segments = [];
+            let segmentStart = startTime;
+            while (segmentStart.add(segmentLength).isBefore(endTime)) {
+            const segmentEnd = segmentStart.clone().add(segmentLength);
+            segments.push(
+            `${segmentStart.format(dateFormat)} to ${segmentEnd.format(dateFormat)}`
+            );
+            segmentStart = segmentEnd;
+            }
+            
+            // Return the available segments
+            return segments;
+            }
+
           modifyRequest.addEventListener('click', async () => {
             modifyPop.innerHTML = `
 
@@ -3348,6 +3376,16 @@ querySnapshotyy.forEach((docx) => {
                       
 
                       <div id=meeting-error-two"></div>
+                      <div class="relative !my-6">
+                        <label for="time-range" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Select Time Range:</label>
+
+                        <select class="mt-4 border-black w-full" name="time-range" id="time-range">
+                          
+                        </select>
+                      </div>
+                      
+
+                      <div id=meeting-error-two"></div>
                       
                     </div>
                     <div class="relative border-none">
@@ -3373,13 +3411,61 @@ querySnapshotyy.forEach((docx) => {
     
               let TableNumSelect = document.querySelector("#table-num");
               let dateRangeSelect = document.querySelector("#date-range");
+              let timeRangeSelect = document.querySelector("#time-range");
       
+
+              dateRangeSelect.addEventListener("click", async() => {
+                timeRangeSelect.innerHTML = ``
+                let SegmentsFromDate = extractSegmentsFromDate(dateRangeSelect.value)
+                // SegmentsFromDate = [];
+                console.log(SegmentsFromDate);
+
+                
+
+                
+                const q = query(collection(db, "Events", eventPopId, "meetings"));
+
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach((doc) => {
+                  // doc.data() is never undefined for query doc snapshots
+                  let timeRange = doc.data().TimeRange
+                  // console.log(timeRange);
+                  let table = timeRange.split("::")[0]
+                  // console.log(table);
+                  let date = timeRange.split("::")[1]
+                  // console.log(date);
+                  let time = timeRange.split("::")[2]
+                  // console.log(time);
+
+                  if (table == TableNumSelect.value && date == dateRangeSelect.value) {
+                    console.log(TableNumSelect.value);
+                    for (let i = 0; i < SegmentsFromDate.length; i++) {
+                      if (time !== SegmentsFromDate[i]) {
+                        
+                        let timeRangeOption = document.createElement("option");
+                        // timeRangeOption.innerHTML = ``;
+                        timeRangeOption.innerHTML = `
+                            <option value="${SegmentsFromDate[i]}">${SegmentsFromDate[i]}</option>
+                          `
+                        timeRangeSelect.appendChild(timeRangeOption);
+                      }
+                    }
+
+                  }
+
+                });
+                
+
+              });
+
               const querySnapshot = await getDocs(collection(db, "Events"));
               querySnapshot.forEach((doc) => {
       
       
                 if (doc.id === eventPopId) {
                   
+                  // dateRangeSelect.setAttribute('value', doc.data().Dates[1]);
+
                   for (let i = 0; i < doc.data().TableNum; i++) {
                     let tableNumOption = document.createElement("option");
       
@@ -3396,6 +3482,7 @@ querySnapshotyy.forEach((docx) => {
                       <option value="${doc.data().Dates[i]}">${doc.data().Dates[i]}</option>
                     `
                     dateRangeSelect.appendChild(dateRangeOption)
+                    
                   }
                 }
       
@@ -3408,6 +3495,7 @@ querySnapshotyy.forEach((docx) => {
                   await updateDoc(doc(db, "Events", eventPopId, "meetings", docx.id), {
                     TableNum: TableNumSelect.value,
                     Date: dateRangeSelect.value,
+                    TimeRange: `${TableNumSelect.value}::${dateRangeSelect.value}::${timeRangeSelect.value}`,
                     status: 4,
                   });
                 }

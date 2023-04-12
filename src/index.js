@@ -3322,7 +3322,7 @@ querySnapshotyy.forEach((docx) => {
           function extractSegmentsFromDate(input) {
             const timeRegex = /\d{1,2}:\d{2} (AM|PM)/g;
             const matches = input.match(timeRegex);
-            const segmentLength = 10 * 60 * 1000; // TODO change this
+            const segmentLength = 10 * 60 * 1000; // TODO add meeting length here
             
             // Parse start and end times
             const dateFormat = 'h:mm a';
@@ -3332,17 +3332,16 @@ querySnapshotyy.forEach((docx) => {
             // Calculate available segments
             const segments = [];
             let segmentStart = startTime;
-            while (segmentStart.add(segmentLength).isBefore(endTime)) {
-            const segmentEnd = segmentStart.clone().add(segmentLength);
-            segments.push(
-            `${segmentStart.format(dateFormat)} to ${segmentEnd.format(dateFormat)}`
-            );
-            segmentStart = segmentEnd;
-            }
+            do {
+              const segmentEnd = segmentStart.clone().add(segmentLength);
+              segments.push(`${segmentStart.format(dateFormat)} to ${segmentEnd.format(dateFormat)}`);
+              segmentStart = segmentEnd;
+            } while (segmentStart.isSameOrBefore(endTime));
             
             // Return the available segments
+            segments.pop();
             return segments;
-            }
+          }
 
           modifyRequest.addEventListener('click', async () => {
             modifyPop.innerHTML = `
@@ -3412,52 +3411,63 @@ querySnapshotyy.forEach((docx) => {
               let TableNumSelect = document.querySelector("#table-num");
               let dateRangeSelect = document.querySelector("#date-range");
               let timeRangeSelect = document.querySelector("#time-range");
-      
-
-              dateRangeSelect.addEventListener("click", async() => {
+              async function  listenerFunction() {
                 timeRangeSelect.innerHTML = ``
                 let SegmentsFromDate = extractSegmentsFromDate(dateRangeSelect.value)
                 // SegmentsFromDate = [];
                 console.log(SegmentsFromDate);
 
-                
+                console.log('CHANGED');
+
 
                 
+                
+                for (let i = 0; i < SegmentsFromDate.length; i++) {
+                  
+                  
+                  let timeRangeOption = document.createElement("option");
+                  // timeRangeOption.innerHTML = ``;
+                  timeRangeOption.innerHTML = `
+                  <option value="${SegmentsFromDate[i]}">${SegmentsFromDate[i]}</option>
+                  `
+                  timeRangeSelect.appendChild(timeRangeOption);
+                  
+                }
                 const q = query(collection(db, "Events", eventPopId, "meetings"));
 
                 const querySnapshot = await getDocs(q);
                 querySnapshot.forEach((doc) => {
                   // doc.data() is never undefined for query doc snapshots
                   let timeRange = doc.data().TimeRange
-                  // console.log(timeRange);
                   let table = timeRange.split("::")[0]
-                  // console.log(table);
                   let date = timeRange.split("::")[1]
-                  // console.log(date);
                   let time = timeRange.split("::")[2]
-                  // console.log(time);
+                 console.log(`current table ${TableNumSelect.value} matched with ${table}`)
 
                   if (table == TableNumSelect.value && date == dateRangeSelect.value) {
-                    console.log(TableNumSelect.value);
-                    for (let i = 0; i < SegmentsFromDate.length; i++) {
-                      if (time !== SegmentsFromDate[i]) {
-                        
-                        let timeRangeOption = document.createElement("option");
-                        // timeRangeOption.innerHTML = ``;
-                        timeRangeOption.innerHTML = `
-                            <option value="${SegmentsFromDate[i]}">${SegmentsFromDate[i]}</option>
-                          `
-                        timeRangeSelect.appendChild(timeRangeOption);
+                    for (let i = 0; i < timeRangeSelect.length; i++) {
+                      console.log(`${timeRangeSelect[i].innerHTML.trim()}`)
+                      console.log(`<option value="${time}">${time}</option>`)
+                      if (timeRangeSelect[i].innerHTML.trim() === `<option value="${time}">${time}</option>`) {
+                        console.log('Reached dleete inside for loop')
+                        timeRangeSelect[i].remove();
                       }
                     }
 
                   }
 
                 });
+              }
+              TableNumSelect.addEventListener("change", async() => {
                 
-
+                listenerFunction()
+                
               });
+              dateRangeSelect.addEventListener("change", async() => {
+                listenerFunction()
+              })
 
+          
               const querySnapshot = await getDocs(collection(db, "Events"));
               querySnapshot.forEach((doc) => {
       

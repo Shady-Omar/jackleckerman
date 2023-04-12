@@ -1023,7 +1023,7 @@ querySnapshotsx.forEach((doccc) => {
 
                 <div id="edit-form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
                   <div class="relative">
-                    <input autocomplete="off" required id="edit-event-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Event Name" />
+                    <input autocomplete="off" required id="edit-event-name" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Event Name" value="${doccc.data().eventName}"/>
                     <label for="edit-event-name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Event Name</label>
                   </div>
 
@@ -1031,7 +1031,7 @@ querySnapshotsx.forEach((doccc) => {
 
                   <div class="relative" id="mrg">
                     <label for="edit-event-color" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Add Event Color:</label>
-                    <input type="color" name="colors" id="edit-event-color" class="mt-4 border-black" value="#000000">
+                    <input type="color" name="colors" id="edit-event-color" class="mt-4 border-black" value="${doccc.data().eventcolor}">
                   </div>
                   
 
@@ -1039,7 +1039,7 @@ querySnapshotsx.forEach((doccc) => {
                   
                   <div class="relative !my-6">
                     <label for="table-edit-number" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Number of Tables:</label>
-                    <input type="number" name="table-number" id="table-edit-number" class="mt-4 border-black border-2 rounded-full w-[28%] px-4" min="1" max="999">
+                    <input type="number" name="table-number" id="table-edit-number" class="mt-4 border-black border-2 rounded-full w-[28%] px-4" min="1" max="999" value="${doccc.data().TableNum}">
                   </div>
                   
 
@@ -1047,27 +1047,10 @@ querySnapshotsx.forEach((doccc) => {
 
                   <div class="relative !my-6">
                     <label for="meeting-edit-length" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Length of Meeting: (in Minutes)</label>
-                    <input type="number" name="meeting-length" id="meeting-edit-length" class="mt-4 border-black border-2 rounded-full w-[28%] px-4" min="1" max="999">
+                    <input type="number" name="meeting-length" id="meeting-edit-length" class="mt-4 border-black border-2 rounded-full w-[28%] px-4" min="1" max="999" value="${doccc.data().MeetingLength}">
                   </div>
 
                   <div id="edit-error-four"></div>
-
-                  <div class="relative !my-6">
-                    <label for="from-edit-date" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">From:</label>
-                    <input type="datetime-local" name="from-event-date" id="from-edit-date" class="mt-4 border-black border-2 rounded-full w-full px-4">
-                  </div>
-                  
-
-                  <div id="edit-error-five"></div>
-                  
-                  
-                  <div class="relative !my-6">
-                    <label for="to-edit-date" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">To:</label>
-                    <input type="datetime-local" name="to-event-date" id="to-edit-date" class="mt-4 border-black border-2 rounded-full w-full px-4">
-                  </div>
-                  
-
-                  <div id="edit-error-six"></div>
 
                   </div>
                   <button id="edit-date-btn" class="bg-black hover:bg-darkblue text-white rounded-md px-2 py-1 my-4 w-full">Add Date</button>
@@ -1083,6 +1066,62 @@ querySnapshotsx.forEach((doccc) => {
         </div>
         `
         editPop.appendChild(editEventPopUp);
+
+
+        // ****************
+        function extractDates(dateStr) {
+          const currentYear = new Date().getFullYear();
+          const fromIndex = dateStr.indexOf('From:') + 5; // start index of "From:" substring
+          const toIndex = dateStr.indexOf(', To:'); // end index of "From:" substring
+          const fromStr = dateStr.substring(fromIndex, toIndex).trim(); // extract "From:" substring and remove whitespace
+          const toStr = dateStr.substring(toIndex + 6).trim(); // extract "To:" substring and remove whitespace
+          const fromDate = new Date(`${fromStr} ${currentYear}`); // parse "From:" date string
+          const toDate = new Date(`${toStr} ${currentYear}`); // parse "To:" date string
+          const fromOffset = fromDate.getTimezoneOffset() * 60000; // get timezone offset in milliseconds and convert to negative value
+          const toOffset = toDate.getTimezoneOffset() * 60000; // get timezone offset in milliseconds and convert to negative value
+          const fromUTC = fromDate.getTime() - fromOffset; // get UTC timestamp for "From:" date
+          const toUTC = toDate.getTime() - toOffset; // get UTC timestamp for "To:" date
+          const fromISO = new Date(fromUTC).toISOString().substring(0, 16); // convert "From:" date to ISO format and remove seconds and milliseconds
+          const toISO = new Date(toUTC).toISOString().substring(0, 16); // convert "To:" date to ISO format and remove seconds and milliseconds
+          return [fromISO, toISO];
+        }
+
+        
+        
+        // ****************
+        
+        for (let i = 0; i < doccc.data().Dates.length; i++) {
+          const dateString = doccc.data().Dates[i];
+          const [fromDateISO, toDateISO] = extractDates(dateString);
+          console.log(fromDateISO); // "2023-04-11T22:30"
+          console.log(toDateISO); // "2023-04-11T23:32"
+          let newOpt = document.createElement("div");
+          let form = document.querySelector("#edit-form");
+          newOpt.classList.add("relative");
+          // newOpt.setAttribute("id", `${count}-id`)
+
+          newOpt.innerHTML = `
+
+          <div class="relative !my-6">
+            <label for="from-edit-date-${doccc.id}-${i}" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">From:</label>
+            <input type="datetime-local" value="${fromDateISO}" name="from-event-date" id="from-edit-date-${doccc.id}-${i}" class="mt-4 border-black border-2 rounded-full w-full px-4">
+          </div>
+          
+
+          <div id="edit-error-five"></div>
+          
+          
+          <div class="relative !my-6">
+            <label for="to-edit-date-${doccc.id}-${i}" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">To:</label>
+            <input type="datetime-local" value="${toDateISO}"" name="to-event-date" id="to-edit-date-${doccc.id}-${i}" class="mt-4 border-black border-2 rounded-full w-full px-4">
+          </div>
+          
+
+          <div id="edit-error-six"></div>
+          `
+          form.appendChild(newOpt);
+        }
+        
 
         let overlay = document.querySelector(".overlay");
         let editpopHidden = document.querySelector("#edit-event-pop");
@@ -1127,6 +1166,7 @@ querySnapshotsx.forEach((doccc) => {
           let idListOne = [];
           let idListTwo = [];
           let dateListValues = [];
+
           let addDate = document.querySelector("#edit-date-btn");
           if (addDate) {
 
@@ -1203,8 +1243,8 @@ querySnapshotsx.forEach((doccc) => {
             let editEventColor = document.querySelector("#edit-event-color");
             let editTableNum = document.querySelector("#table-edit-number");
             let editMeetingLength = document.querySelector("#meeting-edit-length");
-            let editFromDate = document.querySelector("#from-edit-date");
-            let editToDate = document.querySelector("#to-edit-date");
+            let editFromDate = document.querySelector(`#from-edit-date-${doccc.id}-0`);
+            let editToDate = document.querySelector(`#to-edit-date-${doccc.id}-0`);
 
             if (editEventName.value === '' || editEventName.value === null || editEventColor.value === '#000000' || editMeetingLength.value === '' || editMeetingLength.value === null || editTableNum.value === '' || editTableNum.value === null || editFromDate.value === '' || editFromDate.value === null || editToDate.value === '' || editToDate.value === null) {
               if (editEventName.value === '' || editEventName.value === null) {
@@ -1252,7 +1292,10 @@ querySnapshotsx.forEach((doccc) => {
             } else {
               let eventID = editEventPopUp.getAttribute('class');
 
-              dateListValues.push(`From: ${convertDateTo12HourFormat(editFromDate.value)}, To: ${convertDateTo12HourFormat(editToDate.value)}`)
+              for (let i = 0; i < doccc.data().Dates.length; i++) {
+                dateListValues.push(`From: ${convertDateTo12HourFormat(document.getElementById(`from-edit-date-${doccc.id}-${i}`).value)}, To: ${convertDateTo12HourFormat(document.getElementById(`to-edit-date-${doccc.id}-${i}`).value)}`)
+              }
+
     
               for (let i = 0; i< idListOne.length; i++) {
                 let idOne = document.getElementById(idListOne[i]).value;
@@ -3213,6 +3256,8 @@ querySnapshotyy.forEach((docx) => {
           `;
         } else if (docx.data().status === 4) {
           status.innerHTML = `<p class="text-green font-bold">Accepted</p>`;
+        } else if (docx.data().status === 5) {
+          status.innerHTML = `<p class="text-red font-bold">Rejected</p>`;
         }
 
         let acceptRequest = document.querySelector(`#accept-req-${docx.id}`);
@@ -3242,7 +3287,9 @@ querySnapshotyy.forEach((docx) => {
 
           rejectRequest.addEventListener('click', async () => {
             if (confirm("Are you sure you want to reject this invitation request?")) {
-              await deleteDoc(doc(db, "Events", eventPopId, "meetings", docx.id));
+              await updateDoc(doc(db, "Events", eventPopId, "meetings", docx.id), {
+                status: 5
+              });
             }
             alert("Invitation rejected!");
             location.reload();

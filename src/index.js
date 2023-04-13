@@ -3200,9 +3200,9 @@ querySnapshooot.forEach(async(docx) => {
 
 
 const querySnapshotyy = await getDocs(collection(db, "Events", eventPopId, "meetings"));
-querySnapshotyy.forEach((docx) => {
+querySnapshotyy.forEach(async(docx) => {
   // doc.data() is never undefined for query doc snapshots
-  console.log(docx.id, " => ", docx.data());
+  // console.log(docx.id, " => ", docx.data());
 
 
 
@@ -3316,206 +3316,212 @@ querySnapshotyy.forEach((docx) => {
           });
         }
 
-        if (modifyRequest) {
-          let modifyPop = document.querySelector("#modify-btn-pop");
+        const querySnapshot = await getDocs(collection(db, "Events"));
+        querySnapshot.forEach((doc) => {
 
-          function extractSegmentsFromDate(input) {
-            const timeRegex = /\d{1,2}:\d{2} (AM|PM)/g;
-            const matches = input.match(timeRegex);
-            const segmentLength = 10 * 60 * 1000; // TODO add meeting length here
-            
-            // Parse start and end times
-            const dateFormat = 'h:mm a';
-            const startTime = moment(matches[0], dateFormat);
-            const endTime = moment(matches[1], dateFormat);
-            
-            // Calculate available segments
-            const segments = [];
-            let segmentStart = startTime;
-            do {
-              const segmentEnd = segmentStart.clone().add(segmentLength);
-              segments.push(`${segmentStart.format(dateFormat)} to ${segmentEnd.format(dateFormat)}`);
-              segmentStart = segmentEnd;
-            } while (segmentStart.isSameOrBefore(endTime));
-            
-            // Return the available segments
-            segments.pop();
-            return segments;
-          }
+          if (doc.id === eventPopId) {
 
-          modifyRequest.addEventListener('click', async () => {
-            modifyPop.innerHTML = `
-
-            <div id="modify-Pop" class=" flex fixed z-10 top-0 left-0 w-full h-full bg-black bg-opacity-60" style="overflow-y: overlay;">
-              <div class="extraOutline p-12 bg-white w-[30%] max-w-[405px] bg-whtie m-auto rounded-lg">
+            let meetlength = doc.data().MeetingLength
             
-                <div class="max-w-md mx-auto">
-                  <div id="close-event-pop" class="hidden">×</div>
-                  <div>
-                    <h1 class="text-2xl font-semibold">Invite to Meeting</h1>
-                  </div>
-                  <div class="divide-y divide-gray-200">
-                    <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                      <div class="relative">
-                        <label for="table-num" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Select Table Number:</label>
-
-                        <select class="mt-4 border-black w-[20%]" name="table-num" id="table-num">
-                        </select>
+            if (modifyRequest) {
+              let modifyPop = document.querySelector("#modify-btn-pop");
+    
+              function extractSegmentsFromDate(input) {
+                const timeRegex = /\d{1,2}:\d{2} (AM|PM)/g;
+                const matches = input.match(timeRegex);
+                const segmentLength = Number(meetlength) * 60 * 1000; // TODO add meeting length here
+                
+                // Parse start and end times
+                const dateFormat = 'h:mm a';
+                const startTime = moment(matches[0], dateFormat);
+                const endTime = moment(matches[1], dateFormat);
+                
+                // Calculate available segments
+                const segments = [];
+                let segmentStart = startTime;
+                do {
+                  const segmentEnd = segmentStart.clone().add(segmentLength);
+                  segments.push(`${segmentStart.format(dateFormat)} to ${segmentEnd.format(dateFormat)}`);
+                  segmentStart = segmentEnd;
+                } while (segmentStart.isSameOrBefore(endTime));
+                
+                // Return the available segments
+                segments.pop();
+                return segments;
+              }
+    
+              modifyRequest.addEventListener('click', async () => {
+                modifyPop.innerHTML = `
+    
+                <div id="modify-Pop" class=" flex fixed z-10 top-0 left-0 w-full h-full bg-black bg-opacity-60" style="overflow-y: overlay;">
+                  <div class="extraOutline p-12 bg-white w-[30%] max-w-[405px] bg-whtie m-auto rounded-lg">
+                
+                    <div class="max-w-md mx-auto">
+                      <div id="close-event-pop" class="hidden">×</div>
+                      <div>
+                        <h1 class="text-2xl font-semibold">Invite to Meeting</h1>
                       </div>
-
-                      <div id="meeting-error-one"></div>
-
-                      <div class="relative !my-6">
-                        <label for="date-range" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Select Date Range:</label>
-
-                        <select class="mt-4 border-black w-full" name="date-range" id="date-range">
+                      <div class="divide-y divide-gray-200">
+                        <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                          <div class="relative">
+                            <label for="table-num" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Select Table Number:</label>
+    
+                            <select class="mt-4 border-black w-[20%]" name="table-num" id="table-num">
+                            </select>
+                          </div>
+    
+                          <div id="meeting-error-one"></div>
+    
+                          <div class="relative !my-6">
+                            <label for="date-range" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Date Range:</label>
+    
+                            <select class="mt-4 border-black w-full" name="date-range" id="date-range">
+                              <option value="Select a date" selected disabled>Select a date</option>
+                            </select>
+                          </div>
                           
-                        </select>
-                      </div>
-                      
-
-                      <div id=meeting-error-two"></div>
-                      <div class="relative !my-6">
-                        <label for="time-range" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Select Time Range:</label>
-
-                        <select class="mt-4 border-black w-full" name="time-range" id="time-range">
+    
+                          <div id=meeting-error-two"></div>
+                          <div class="relative !my-6">
+                            <label for="time-range" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Time Range:</label>
+    
+                            <select class="mt-4 border-black w-full" name="time-range" id="time-range">
+                              <option value="Select a time" selected disabled>Select a time</option>
+                            </select>
+                          </div>
                           
-                        </select>
+    
+                          <div id=meeting-error-two"></div>
+                          
+                        </div>
+                        <div class="relative border-none">
+                          <button id="modify-meeting-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Invite</button>
+                          <button id="close-modify-btn" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                        </div>
                       </div>
-                      
-
-                      <div id=meeting-error-two"></div>
-                      
-                    </div>
-                    <div class="relative border-none">
-                      <button id="modify-meeting-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Invite</button>
-                      <button id="close-modify-btn" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            `
-
-            if (modifyPop) {
-
-              let closeModifyPop = document.querySelector("#close-modify-btn");
-              let InvitePop = document.querySelector("#modify-Pop");
-      
-              closeModifyPop.addEventListener('click', () => {
-                InvitePop.remove()
-                overlay.classList.add("hidden");
-              });
     
-              let TableNumSelect = document.querySelector("#table-num");
-              let dateRangeSelect = document.querySelector("#date-range");
-              let timeRangeSelect = document.querySelector("#time-range");
-              async function  listenerFunction() {
-                timeRangeSelect.innerHTML = ``
-                let SegmentsFromDate = extractSegmentsFromDate(dateRangeSelect.value)
-                // SegmentsFromDate = [];
-                console.log(SegmentsFromDate);
-
-                console.log('CHANGED');
-
-
-                
-                
-                for (let i = 0; i < SegmentsFromDate.length; i++) {
+                `
+    
+                if (modifyPop) {
+    
+                  let closeModifyPop = document.querySelector("#close-modify-btn");
+                  let InvitePop = document.querySelector("#modify-Pop");
+          
+                  closeModifyPop.addEventListener('click', () => {
+                    InvitePop.remove()
+                    overlay.classList.add("hidden");
+                  });
+        
+                  let TableNumSelect = document.querySelector("#table-num");
+                  let dateRangeSelect = document.querySelector("#date-range");
+                  let timeRangeSelect = document.querySelector("#time-range");
                   
-                  
-                  let timeRangeOption = document.createElement("option");
-                  // timeRangeOption.innerHTML = ``;
-                  timeRangeOption.innerHTML = `
-                  <option value="${SegmentsFromDate[i]}">${SegmentsFromDate[i]}</option>
-                  `
-                  timeRangeSelect.appendChild(timeRangeOption);
-                  
-                }
-                const q = query(collection(db, "Events", eventPopId, "meetings"));
-
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach((doc) => {
-                  // doc.data() is never undefined for query doc snapshots
-                  let timeRange = doc.data().TimeRange
-                  let table = timeRange.split("::")[0]
-                  let date = timeRange.split("::")[1]
-                  let time = timeRange.split("::")[2]
-                 console.log(`current table ${TableNumSelect.value} matched with ${table}`)
-
-                  if (table == TableNumSelect.value && date == dateRangeSelect.value) {
-                    for (let i = 0; i < timeRangeSelect.length; i++) {
-                      console.log(`${timeRangeSelect[i].innerHTML.trim()}`)
-                      console.log(`<option value="${time}">${time}</option>`)
-                      if (timeRangeSelect[i].innerHTML.trim() === `<option value="${time}">${time}</option>`) {
-                        console.log('Reached dleete inside for loop')
-                        timeRangeSelect[i].remove();
+                  async function  listenerFunction() {
+                    timeRangeSelect.innerHTML = ``;
+                    let SegmentsFromDate = extractSegmentsFromDate(dateRangeSelect.value)
+                    console.log(SegmentsFromDate);
+    
+                    console.log('CHANGED');
+    
+    
+                    for (let i = 0; i < SegmentsFromDate.length; i++) {
+                      
+                      
+                      let timeRangeOption = document.createElement("option");
+                      // timeRangeOption.innerHTML = ``;
+                      timeRangeOption.innerHTML = `
+                      <option value="${SegmentsFromDate[i]}">${SegmentsFromDate[i]}</option>
+                      `
+                      timeRangeSelect.appendChild(timeRangeOption);
+                      
+                    }
+                    const q = query(collection(db, "Events", eventPopId, "meetings"));
+    
+                    const querySnapshot = await getDocs(q);
+                    querySnapshot.forEach((doc) => {
+                      // doc.data() is never undefined for query doc snapshots
+                      let timeRange = doc.data().TimeRange
+                      let table = timeRange.split("::")[0]
+                      let date = timeRange.split("::")[1]
+                      let time = timeRange.split("::")[2]
+                    
+    
+                      if (table == TableNumSelect.value && date == dateRangeSelect.value) {
+                        for (let i = 0; i < timeRangeSelect.length; i++) {
+                          if (timeRangeSelect[i].innerHTML.trim() === `<option value="${time}">${time}</option>`) {
+                            timeRangeSelect[i].remove();
+                          }
+                        }
+    
+                      }
+    
+                    });
+                  }
+                  TableNumSelect.addEventListener("change", async() => {
+                    
+                    listenerFunction()
+                    
+                  });
+                  dateRangeSelect.addEventListener("change", async() => {
+                    listenerFunction()
+                  })
+    
+              
+                  const querySnapshot = await getDocs(collection(db, "Events"));
+                  querySnapshot.forEach((doc) => {
+          
+          
+                    if (doc.id === eventPopId) {
+                      
+                      // dateRangeSelect.setAttribute('value', doc.data().Dates[1]);
+    
+                      for (let i = 0; i < doc.data().TableNum; i++) {
+                        let tableNumOption = document.createElement("option");
+          
+                        tableNumOption.innerHTML = `
+                          <option value="${i + 1}">${i + 1}</option>
+                        `
+                        TableNumSelect.appendChild(tableNumOption)
+                      }
+          
+                      for (let i = 0; i < doc.data().Dates.length; i++) {
+                        let dateRangeOption = document.createElement("option");
+          
+                        dateRangeOption.innerHTML = `
+                          <option value="${doc.data().Dates[i]}">${doc.data().Dates[i]}</option>
+                        `
+                        dateRangeSelect.appendChild(dateRangeOption)
+                        
                       }
                     }
-
-                  }
-
-                });
-              }
-              TableNumSelect.addEventListener("change", async() => {
-                
-                listenerFunction()
-                
-              });
-              dateRangeSelect.addEventListener("change", async() => {
-                listenerFunction()
-              })
-
           
-              const querySnapshot = await getDocs(collection(db, "Events"));
-              querySnapshot.forEach((doc) => {
-      
-      
-                if (doc.id === eventPopId) {
-                  
-                  // dateRangeSelect.setAttribute('value', doc.data().Dates[1]);
-
-                  for (let i = 0; i < doc.data().TableNum; i++) {
-                    let tableNumOption = document.createElement("option");
-      
-                    tableNumOption.innerHTML = `
-                      <option value="${i + 1}">${i + 1}</option>
-                    `
-                    TableNumSelect.appendChild(tableNumOption)
-                  }
-      
-                  for (let i = 0; i < doc.data().Dates.length; i++) {
-                    let dateRangeOption = document.createElement("option");
-      
-                    dateRangeOption.innerHTML = `
-                      <option value="${doc.data().Dates[i]}">${doc.data().Dates[i]}</option>
-                    `
-                    dateRangeSelect.appendChild(dateRangeOption)
-                    
-                  }
-                }
-      
-              });
-      
-              let modifyMeetingBtn = document.querySelector("#modify-meeting-btn");
-      
-              modifyMeetingBtn.addEventListener('click', async() => {
-                if (confirm("Are you sure you want to confirm this invitation request?")) {
-                  await updateDoc(doc(db, "Events", eventPopId, "meetings", docx.id), {
-                    TableNum: TableNumSelect.value,
-                    Date: dateRangeSelect.value,
-                    TimeRange: `${TableNumSelect.value}::${dateRangeSelect.value}::${timeRangeSelect.value}`,
-                    status: 4,
+                  });
+          
+                  let modifyMeetingBtn = document.querySelector("#modify-meeting-btn");
+          
+                  modifyMeetingBtn.addEventListener('click', async() => {
+                    if (confirm("Are you sure you want to confirm this invitation request?")) {
+                      await updateDoc(doc(db, "Events", eventPopId, "meetings", docx.id), {
+                        TableNum: TableNumSelect.value,
+                        Date: dateRangeSelect.value,
+                        TimeRange: `${TableNumSelect.value}::${dateRangeSelect.value}::${timeRangeSelect.value}`,
+                        status: 4,
+                      });
+                    }
+                    alert("Invitation confirmed!");
+                    location.reload();
                   });
                 }
-                alert("Invitation confirmed!");
-                location.reload();
+    
               });
             }
+          }
 
-          });
-        }
+        });
+
 
       }
 

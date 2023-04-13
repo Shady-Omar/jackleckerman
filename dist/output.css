@@ -1048,6 +1048,12 @@ video {
   overflow-y: auto;
 }
 
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .overflow-ellipsis {
   text-overflow: ellipsis;
 }
@@ -1396,6 +1402,10 @@ video {
   text-transform: uppercase;
 }
 
+.lowercase {
+  text-transform: lowercase;
+}
+
 .italic {
   font-style: italic;
 }
@@ -1507,6 +1517,11 @@ video {
 
 .drop-shadow-md {
   --tw-drop-shadow: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.invert {
+  --tw-invert: invert(100%);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
@@ -1806,6 +1821,16 @@ select {
 .focus\:ring-blue:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(0 141 255 / var(--tw-ring-opacity));
+}
+
+.focus\:ring-green:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(4 120 87 / var(--tw-ring-opacity));
+}
+
+.focus\:ring-red:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(255 0 0 / var(--tw-ring-opacity));
 }
 
 .peer:-moz-placeholder-shown ~ .peer-placeholder-shown\:top-2 {

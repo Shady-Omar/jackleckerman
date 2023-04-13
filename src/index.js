@@ -3213,7 +3213,9 @@ querySnapshotyy.forEach(async(docx) => {
     if (attendContainer) {
       let attendList = document.createElement("tbody");
       // attendList.setAttribute('class', `${doccc.id}`);
-
+      let timeRange = docx.data().TimeRange
+      let table = timeRange != null ? timeRange.split("::")[0] : 'To be determined'
+      let date = timeRange != null ? `${docx.data().Date}\n${timeRange.split("::")[2]}` : `${docx.data().Date}`
       attendList.innerHTML = `
       <tr id=row-${docx.id} class="bg-navy border-b border-grey">
         <td id=receiver-${docx.id} scope="row" class="px-6 py-4 overflow-ellipsis font-medium text-white whitespace-nowrap max-w-[160px]" style="overflow-wrap: break-word;">
@@ -3223,11 +3225,12 @@ querySnapshotyy.forEach(async(docx) => {
           ${docx.data().sender_username}
         </td>
         <td id=table-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
-            ${docx.data().TableNum}
+            ${table}
         </td>
         <td id=date-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
-            ${docx.data().Date}
+            ${date}
         </td>
+        
         <td id=status-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
             
         </td>
@@ -3317,11 +3320,13 @@ querySnapshotyy.forEach(async(docx) => {
         }
 
         const querySnapshot = await getDocs(collection(db, "Events"));
-        querySnapshot.forEach((doc) => {
 
-          if (doc.id === eventPopId) {
+        
+        querySnapshot.forEach((documentSnapshot) => {
 
-            let meetlength = doc.data().MeetingLength
+          if (documentSnapshot.id === eventPopId) {
+
+            let meetlength = documentSnapshot.data().MeetingLength
             
             if (modifyRequest) {
               let modifyPop = document.querySelector("#modify-btn-pop");
@@ -3441,9 +3446,9 @@ querySnapshotyy.forEach(async(docx) => {
                     const q = query(collection(db, "Events", eventPopId, "meetings"));
     
                     const querySnapshot = await getDocs(q);
-                    querySnapshot.forEach((doc) => {
+                    querySnapshot.forEach((documentSnapshot) => {
                       // doc.data() is never undefined for query doc snapshots
-                      let timeRange = doc.data().TimeRange
+                      let timeRange = documentSnapshot.data().TimeRange
                       let table = timeRange.split("::")[0]
                       let date = timeRange.split("::")[1]
                       let time = timeRange.split("::")[2]
@@ -3471,14 +3476,14 @@ querySnapshotyy.forEach(async(docx) => {
     
               
                   const querySnapshot = await getDocs(collection(db, "Events"));
-                  querySnapshot.forEach((doc) => {
+                  querySnapshot.forEach((documentSnapshot) => {
           
           
-                    if (doc.id === eventPopId) {
+                    if (documentSnapshot.id === eventPopId) {
                       
                       // dateRangeSelect.setAttribute('value', doc.data().Dates[1]);
     
-                      for (let i = 0; i < doc.data().TableNum; i++) {
+                      for (let i = 0; i < documentSnapshot.data().TableNum; i++) {
                         let tableNumOption = document.createElement("option");
           
                         tableNumOption.innerHTML = `
@@ -3487,11 +3492,11 @@ querySnapshotyy.forEach(async(docx) => {
                         TableNumSelect.appendChild(tableNumOption)
                       }
           
-                      for (let i = 0; i < doc.data().Dates.length; i++) {
+                      for (let i = 0; i < documentSnapshot.data().Dates.length; i++) {
                         let dateRangeOption = document.createElement("option");
           
                         dateRangeOption.innerHTML = `
-                          <option value="${doc.data().Dates[i]}">${doc.data().Dates[i]}</option>
+                          <option value="${documentSnapshot.data().Dates[i]}">${documentSnapshot.data().Dates[i]}</option>
                         `
                         dateRangeSelect.appendChild(dateRangeOption)
                         
@@ -3510,9 +3515,9 @@ querySnapshotyy.forEach(async(docx) => {
                         TimeRange: `${TableNumSelect.value}::${dateRangeSelect.value}::${timeRangeSelect.value}`,
                         status: 4,
                       });
+                      alert("Invitation confirmed!");
+                      location.reload();
                     }
-                    alert("Invitation confirmed!");
-                    location.reload();
                   });
                 }
     

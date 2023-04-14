@@ -3513,8 +3513,8 @@ querySnapshotyy.forEach(async(docx) => {
                     if (confirm("Are you sure you want to confirm this invitation request?")) {
                       await updateDoc(doc(db, "Events", eventPopId, "meetings", docx.id), {
                         TableNum: TableNumSelect.value,
-                        Date: dateRangeSelect.value,
-                        TimeRange: `${TableNumSelect.value}::${dateRangeSelect.value}::${timeRangeSelect.value}`,
+                        Date: docx.data().Date,
+                        TimeRange: `${TableNumSelect.value}::${docx.data().Date}::${timeRangeSelect.value}`,
                         status: 4,
                       });
                       alert("Invitation confirmed!");

@@ -3426,10 +3426,10 @@ querySnapshotyy.forEach(async(docx) => {
                   
                   async function  listenerFunction() {
                     timeRangeSelect.innerHTML = ``;
-                    let SegmentsFromDate = extractSegmentsFromDate(dateRangeSelect.value)
-                    console.log(SegmentsFromDate);
+
+                    let selectedDate = docx.data().Date
+                    let SegmentsFromDate = extractSegmentsFromDate(selectedDate)
     
-                    console.log('CHANGED');
     
     
                     for (let i = 0; i < SegmentsFromDate.length; i++) {
@@ -3449,12 +3449,14 @@ querySnapshotyy.forEach(async(docx) => {
                     querySnapshot.forEach((documentSnapshot) => {
                       // doc.data() is never undefined for query doc snapshots
                       let timeRange = documentSnapshot.data().TimeRange
+                      if(timeRange != null) {
                       let table = timeRange.split("::")[0]
                       let date = timeRange.split("::")[1]
                       let time = timeRange.split("::")[2]
-                    
-    
-                      if (table == TableNumSelect.value && date == dateRangeSelect.value) {
+                      
+                        
+
+                      if (table == TableNumSelect.value && date == selectedDate) {
                         for (let i = 0; i < timeRangeSelect.length; i++) {
                           if (timeRangeSelect[i].innerHTML.trim() === `<option value="${time}">${time}</option>`) {
                             timeRangeSelect[i].remove();
@@ -3462,6 +3464,7 @@ querySnapshotyy.forEach(async(docx) => {
                         }
     
                       }
+                    }
     
                     });
                   }
@@ -3478,7 +3481,7 @@ querySnapshotyy.forEach(async(docx) => {
                   const querySnapshot = await getDocs(collection(db, "Events"));
                   querySnapshot.forEach((documentSnapshot) => {
           
-          
+                   
                     if (documentSnapshot.id === eventPopId) {
                       
                       // dateRangeSelect.setAttribute('value', doc.data().Dates[1]);
@@ -3492,15 +3495,16 @@ querySnapshotyy.forEach(async(docx) => {
                         TableNumSelect.appendChild(tableNumOption)
                       }
           
-                      for (let i = 0; i < documentSnapshot.data().Dates.length; i++) {
-                        let dateRangeOption = document.createElement("option");
+                      // for (let i = 0; i < documentSnapshot.data().Dates.length; i++) {
+                      //   let dateRangeOption = document.createElement("option");
           
-                        dateRangeOption.innerHTML = `
-                          <option value="${documentSnapshot.data().Dates[i]}">${documentSnapshot.data().Dates[i]}</option>
-                        `
-                        dateRangeSelect.appendChild(dateRangeOption)
+                      //   dateRangeOption.innerHTML = `
+                      //     <option value="${documentSnapshot.data().Dates[i]}">${documentSnapshot.data().Dates[i]}</option>
+                      //   `
+                      //   dateRangeSelect.appendChild(dateRangeOption)
                         
-                      }
+                      // }
+                      listenerFunction();
                     }
           
                   });

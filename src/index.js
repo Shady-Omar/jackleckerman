@@ -166,12 +166,7 @@ if (coordBtn) {
         rank: 1
       });
 
-      // let coordRef = doc(db, "Events", userEventId, "users", docRef.id);
-      // setDoc(coordRef, {
-      //   name: fname.value,
-      //   lastName: lname.value,
-      //   isAdmin: true
-      // });
+      
 
       alert("Coordinator Added Successfully")
       location.reload();
@@ -613,6 +608,10 @@ querySnapshots.forEach((doctwo) => {
                   setDoc(chatRef, {
                     name: rows[i][0] || null,
                     surname: rows[i][1] || null,
+                    email: rows[i][2] || null,
+                    jobTitle: rows[i][3] || null,
+                    Company: rows[i][4] || null,
+                    Country: rows[i][5] || null,
                     rank: 2
                   });
                 
@@ -888,6 +887,10 @@ querySnapshots.forEach((doctwo) => {
                     setDoc(chatRef, {
                       name: username.value,
                       surname: surname.value,
+                      email: userEmail.value,
+                      jobTitle: jobtitle.value,
+                      Company: company.value,
+                      Country: country.value,
                       rank: 2
                     });
     
@@ -1153,6 +1156,7 @@ querySnapshotsx.forEach((doccc) => {
 
             if (window.confirm("Do you really want to delete this event?")) {
               try {
+                
                 await deleteDoc(doc(db, "Events", eventID))
                 alert("Event Deleted Successfully!")
                 location.reload();
@@ -1315,8 +1319,8 @@ querySnapshotsx.forEach((doccc) => {
                 await updateDoc(eventRef, {
                   eventName: editEventName.value,
                   eventcolor: editEventColor.value,
-                  TableNum: editTableNum.value,
-                  MeetingLength: editMeetingLength.value,
+                  TableNum: Number(editTableNum.value),
+                  MeetingLength: Number(editMeetingLength.value),
                   Dates: dateListValues,
                 });
                 alert("Event Edited")
@@ -2195,29 +2199,21 @@ let pollDet = document.querySelector("#poll-detail");
   if (pollDet) {
     
 
-    let listInt = [];
-    let listSum = [];
-    
-    const querySnapshotxxx = await getDocs(collection(db, "Events", eventPopId, "polls"));
-    querySnapshotxxx.forEach(async(doc) => {
-    
-      const q = query(collection(db, "Events", eventPopId, "polls", doc.id, "options" ));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach(async(docc) => {
-        // doc.data() is never undefined for query doc snapshots
-        // console.log(doc.id, " => ", doc.data());
-    
-        let optionVoters = docc.data().voters.length;
-        listInt.push(optionVoters);
-    
-        
-      });
-      let sum = 0
-      const s = listInt.reduce((partialSum, a) => partialSum + a, 0);
-      listSum.push(s);
-      listInt = []
-      sum = 0;
-    });
+    let sum = 0
+    const q = onSnapshot(collection(db, "Events", eventPopId, "polls", PollDocID, "options" ) , async (optionsCollection)  => {
+        sum = 0
+        // const optionsCollection = await getDocs(collection(db, "Events", eventPopId, "polls", PollDocID, "options" ));
+        console.log('CHAAAAgE')     
+        optionsCollection.forEach(async(docc) => {
+       
+      
+          let optionVoters = docc.data().voters.length;
+          sum += optionVoters;
+      
+          
+        });
+      })
+      
     let z = 0;
 
 
@@ -2233,28 +2229,35 @@ let pollDet = document.querySelector("#poll-detail");
 
         const q = query(collection(db, "Events", eventPopId, "polls", PollDocID, "options"));
   
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach(async(docc) => {
-            // doc.data() is never undefined for query doc snapshots
-            // console.log(doc.id, " => ", doc.data());
+          const unsub = onSnapshot(q , (querySnapshot) => {
+            pollDet.innerHTML = ''
+            querySnapshot.forEach(async(docc) => {
+              // doc.data() is never undefined for query doc snapshots
+              // console.log(doc.id, " => ", doc.data());
+    
+              let optBar = document.createElement("div")
+              optBar.setAttribute('class', 'my-2');
+              optBar.setAttribute('id', `${docc.id}`);
+              
   
-            let optBar = document.createElement("div")
-            optBar.setAttribute('class', 'my-2');
-            optBar.setAttribute('id', `${docc.id}`);
-  
-            let percent = ((docc.data().voters.length / listSum[z]) * 100);
-            percent = Math.round(percent)
-  
-            optBar.innerHTML = `
-            <div class="w-full bg-navy rounded-full relative my-10 flex items-center">
-              <p class="absolute text-lg text-white text-center text-poll font-semibold">${docc.data().pollOption} <br/> ${isNaN(percent)?0:percent}%</p>
-              <div class="bg-blue text-xs font-medium text-white text-center p-8 leading-none rounded-full" style="width: ${isNaN(percent) || percent == 0 ?1:percent}%"></div>
-            </div>
-            `
-            
-            pollDet.appendChild(optBar);
-            
-          });
+              // let percent = ((docc.data().voters.length / listSum[z]) * 100);
+              // percent = Math.round(percent)
+              console.log(sum)
+              let percent = ((docc.data().voters.length / sum) * 100);
+              percent = Math.round(percent)
+    
+              optBar.innerHTML = `
+              <div class="w-full bg-navy rounded-full relative my-10 flex items-center">
+                <p class="absolute text-lg text-white text-center text-poll font-semibold">${docc.data().pollOption} <br/> ${isNaN(percent)?0:percent}%</p>
+                <div class="bg-blue text-xs font-medium text-white text-center p-8 leading-none rounded-full" style="width: ${isNaN(percent) || percent == 0 ?1:percent}%"></div>
+              </div>
+              `
+              
+              pollDet.appendChild(optBar);
+              
+            });
+          })
+          
           
           z++
 

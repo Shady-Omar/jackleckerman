@@ -1102,6 +1102,7 @@ querySnapshotsx.forEach((doccc) => {
           console.log(fromDateISO); // "2023-04-11T22:30"
           console.log(toDateISO); // "2023-04-11T23:32"
           let newOpt = document.createElement("div");
+          newOpt.style.borderTop = 'solid 1px black';
           let form = document.querySelector("#edit-form");
           newOpt.classList.add("relative");
           // newOpt.setAttribute("id", `${count}-id`)
@@ -1113,17 +1114,13 @@ querySnapshotsx.forEach((doccc) => {
             <input type="datetime-local" value="${fromDateISO}" name="from-event-date" id="from-edit-date-${doccc.id}-${i}" class="mt-4 border-black border-2 rounded-full w-full px-4">
           </div>
           
-
-          <div id="edit-error-five"></div>
-          
-          
           <div class="relative !my-6">
             <label for="to-edit-date-${doccc.id}-${i}" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">To:</label>
-            <input type="datetime-local" value="${toDateISO}"" name="to-event-date" id="to-edit-date-${doccc.id}-${i}" class="mt-4 border-black border-2 rounded-full w-full px-4">
+            <input type="datetime-local" value="${toDateISO}" name="to-event-date" id="to-edit-date-${doccc.id}-${i}" class="mt-4 border-black border-2 rounded-full w-full px-4">
           </div>
           
 
-          <div id="edit-error-six"></div>
+          <div class="hidden text-red text-sm mb-2" id="edit-error-${i}">* Invalid date</div>
           `
           form.appendChild(newOpt);
         }
@@ -1141,6 +1138,7 @@ querySnapshotsx.forEach((doccc) => {
             editpopHidden.classList.add("hidden");
             editpopHidden.classList.remove("flex");
             overlay.classList.add("hidden");
+            editpopHidden.remove();
           });
         }
 
@@ -1187,6 +1185,8 @@ querySnapshotsx.forEach((doccc) => {
               } else {
                 
                   let newOpt = document.createElement("div");
+                  newOpt.setAttribute('id', `add-date-${count}`)
+                  newOpt.style.borderTop = 'solid 1px black';
                   let form = document.querySelector("#edit-form");
                   newOpt.classList.add("relative");
                   // newOpt.setAttribute("id", `${count}-id`)
@@ -1198,22 +1198,43 @@ querySnapshotsx.forEach((doccc) => {
                     <input type="datetime-local" name="meeting-length" id="from-event-date-${count}-id" class="mt-4 border-black border-2 rounded-full w-full px-4">
                   </div>
                   
-
-                  <div id="event-error-five"></div>
-                  
-                  
                   <div class="relative !my-6">
                     <label for="to-event-date-${count}-id" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">To:</label>
                     <input type="datetime-local" name="meeting-length" id="to-event-date-${count}-id" class="mt-4 border-black border-2 rounded-full w-full px-4">
                   </div>
+
+                  <div class="hidden text-red text-sm mb-2" id="edit-error-${count}">* Invalid date</div>
+                  <button id="delete-date-btn-${count}" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">remove</button>
                   `
                   form.appendChild(newOpt);
               }
 
+
+              let removeDate = document.getElementById(`delete-date-btn-${count}`);
+              let dateAdded = document.getElementById(`add-date-${count}`);
               let dd = document.querySelector(`#from-event-date-${count}-id`);
               let bb = document.querySelector(`#to-event-date-${count}-id`);
               let ww = dd.getAttribute("id");
               let mm = bb.getAttribute("id");
+              removeDate.addEventListener('click', () => {
+                dateAdded.remove()
+
+                let indexFrom = idListOne.indexOf(ww); // find the index of the item you want to remove
+                if (indexFrom !== -1) { // check if the item exists in the array
+                  idListOne.splice(indexFrom, 1); // remove the item using splice()
+                }
+                let indexTo = idListTwo.indexOf(mm); // find the index of the item you want to remove
+                if (indexTo !== -1) { // check if the item exists in the array
+                  idListTwo.splice(indexTo, 1); // remove the item using splice()
+                }
+
+                console.log(idListOne)
+                console.log(idListTwo)
+
+                // idListOne
+              });
+
+              
               // if (dd) {
 
               //   console.log(dd.value)
@@ -1240,11 +1261,8 @@ querySnapshotsx.forEach((doccc) => {
           editEvent.addEventListener('click', async () => {
 
             let editErrorOne = document.querySelector("#edit-error-one");
-            let editErrorTwo = document.querySelector("#edit-error-two");
             let eventErrorThree = document.querySelector("#edit-error-three");
             let eventErrorFour = document.querySelector("#edit-error-four");
-            let eventErrorFive = document.querySelector("#edit-error-five");
-            let eventErrorSix = document.querySelector("#edit-error-six");
 
             let editEventName = document.querySelector("#edit-event-name");
             let editEventColor = document.querySelector("#edit-event-color");
@@ -1253,19 +1271,12 @@ querySnapshotsx.forEach((doccc) => {
             let editFromDate = document.querySelector(`#from-edit-date-${doccc.id}-0`);
             let editToDate = document.querySelector(`#to-edit-date-${doccc.id}-0`);
 
-            if (editEventName.value === '' || editEventName.value === null || editEventColor.value === '#000000' || editMeetingLength.value === '' || editMeetingLength.value === null || editTableNum.value === '' || editTableNum.value === null || editFromDate.value === '' || editFromDate.value === null || editToDate.value === '' || editToDate.value === null) {
+            if (editEventName.value === '' || editEventName.value === null || editMeetingLength.value === '' || editMeetingLength.value === null || editTableNum.value === '' || editTableNum.value === null || editFromDate.value === '' || editFromDate.value === null || editToDate.value === '' || editToDate.value === null) {
               if (editEventName.value === '' || editEventName.value === null) {
           
                 editErrorOne.innerHTML = "*Event name is required"
               } else {
                 editErrorOne.classList.add("hidden")
-              }
-            
-              if (editEventColor.value === '#000000' || '#003366' || '#008dff' || '#FFFFFF' || '#fff0') {
-            
-                editErrorTwo.innerHTML = "*Select Another Color"
-              } else {
-                editErrorTwo.classList.add("hidden")
               }
 
               if (editTableNum.value === '' || editTableNum.value === null) {
@@ -1282,25 +1293,33 @@ querySnapshotsx.forEach((doccc) => {
                 eventErrorFour.classList.add("hidden")
               }
 
-              if (editFromDate.value === '' || editFromDate.value === null) {
+              // if (editFromDate.value === '' || editFromDate.value === null) {
   
-                eventErrorFive.innerHTML = "*Select Date"
-              } else {
-                eventErrorFive.classList.add("hidden")
-              }
+              //   eventErrorFive.innerHTML = "*Invalid date input"
+              // } else {
+              //   eventErrorFive.classList.add("hidden")
+              // }
 
-              if (editToDate.value === '' || editToDate.value === null) {
+              // if (editToDate.value === '' || editToDate.value === null) {
   
-                eventErrorSix.innerHTML = "*Select Date"
-              } else {
-                eventErrorSix.classList.add("hidden")
-              }
+              //   eventErrorSix.innerHTML = "*Invalid date input"
+              // } else {
+              //   eventErrorSix.classList.add("hidden")
+              // }
 
             } else {
               let eventID = editEventPopUp.getAttribute('class');
 
               for (let i = 0; i < doccc.data().Dates.length; i++) {
-                dateListValues.push(`From: ${convertDateTo12HourFormat(document.getElementById(`from-edit-date-${doccc.id}-${i}`).value)}, To: ${convertDateTo12HourFormat(document.getElementById(`to-edit-date-${doccc.id}-${i}`).value)}`)
+                let dateFrom = document.getElementById(`from-edit-date-${doccc.id}-${i}`).value
+                let dateTo = document.getElementById(`to-edit-date-${doccc.id}-${i}`).value
+                if (dateFrom != "" && dateFrom != null && dateTo != "" && dateTo != null) {
+
+                  dateListValues.push(`From: ${convertDateTo12HourFormat(document.getElementById(`from-edit-date-${doccc.id}-${i}`).value)}, To: ${convertDateTo12HourFormat(document.getElementById(`to-edit-date-${doccc.id}-${i}`).value)}`)
+                } else {
+                  alert('Invalid Date Input');
+                  return;
+                }
               }
 
     
@@ -1309,6 +1328,9 @@ querySnapshotsx.forEach((doccc) => {
                 let idTwo = document.getElementById(idListTwo[i]).value;
                 if (idOne != "" && idOne != null && idTwo != "" && idTwo != null) {
                   dateListValues.push(`From: ${convertDateTo12HourFormat(idOne)}, To: ${convertDateTo12HourFormat(idTwo)}`)
+                } else {
+                  alert('Invalid Date Input');
+                  return;
                 }
                 
               }

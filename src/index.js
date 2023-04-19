@@ -2407,8 +2407,7 @@ const unsubscribe = onSnapshot(qe, (querySnapshot) => {
   chatContainer.innerHTML = ``;
   querySnapshot.forEach((doc) => {
 
-      if (doc.data().senderId == adminID) {
-
+      if (doc.data().senderId == adminID) { // Lw ana el ba3et khaly el lon bel lon el folany (chats daniela)
         let msgSent = document.createElement("div");
         msgSent.setAttribute('class', 'flex justify-end mb-4 mr-4');
         msgSent.setAttribute('id', 'msg-sender');
@@ -2418,7 +2417,7 @@ const unsubscribe = onSnapshot(qe, (querySnapshot) => {
         </div>
         `
         chatContainer.appendChild(msgSent);
-      } else if (doc.data().senderId == chatUser){
+      } else if (doc.data().reciverId == adminID){ // lw hea el ba3ta lea yb2a khaly el bubble bel lon el folany
 
         let msgSent = document.createElement("div");
         msgSent.setAttribute('class', 'flex justify-start mb-4 ml-4');

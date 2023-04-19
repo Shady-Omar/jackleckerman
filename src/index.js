@@ -231,6 +231,7 @@ if (eventBtn) {
         } else {
           
             let newOpt = document.createElement("div");
+            newOpt.setAttribute('id', `added-date-${count}-id`)
             let form = document.querySelector("#form");
             newOpt.classList.add("relative");
             // newOpt.setAttribute("id", `${count}-id`)
@@ -275,11 +276,25 @@ if (eventBtn) {
         console.log(idListTwo);
         console.log(count);
         
+        let closeEventBtn = document.querySelector('#close-event-btns');
+        
+        let newOpt = document.getElementById(`added-date-${count}-id`)
+        closeEventBtn.addEventListener('click', () => {
+          newOpt.remove();
+          idListOne = [];
+          idListTwo = [];
+          console.log(idListOne);
+          console.log(idListTwo);
+        })
+          
+        
       })
       
       
     }
 
+
+    
 
   eventBtn.addEventListener('click', async (e) => {
 
@@ -1102,6 +1117,7 @@ querySnapshotsx.forEach((doccc) => {
           console.log(fromDateISO); // "2023-04-11T22:30"
           console.log(toDateISO); // "2023-04-11T23:32"
           let newOpt = document.createElement("div");
+          newOpt.setAttribute('id', `added-date-${doccc.id}-${i}`)
           newOpt.style.borderTop = 'solid 1px black';
           let form = document.querySelector("#edit-form");
           newOpt.classList.add("relative");
@@ -1120,9 +1136,18 @@ querySnapshotsx.forEach((doccc) => {
           </div>
           
 
-          <div class="hidden text-red text-sm mb-2" id="edit-error-${i}">* Invalid date</div>
+          <div class="hidden text-red text-sm mb-2" id="edit-error-${doccc.id}-${i}">* Invalid date</div>
+          <button id="delete-added-date-${i}" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">remove</button>
           `
           form.appendChild(newOpt);
+
+
+          let deleteAddedDate = document.getElementById(`delete-added-date-${i}`);
+          deleteAddedDate.addEventListener('click', () => {
+            let addedDate = document.getElementById(`added-date-${doccc.id}-${i}`);
+            addedDate.remove();
+          })
+
         }
         
 
@@ -1271,7 +1296,7 @@ querySnapshotsx.forEach((doccc) => {
             let editFromDate = document.querySelector(`#from-edit-date-${doccc.id}-0`);
             let editToDate = document.querySelector(`#to-edit-date-${doccc.id}-0`);
 
-            if (editEventName.value === '' || editEventName.value === null || editMeetingLength.value === '' || editMeetingLength.value === null || editTableNum.value === '' || editTableNum.value === null || editFromDate.value === '' || editFromDate.value === null || editToDate.value === '' || editToDate.value === null) {
+            if (editEventName.value === '' || editEventName.value === null || editMeetingLength.value === '' || editMeetingLength.value === null || editTableNum.value === '' || editTableNum.value === null) {
               if (editEventName.value === '' || editEventName.value === null) {
           
                 editErrorOne.innerHTML = "*Event name is required"
@@ -1311,28 +1336,35 @@ querySnapshotsx.forEach((doccc) => {
               let eventID = editEventPopUp.getAttribute('class');
 
               for (let i = 0; i < doccc.data().Dates.length; i++) {
-                let dateFrom = document.getElementById(`from-edit-date-${doccc.id}-${i}`).value
-                let dateTo = document.getElementById(`to-edit-date-${doccc.id}-${i}`).value
-                if (dateFrom != "" && dateFrom != null && dateTo != "" && dateTo != null) {
+                let dateFrom = document.getElementById(`from-edit-date-${doccc.id}-${i}`);
+                let dateTo = document.getElementById(`to-edit-date-${doccc.id}-${i}`);
+                if (dateFrom && dateTo && dateFrom.value != "" && dateFrom.value != null && dateTo.value != "" && dateTo.value != null) {
+                  let dateFromID = dateFrom.getAttribute('id');
+                  let dateToID = dateTo.getAttribute('id');
 
-                  dateListValues.push(`From: ${convertDateTo12HourFormat(document.getElementById(`from-edit-date-${doccc.id}-${i}`).value)}, To: ${convertDateTo12HourFormat(document.getElementById(`to-edit-date-${doccc.id}-${i}`).value)}`)
-                } else {
-                  alert('Invalid Date Input');
-                  return;
+                  idListOne.push(dateFromID)
+                  idListTwo.push(dateToID)
+
+                  // dateListValues.push(`From: ${convertDateTo12HourFormat(dateFrom.value)}, To: ${convertDateTo12HourFormat(dateTo.value)}`)
                 }
               }
 
-    
-              for (let i = 0; i< idListOne.length; i++) {
-                let idOne = document.getElementById(idListOne[i]).value;
-                let idTwo = document.getElementById(idListTwo[i]).value;
-                if (idOne != "" && idOne != null && idTwo != "" && idTwo != null) {
-                  dateListValues.push(`From: ${convertDateTo12HourFormat(idOne)}, To: ${convertDateTo12HourFormat(idTwo)}`)
-                } else {
-                  alert('Invalid Date Input');
-                  return;
+              if (idListOne.length != 0 && idListTwo.length != 0) {
+                for (let i = 0; i< idListOne.length; i++) {
+                  let idOne = document.getElementById(idListOne[i]).value;
+                  let idTwo = document.getElementById(idListTwo[i]).value;
+                  if (idOne != "" && idOne != null && idTwo != "" && idTwo != null) {
+                    dateListValues.push(`From: ${convertDateTo12HourFormat(idOne)}, To: ${convertDateTo12HourFormat(idTwo)}`)
+                  } else {
+                    alert('Invalid Date Input');
+                    return;
+                  }
+                  
                 }
-                
+
+              } else {
+                alert('Date range is required!');
+                return;
               }
 
               try {

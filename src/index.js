@@ -47,6 +47,20 @@ function makepassword(length) {
   }
   return result;
 }
+function sendEmail(fname,lname,email,password)  {
+
+      var params = {
+        from_name : `${fname} ${lname}`,
+        email_id: email,
+        password: password,
+      }
+      emailjs.send('service_r39ml1j', 'template_kjtoerl', params, "_oAoi1a5ARfpe6IsI")
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+        }, function(error) {
+          console.log('FAILED...', error);
+        });
+}
 // /////////////////////
 
 if (coordBtn) {
@@ -78,83 +92,10 @@ if (coordBtn) {
     regPop.classList.add("hidden");
     regPop.classList.remove("block");
     overlay.classList.add("hidden");
-
-    let pass = [];
-    pass.push(makepassword(10));
-
-      var params = {
-        from_name : `${fname.value} ${lname.value}`,
-        email_id: email.value,
-        password: pass.toString()
-      }
-      emailjs.send('service_r39ml1j', 'template_kjtoerl', params, "_oAoi1a5ARfpe6IsI")
-        .then(function(response) {
-          console.log('SUCCESS!', response.status, response.text);
-        }, function(error) {
-          console.log('FAILED...', error);
-        });
-
-      //MailJet:
-      
-      /**
- *
- * Run:
- *
- */
-
-      // const myModule = require('node-mailjet');
-
-      // if (myModule) {
-      //   console.log('Module imported successfully');
-      // } else {
-      //   console.log('Module not found');
-      // }
-
-
-      // const Mailjet = require('node-mailjet');
-
-      // const mailjet = Mailjet.apiConnect(
-      //   process.env.MJ_APIKEY_PUBLIC,
-      //   process.env.MJ_APIKEY_PRIVATE,
-      // );
-      
-      // function sendEmail(recipient) {
-      //   return mailjet
-      //     .post("send", { version: "v3.1" })
-      //     .request({
-      //       Messages: [
-      //         {
-      //           From: {
-      //             Email: "shady22elmagic@gmail.com",
-      //             Name: "JackLeckerman",
-      //           },
-      //           To: [
-      //             {
-      //               Email: email.value,
-      //             },
-      //           ],
-      //           Subject: "one",
-      //           TextPart: "two",
-      //           HTMLPart: "three",
-      //         },
-      //       ],
-      //     })
-      //     .then((result) => {
-      //       // do something with the send result or ignore
-      //       console.log("done")
-      //     })
-      //     .catch((err) => {
-      //       // handle an error
-      //       console.log("error")
-      //     });
-      // }
-
-      // const api = new MailSlurp({ apiKey: "db682089d96bec6fbce322f0ff2467b9e1ef6f639d663eb4a6de00332dbe2c2c" });
-      // const newEmailInbox = await api.createInbox();
-      // const result = await sendEmail(newEmailInbox.emailAddress);
-      // expect(result.success).to.be(true);
-
-      // **************
+    let pass = makepassword(10)
+    sendEmail(fname.value,lname.value,email.value,pass)
+    
+     
 
     try {
       const docRef = await addDoc(collection(db, "excelSheetMembers"), {
@@ -568,11 +509,11 @@ querySnapshots.forEach((doctwo) => {
             var rows = XLSX.utils.sheet_to_json(worksheet, {header:1});
 
             localStorage.setItem("event ID", doctwo.id);
-
+            
             for (let i = 0; i < rows.length -1 ; i++) {
-
-              let pass = [];
-              pass.push(makepassword(10));
+              if(rows[i][0] == null) break;
+              
+              let pass = makepassword(10);
 
 
               let eventIds = [];
@@ -606,11 +547,13 @@ querySnapshots.forEach((doctwo) => {
                     jobTitle: rows[i][3] || null,
                     Company: rows[i][4] || null,
                     Country: rows[i][5] || null,
-                    Password: pass.toString() || null,
+                    Password: pass || null,
                     eventId: eventIds || null,
                     changedPassword: false,
                     rank: 2
                   });
+
+                  sendEmail(rows[i][0] ,rows[i][1] ,rows[i][2] , pass )
                 }
                   var userEventId = localStorage.getItem("event ID");
                   
@@ -630,7 +573,6 @@ querySnapshots.forEach((doctwo) => {
                     rank: 2
                   });
                 
-
 
 
 
@@ -809,8 +751,8 @@ querySnapshots.forEach((doctwo) => {
                 
 
 
-                let pass = [];
-                pass.push(makepassword(10));
+                
+                let pass = makepassword(10);
   
   
                 let eventIds = [];
@@ -879,19 +821,20 @@ querySnapshots.forEach((doctwo) => {
     
                     let reff;
                     if(!found) {
-                        const reff = await addDoc(collection(db, "excelSheetMembers"), {
+                        reff = await addDoc(collection(db, "excelSheetMembers"), {
                         Name: username.value,
                         Surname: surname.value,
                         email: userEmail.value,
                         jobTitle: jobtitle.value,
                         Company: company.value,
                         Country: country.value,
-                        Password: pass.toString() || null,
+                        Password: pass || null,
                         eventId: eventIds || null,
                         changedPassword: false,
                         rank: 2
                       });
                       
+                      sendEmail(username.value, surname.value , userEmail.value, pass )
                     }
 
                     var userEventId = localStorage.getItem("event ID");
@@ -899,7 +842,7 @@ querySnapshots.forEach((doctwo) => {
                     let refNotDuplicate = found ? docRefDuplicate : reff.id;
 
                     let chatRef = doc(db, "Events", userEventId, "users", refNotDuplicate);
-                    setDoc(chatRef, {
+                   await setDoc(chatRef, {
                       name: username.value,
                       surname: surname.value,
                       email: userEmail.value,
@@ -909,7 +852,7 @@ querySnapshots.forEach((doctwo) => {
                       rank: 2
                     });
     
-    
+                    /// Adding event id to list of events in excelsheetMembers
                     const foundQuery = query(usersRef, where("email", "==", userEmail.value));
                     const foundQuerySnapShot = await getDocs(foundQuery);
     
@@ -3592,3 +3535,66 @@ querySnapshotyy.forEach(async(docx) => {
   }
 
 });
+
+
+ //MailJet:
+      
+      /**
+ *
+ * Run:
+ *
+ */
+
+      // const myModule = require('node-mailjet');
+
+      // if (myModule) {
+      //   console.log('Module imported successfully');
+      // } else {
+      //   console.log('Module not found');
+      // }
+
+
+      // const Mailjet = require('node-mailjet');
+
+      // const mailjet = Mailjet.apiConnect(
+      //   process.env.MJ_APIKEY_PUBLIC,
+      //   process.env.MJ_APIKEY_PRIVATE,
+      // );
+      
+      // function sendEmail(recipient) {
+      //   return mailjet
+      //     .post("send", { version: "v3.1" })
+      //     .request({
+      //       Messages: [
+      //         {
+      //           From: {
+      //             Email: "shady22elmagic@gmail.com",
+      //             Name: "JackLeckerman",
+      //           },
+      //           To: [
+      //             {
+      //               Email: email.value,
+      //             },
+      //           ],
+      //           Subject: "one",
+      //           TextPart: "two",
+      //           HTMLPart: "three",
+      //         },
+      //       ],
+      //     })
+      //     .then((result) => {
+      //       // do something with the send result or ignore
+      //       console.log("done")
+      //     })
+      //     .catch((err) => {
+      //       // handle an error
+      //       console.log("error")
+      //     });
+      // }
+
+      // const api = new MailSlurp({ apiKey: "db682089d96bec6fbce322f0ff2467b9e1ef6f639d663eb4a6de00332dbe2c2c" });
+      // const newEmailInbox = await api.createInbox();
+      // const result = await sendEmail(newEmailInbox.emailAddress);
+      // expect(result.success).to.be(true);
+
+      // **************

@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc, updateDoc, serverTimestamp, getCountFromServer ,onSnapshot, orderBy, writeBatch, doc, deleteDoc, connectFirestoreEmulator, query, where, setDoc, runTransaction } from "firebase/firestore";
+import { getFirestore, collection,documentId, getDocs, addDoc, updateDoc, serverTimestamp, getCountFromServer ,onSnapshot, orderBy, writeBatch, doc, deleteDoc, connectFirestoreEmulator, query, where, setDoc, runTransaction } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import emailjs from '@emailjs/browser';
+
 import { read, writeFileXLSX } from "xlsx";
 import XLSX from 'xlsx';
 import moment from 'moment';
@@ -1901,7 +1902,7 @@ let userID = localStorage.getItem("chatUser");
               receiverID: docx.id,
               receiver_username: `${docx.data().Name} ${docx.data().Surname}`,
               sender_username: adminName,
-              status: 0,
+              status: 2,
               TableNum: TableNumSelect.value,
               Date: dateRangeSelect.value,
             });
@@ -2267,39 +2268,61 @@ let pollDet = document.querySelector("#poll-detail");
 
 let chatRecentList = document.querySelector("#recent-list");
 if (chatRecentList) {
+  
+  const myChatsQuery = await getDocs(query(collection(db, "Events", eventPopId, "users", adminID, "chats")));
+  let usersTalkedTo = []
+  console.log("ALOOO")
+  myChatsQuery.forEach((chatDoc) => {
+    usersTalkedTo.push(chatDoc.data()["reciverId"])
+    usersTalkedTo.push(chatDoc.data()["senderId"])
+  })
+  
+  // Now we have all users we chatted before with
+ let uniq = [...new Set(usersTalkedTo)]
 
-  const q = query(collection(db, "Events", eventPopId, "users"), orderBy("datetime"));
-
-const querySnapshoyt = await getDocs(q);
-querySnapshoyt.forEach((doc) => {
-  // doc.data() is never undefined for query doc snapshots
-  // console.log(doc.id, " => ", doc.data());
-
-    if (doc.id != adminID && doc.data().name != "Name") {
-      let user = document.createElement("div");
+  if(uniq != undefined && uniq.length > 0) {
+    // , where(documentId(), 'in', uniq)
+      const q = query(collection(db, "Events", eventPopId, "users"));
       
-      user.innerHTML = `
+      const querySnapshoyt = await getDocs(q);
+      let dataToRemove = []
+      querySnapshoyt.forEach((element) => {
+        if(!uniq.includes(element.id)) {
+          dataToRemove.push(element.id)
+        }
+      })
       
 
-      <div id=${doc.id}>
-        <a href="chatroom.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border transition-colors border-navy rounded-lg shadow hover:bg-grey">
-        <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${doc.data().name}</h5>
-        </a>
-      </div>
-      `
+      querySnapshoyt.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        // console.log(doc.id, " => ", doc.data());
 
-      if(user) {
-        user.addEventListener('click', () => {
-          localStorage.setItem("chatUser", `${doc.id}`);
+          if (doc.id != adminID && doc.data().name != "Name" && !dataToRemove.includes(doc.id)) {
+            let user = document.createElement("div");
+            
+            user.innerHTML = `
+            
+
+            <div id=${doc.id}>
+              <a href="chatroom.html" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-navy border transition-colors border-navy rounded-lg shadow hover:bg-grey">
+              <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">${doc.data().name}</h5>
+              </a>
+            </div>
+            `
+
+            if(user) {
+              user.addEventListener('click', () => {
+                localStorage.setItem("chatUser", `${doc.id}`);
+              });
+            }
+
+
+            chatRecentList.appendChild(user)
+          }
+          
+          
         });
-      }
-
-
-      chatRecentList.appendChild(user)
-    }
-    
-    
-  });
+  }
 }
 
 let chatContactList = document.querySelector("#contact-list");

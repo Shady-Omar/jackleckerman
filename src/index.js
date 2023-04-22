@@ -2411,35 +2411,40 @@ if (sendBtn) {
   sendBtn.addEventListener('click', async () => {
 
     if (msgInput.value != "" || null) {
-      await addDoc(collection(db, "Events", eventPopId, "users", chatUser, "chats"), {
-        datetime: serverTimestamp(),
-        reciverId: chatUser,
-        senderId: adminID,
-        text: msgInput.value
-      });
-      await addDoc(collection(db, "Events", eventPopId, "users", adminID, "chats"), {
-        datetime: serverTimestamp(),
-        reciverId: chatUser,
-        senderId: adminID,
-        text: msgInput.value
-      });
-
-      const chatRefDoc = doc(db, "Events", eventPopId, "users", chatUser);
-      await updateDoc(chatRefDoc, {
-        datetime: serverTimestamp()
-      });
-
-      const chatAdminDoc = doc(db, "Events", eventPopId, "users", adminID);
-      await updateDoc(chatAdminDoc, {
-        datetime: serverTimestamp()
-      });
-
+      await sendMessage(adminID , chatUser, msgInput.value )
       window.scrollBy(0, 1000000);
       msgInput.value = ""
     }
   })
 }
 
+async function sendMessage (from , to , message)   {
+
+  if (message != "" || null) {
+    await addDoc(collection(db, "Events", eventPopId, "users", to, "chats"), {
+      datetime: serverTimestamp(),
+      reciverId: to,
+      senderId: from,
+      text: message
+    });
+    await addDoc(collection(db, "Events", eventPopId, "users", from, "chats"), {
+      datetime: serverTimestamp(),
+      reciverId: to,
+      senderId: from,
+      text: message
+    });
+
+    const chatRefDoc = doc(db, "Events", eventPopId, "users", to);
+    await updateDoc(chatRefDoc, {
+      datetime: serverTimestamp()
+    });
+
+    const chatAdminDoc = doc(db, "Events", eventPopId, "users", from);
+    await updateDoc(chatAdminDoc, {
+      datetime: serverTimestamp()
+    });
+ }
+}
 
 // Editing Polls :
 
@@ -2957,13 +2962,13 @@ querySnapshoot.forEach(async(docx) => {
               var eventPopId = localStorage.getItem("event ID");
               console.log(eventPopId)
 
-
-              await addDoc(collection(db, "Events", eventPopId, "users", chatUser, "userBtns"), {
-                btnName: newBtnName.value,
-                btnURL: newBtnLink.value,
-                userBtnID: userID,
-                hidden: false,
-              });
+              console.log(`This button will be added to the user ${chatUser}`)
+              // await addDoc(collection(db, "Events", eventPopId, "users", chatUser, "userBtns"), {
+              //   btnName: newBtnName.value,
+              //   btnURL: newBtnLink.value,
+              //   userBtnID: userID,
+              //   hidden: false,
+              // });
 
               addBtnPopHidden.classList.add("hidden");
               addBtnPopHidden.classList.remove("flex");
@@ -3669,12 +3674,18 @@ querySnapshotyy.forEach(async(docx) => {
           });
 
           let SendBtn = document.getElementById('send-all-btn');
-          SendBtn.addEventListener('click', () => {
+          SendBtn.addEventListener('click', async () =>  {
             let messageValue = document.getElementById('message-value');
-            // **********
-            // Your Code Here
-            // **********
             sendPop.remove();
+            if(messageValue.value) {
+            let eventUsersSnapshot = await getDocs(query(collection(db, "Events" , eventPopId , "users")))
+            for await (const user of eventUsersSnapshot.docs) {
+              await sendMessage(adminID ,user.id , messageValue.value)
+            }
+
+            alert('Message Sent to all event attendess')
+            location.reload()
+          }
           });
         });
 

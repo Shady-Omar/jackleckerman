@@ -954,15 +954,17 @@ querySnapshotss.forEach((doc) => {
 
 let CoordinatorBtn = document.querySelector(".admin");
 
+if (CoordinatorBtn) {
+  const querySnapshoxxt = await getDocs(collection(db, "excelSheetMembers"));
+  querySnapshoxxt.forEach(async(doc) => {
+  
+    if (adminID === doc.id && doc.data().rank === 0) {
+      CoordinatorBtn.classList.remove("hidden");
+    }
+  
+  });
 
-const querySnapshoxxt = await getDocs(collection(db, "excelSheetMembers"));
-querySnapshoxxt.forEach(async(doc) => {
-
-  if (adminID === doc.id && doc.data().rank === 0) {
-    CoordinatorBtn.classList.remove("hidden");
-  }
-
-});
+}
 
 
 const querySnapshotsx = await getDocs(collection(db, "Events"));
@@ -2630,7 +2632,7 @@ querySnapshoot.forEach(async(docx) => {
         <div  class=" flex fixed z-10 top-0 w-full h-full bg-navy bg-opacity-60 flex-col items-center ">
           <div id="add-btn-block" class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg grid gap-[1rem] grid-cols-4">
               
-            <div id=${userID}-add-opt class="cursor-pointer">
+            <div id=add-opt-${userID} class="cursor-pointer">
               <div href="#" class="block max-w-[180px] min-w-[180px] min-h-[80px] p-6 bg-green border border-green rounded-lg shadow hover:bg-darkgreen">
                 <h5 class="mb-2 text-2xl text-center font-bold tracking-tight text-white">Add Option</h5>
               </div>
@@ -2654,7 +2656,7 @@ querySnapshoot.forEach(async(docx) => {
         const querySnapshottt = await getDocs(quu);
         querySnapshottt.forEach((ddoc) => {
           
-          let addUserBtn = document.querySelector(`#${chatUser}-add-opt`)
+          let addUserBtn = document.querySelector(`#add-opt-${chatUser}`)
           
 
           
@@ -2865,7 +2867,7 @@ querySnapshoot.forEach(async(docx) => {
         });
       }
 
-      let addbtn = document.querySelector(`#${userID}-add-opt`);
+      let addbtn = document.querySelector(`#add-opt-${userID}`);
       if (addbtn) {
         addbtn.addEventListener('click',() => {
 
@@ -3621,3 +3623,60 @@ querySnapshotyy.forEach(async(docx) => {
       // expect(result.success).to.be(true);
 
       // **************
+
+      let sendAll = document.getElementById('send-all');
+      
+      if (sendAll) {
+        sendAll.addEventListener('click', () => {
+          let sendAllPop = document.getElementById('send-all-pop');
+          let sendPop = document.createElement('div');
+          sendPop.innerHTML = `
+          <div id="modify-Pop" class=" flex fixed z-10 top-0 left-0 w-full h-full bg-black bg-opacity-60" style="overflow-y: overlay;">
+          <div class="extraOutline p-12 bg-white w-[30%] max-w-[405px] bg-whtie m-auto rounded-lg">
+        
+            <div class="max-w-md mx-auto">
+              <div id="close-send-pop" class="hidden">×</div>
+              <div>
+                <h1 class="text-2xl font-semibold">Send Message to all</h1>
+              </div>
+              <div class="divide-y divide-gray-200">
+                <div id="form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+                  <div class="relative">
+                  <label for="message" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Message:</label>
+                  <input id="message-value" type="text" class="mt-4 border rounded-md">
+  
+                  </div>
+  
+                  <div id="send-error-one"></div>
+  
+                  
+                </div>
+                <div class="relative border-none">
+                  <button id="send-all-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Send</button>
+                  <button id="close-send-btn" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+          `
+  
+          sendAllPop.appendChild(sendPop)
+  
+          let closeSend = document.getElementById('close-send-btn');
+          closeSend.addEventListener('click', () => {
+            sendPop.remove();
+          });
+
+          let SendBtn = document.getElementById('send-all-btn');
+          SendBtn.addEventListener('click', () => {
+            let messageValue = document.getElementById('message-value');
+            // **********
+            // Your Code Here
+            // **********
+            sendPop.remove();
+          });
+        });
+
+
+      }

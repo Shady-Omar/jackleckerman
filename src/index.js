@@ -2623,7 +2623,7 @@ querySnapshoot.forEach(async(docx) => {
 
     clkAddBtn.addEventListener('click', async() => {
       localStorage.setItem("chatUser", docx.id);
-      let cc = localStorage.getItem("chatUser");
+      
       // **********
 
       let addbtnPop = document.querySelector("#add-btn-pop");
@@ -2655,12 +2655,12 @@ querySnapshoot.forEach(async(docx) => {
       addbtnPop.appendChild(optionPopUp);
 
         // *************
-        
-        const quu = query(collection(db, "Events", eventPopId, "users", cc, "userBtns"), where("userBtnID", "==", cc));
+        let cc = localStorage.getItem("chatUser");
+        const quu = query(collection(db, "Events", eventPopId, "users", cc, "userBtns"));
       
         const querySnapshottt = await getDocs(quu);
         querySnapshottt.forEach((ddoc) => {
-          
+          console.log(ddoc.id)
           let addUserBtn = document.querySelector(`#add-opt-${chatUser}`)
           
 
@@ -2961,14 +2961,14 @@ querySnapshoot.forEach(async(docx) => {
 
               var eventPopId = localStorage.getItem("event ID");
               console.log(eventPopId)
-
-              console.log(`This button will be added to the user ${chatUser}`)
-              // await addDoc(collection(db, "Events", eventPopId, "users", chatUser, "userBtns"), {
-              //   btnName: newBtnName.value,
-              //   btnURL: newBtnLink.value,
-              //   userBtnID: userID,
-              //   hidden: false,
-              // });
+              let attendUser = localStorage.getItem("chatUser")
+              console.log(`This button will be added to the user ${attendUser}`)
+              await addDoc(collection(db, "Events", eventPopId, "users", attendUser, "userBtns"), {
+                btnName: newBtnName.value,
+                btnURL: newBtnLink.value,
+                userBtnID: attendUser,
+                hidden: false,
+              });
 
               addBtnPopHidden.classList.add("hidden");
               addBtnPopHidden.classList.remove("flex");

@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection,documentId, getDocs, addDoc, updateDoc, serverTimestamp, getCountFromServer ,onSnapshot, orderBy, writeBatch, doc, deleteDoc, connectFirestoreEmulator, query, where, setDoc, runTransaction } from "firebase/firestore";
+import { getFirestore, collection,documentId, getDocs,getDoc, addDoc, updateDoc, serverTimestamp, getCountFromServer ,onSnapshot, orderBy, writeBatch, doc, deleteDoc, connectFirestoreEmulator, query, where, setDoc, runTransaction } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import emailjs from '@emailjs/browser';
 
@@ -2412,7 +2412,7 @@ if (sendBtn) {
   sendBtn.addEventListener('click', async () => {
 
     if (msgInput.value != "" || null) {
-      await sendMessage(adminID , chatUser, msgInput.value )
+      await sendMessage(adminID , chatUser, msgInput.value)
       window.scrollBy(0, 1000000);
       msgInput.value = ""
     }
@@ -2420,7 +2420,7 @@ if (sendBtn) {
 }
 
 async function sendMessage (from , to , message)   {
-
+  let adminName = localStorage.getItem("UserName")
   if (message != "" || null) {
     await addDoc(collection(db, "Events", eventPopId, "users", to, "chats"), {
       datetime: serverTimestamp(),
@@ -2444,9 +2444,17 @@ async function sendMessage (from , to , message)   {
     await updateDoc(chatAdminDoc, {
       datetime: serverTimestamp()
     });
+
+    const functions = getFunctions();
+              const addMessage = httpsCallable(functions, 'sendNotifi');
+              await addMessage({ 
+                recieverId: to,
+                message: message,
+                title: `New message from ${adminName}`,
+              })
  }
 }
-
+// https://ppec-website.vercel.app/
 // Editing Polls :
 
 let editForm = document.querySelector("#edit-form");
@@ -3249,10 +3257,10 @@ querySnapshotyy.forEach(async(docx) => {
       attendList.innerHTML = `
       <tr id=row-${docx.id} class="bg-navy border-b border-grey">
         <td id=receiver-${docx.id} scope="row" class="px-6 py-4 overflow-ellipsis font-medium text-white whitespace-nowrap max-w-[160px]" style="overflow-wrap: break-word;">
-            ${docx.data().receiver_username}
+            ${docx.data().sender_username}
         </td>
         <td id=sender-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
-          ${docx.data().sender_username}
+          ${docx.data().receiver_username}
         </td>
         <td id=table-${docx.id} class="px-3 py-4 max-w-[160px]" style="overflow-wrap: break-word;">
             ${table}
@@ -3294,6 +3302,8 @@ querySnapshotyy.forEach(async(docx) => {
           status.innerHTML = `<p class="text-green font-bold">Accepted</p>`;
         } else if (docx.data().status === 5) {
           status.innerHTML = `<p class="text-red font-bold">Rejected</p>`;
+        } else if(docx.data().status === 6) {
+          status.innerHTML = `<p class="text-red font-bold">Rejected by coordinator</p>`;
         }
 
         let acceptRequest = document.querySelector(`#accept-req-${docx.id}`);
@@ -3301,18 +3311,22 @@ querySnapshotyy.forEach(async(docx) => {
         if (acceptRequest) {
 
           acceptRequest.addEventListener('click', async () => {
+            console.log(docx.data().receiverID)
+            let userRef = await getDoc(doc(db, "excelSheetMembers" ,docx.data().receiverID ));
+            let rank = userRef.data().rank
             if (confirm("Are you sure you want to accept this invitation request?")) {
               await updateDoc(doc(db, "Events", eventPopId, "meetings", docx.id), {
-                status: 2
+                status: rank == 2  ? 2 : 3
               });
-
+              if(rank == 2) {
               const functions = getFunctions();
               const addMessage = httpsCallable(functions, 'sendNotifi');
               await addMessage({ 
                 recieverId: docx.data().receiverID,
                 message: 'has invited you to a meeting',
-                title: `Meeting invite from ${docx.data().sender_username}`
-              ,})
+                title: `Meeting invite from ${docx.data().sender_username}`,
+              })
+              }
             }
             alert("Invitation accepted!");
             location.reload();
@@ -3324,7 +3338,7 @@ querySnapshotyy.forEach(async(docx) => {
           rejectRequest.addEventListener('click', async () => {
             if (confirm("Are you sure you want to reject this invitation request?")) {
               await updateDoc(doc(db, "Events", eventPopId, "meetings", docx.id), {
-                status: 5
+                status: 6 // Rejected by coordinator
               });
             }
             alert("Invitation rejected!");
@@ -3680,6 +3694,7 @@ querySnapshotyy.forEach(async(docx) => {
             sendPop.remove();
             if(messageValue.value) {
             let eventUsersSnapshot = await getDocs(query(collection(db, "Events" , eventPopId , "users")))
+            
             for await (const user of eventUsersSnapshot.docs) {
               await sendMessage(adminID ,user.id , messageValue.value)
             }

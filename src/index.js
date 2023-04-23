@@ -1684,6 +1684,7 @@ querySnapshott.forEach(async(doccc) => {
                   btnName: newBtnName.value,
                   btnURL: newBtnLink.value,
                   eventBtnID: eventPopId,
+                  hidden: false,
                 });
 
                 addBtnPopHidden.classList.add("hidden");

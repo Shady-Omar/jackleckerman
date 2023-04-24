@@ -2010,7 +2010,7 @@ let userID = localStorage.getItem("chatUser");
           let inviteMeetingBtn = document.querySelector("#invite-event-btn");
   
           inviteMeetingBtn.addEventListener('click', async() => {
-  
+            let adminName = localStorage.getItem("UserName")
             const docRef = await addDoc(collection(db, "Events", eventPopId, "meetings"), {
               datetime: serverTimestamp(),
               senderID: adminID,
@@ -2021,7 +2021,13 @@ let userID = localStorage.getItem("chatUser");
               TableNum: TableNumSelect.value,
               Date: dateRangeSelect.value,
             });
-    
+            const functions = getFunctions();
+              const addMessage = httpsCallable(functions, 'sendNotifi');
+              await addMessage({ 
+                recieverId: docx.id,
+                message: 'has invited you to a meeting',
+                title: `Meeting invite from ${adminName}`,
+              })
             alert("User Invited Successfully!");
             location.reload();
             

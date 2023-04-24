@@ -363,9 +363,9 @@ if (eventBtn) {
 
 
 const querySnapshot = await getDocs(collection(db, "excelSheetMembers"));
-querySnapshot.forEach((docx) => {
+querySnapshot.forEach((doc) => {
 
-  if (docx.data().rank != 2) {
+  if (doc.data().rank != 2) {
 
     // List for Coordinators Page
     let listContainer = document.querySelector("#list-container");
@@ -385,89 +385,18 @@ querySnapshot.forEach((docx) => {
     
     <!-- Title -->
     <div class="col-span-11 xl: ml-6">
-      <p class="text-blue-600 font-semibold"> ${docx.data().firstName} ${docx.data().lastName} </p>
+      <p class="text-blue-600 font-semibold"> ${doc.data().firstName} ${doc.data().lastName} </p>
     </div>
     
     <!-- Description -->
     <div class="md:col-start-2 col-span-11 xl: ml-6">
-      <p class="text-sm text-gray-800 font-light"> ${docx.data().email} </p>
+      <p class="text-sm text-gray-800 font-light"> ${doc.data().email} </p>
     </div>
-    <button id=edit-${docx.id} class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Event</button>
+    
   </a>
     `;
   
     listContainer.appendChild(listBlock);
-
-    let editCoordBtn = document.querySelector(`#edit-${docx.id}`)
-
-  if (editCoordBtn) {
-    editCoordBtn.addEventListener('click', () => {
-
-      let editPop = document.querySelector("#edit-coord");
-        if(editPop) {
-        let editEventPopUp = document.createElement("div");
-        editEventPopUp.setAttribute('class', `${docx.id}`);
-
-        editEventPopUp.innerHTML = `
-        
-          <div id="edit-event-pop" class="items-center justify-center relative">
-            <div class=" flex fixed z-10 top-0 w-full h-full bg-black bg-opacity-60" style="overflow-y: overlay;">
-              <div class="extraOutline p-4 bg-white w-max bg-whtie m-auto rounded-lg">
-                  <div class="file_upload flex flex-col justify-center p-5 relative border-4 border-dotted border-grey rounded-lg" style="width: 450px">
-
-                  <div id="edit-form" class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                    <div class="relative">
-                      <input autocomplete="off" required id="edit-coord-email" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Event Name" value="${docx.data().email}"/>
-                      <label for="edit-coord-email" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Email Address</label>
-                    </div>
-
-                    <div id="edit-error-one"></div>
-                    </div>
-                    <div class="relative">
-                      <button id="edit-coord-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Edit</button>
-                      <button id="delete-coord-btn" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">Delete</button>
-                      <button id="close-coord-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
-                    </div>
-
-                  </div>
-              </div>
-            </div>
-          </div>
-          `
-          editPop.appendChild(editEventPopUp);
-
-          let closeEditCoord = document.getElementById('close-coord-btn');
-          if (closeEditCoord) {
-            closeEditCoord.addEventListener('click', () => {
-              editEventPopUp.remove();
-            });
-          }
-
-          // Delete Btn:
-          let deleteCoord = document.getElementById('delete-coord-btn');
-          if (deleteCoord) {
-            deleteCoord.addEventListener('click', async() => {
-              if (confirm("Are you sure you wannt to delete this Coordinator ?")) {
-                await deleteDoc(doc(db, "excelSheetMembers", docx.id));
-                alert("Coordinator Deleted!");
-                location.reload();
-              }
-            });
-          }
-
-          // Edit Btn:
-          let editCoord = document.getElementById('edit-coord-btn');
-          if (editCoord) {
-            editCoord.addEventListener('click', async() => {
-              // Your Code Here :
-              // *
-              // *
-              // *
-            });
-          }
-        }
-      })
-    }
     }
   }
 
@@ -3355,30 +3284,57 @@ querySnapshotyy.forEach(async(docx) => {
           status.innerHTML = `<p class="text-yellow font-bold">Coordinator confirmation pending:</p>
           <div  class="flex flex-row justify-start items-center">
           <button id="accept-req-${docx.id}" type="button" class="focus:outline-none text-white bg-green hover:bg-darkgreen focus:ring-4 focus:ring-green font-medium rounded-lg text-sm px-5 py-2.5 mr-4 my-2">Accept</button>
-          <button id="reject-req-${docx.id}" type="button" class="focus:outline-none text-white bg-red hover:bg-black focus:ring-4 focus:ring-red font-medium rounded-lg text-sm px-5 py-2.5 my-2">Reject</button>
+          <button id="reject-req-${docx.id}" type="button" class="focus:outline-none text-white bg-red hover:bg-black focus:ring-4 focus:ring-red font-medium rounded-lg text-sm px-5 py-2.5 mr-4  my-2">Reject</button>
+          <button id="delete-req-${docx.id}" type="button" class="focus:outline-none text-white bg-red hover:bg-black focus:ring-4 focus:ring-red font-medium rounded-lg text-sm px-5 py-2.5 my-2">Delete</button>
+
           </div>`;
           // ConfirmOne.classList.remove('hidden');
           // ConfirmBtnsOne.classList.remove('hidden');
         } else if (docx.data().status === 2) {
           status.innerHTML = `<p class="text-yellow font-bold">User confirmation pending ...</p>
+          <div class="flex flex-row justify-start items-center">
+          
+          <button id="delete-req-${docx.id}" type="button" class="focus:outline-none text-white bg-red hover:bg-black focus:ring-4 focus:ring-red font-medium rounded-lg text-sm px-5 py-2.5 my-2">Delete</button>
+
+          </div>
           `;
         } else if (docx.data().status === 3) {
           status.innerHTML = `<p class="text-green font-bold">User Accepted the invitation</p>
           <div class="flex flex-row justify-start items-center">
           
-          <button id="modify-req-${docx.id}" type="button" class="focus:outline-none text-white bg-blue hover:bg-darkblue focus:ring-4 focus:ring-blue font-medium rounded-lg text-sm px-5 py-2.5 my-2">Modifiy</button>
+          <button id="modify-req-${docx.id}" type="button" class="focus:outline-none text-white bg-blue hover:bg-darkblue focus:ring-4 focus:ring-blue font-medium rounded-lg text-sm px-5 py-2.5 mr-4 my-2">Modifiy</button>
+          <button id="delete-req-${docx.id}" type="button" class="focus:outline-none text-white bg-red hover:bg-black focus:ring-4 focus:ring-red font-medium rounded-lg text-sm px-5 py-2.5 my-2">Delete</button>
+
           </div>
           `;
         } else if (docx.data().status === 4) {
-          status.innerHTML = `<p class="text-green font-bold">Accepted</p>`;
+          status.innerHTML = `<p class="text-green font-bold">Accepted</p>
+          <div class="flex flex-row justify-start items-center">
+          
+          <button id="delete-req-${docx.id}" type="button" class="focus:outline-none text-white bg-red hover:bg-black focus:ring-4 focus:ring-red font-medium rounded-lg text-sm px-5 py-2.5 my-2">Delete</button>
+
+          </div>
+          `;
         } else if (docx.data().status === 5) {
-          status.innerHTML = `<p class="text-red font-bold">Rejected</p>`;
+          status.innerHTML = `<p class="text-red font-bold">Rejected</p>
+          <div class="flex flex-row justify-start items-center">
+          
+          <button id="delete-req-${docx.id}" type="button" class="focus:outline-none text-white bg-red hover:bg-black focus:ring-4 focus:ring-red font-medium rounded-lg text-sm px-5 py-2.5 my-2">Delete</button>
+
+          </div>`;
         } else if(docx.data().status === 6) {
-          status.innerHTML = `<p class="text-red font-bold">Rejected by coordinator</p>`;
+          status.innerHTML = `<p class="text-red font-bold">Rejected by coordinator</p>
+          <div class="flex flex-row justify-start items-center">
+          
+          <button id="delete-req-${docx.id}" type="button" class="focus:outline-none text-white bg-red hover:bg-black focus:ring-4 focus:ring-red font-medium rounded-lg text-sm px-5 py-2.5 my-2">Delete</button>
+
+          </div>`;
         }
 
         let acceptRequest = document.querySelector(`#accept-req-${docx.id}`);
         let rejectRequest = document.querySelector(`#reject-req-${docx.id}`);
+        let deleteRequest = document.querySelector(`#delete-req-${docx.id}`);
+
         if (acceptRequest) {
 
           acceptRequest.addEventListener('click', async () => {
@@ -3401,6 +3357,16 @@ querySnapshotyy.forEach(async(docx) => {
             }
             alert("Invitation accepted!");
             location.reload();
+          });
+        }
+
+        if(deleteRequest) {
+          deleteRequest.addEventListener('click' , async () => {
+            if (confirm("Are you sure you want to delete this invitation request?")) {
+              await deleteDoc(doc(db, "Events", eventPopId, "meetings", docx.id))
+              alert("Invitation removed")
+              location.reload()
+            }
           });
         }
 

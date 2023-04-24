@@ -392,7 +392,7 @@ querySnapshot.forEach((docx) => {
     <div class="md:col-start-2 col-span-11 xl: ml-6">
       <p class="text-sm text-gray-800 font-light"> ${docx.data().email} </p>
     </div>
-    <button id=edit-${docx.id} class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Event</button>
+    <button id=edit-${docx.id} class="bg-black md:col-start-10 col-span-12 hover:bg-darkblue text-white rounded-md px-2 py-1">Edit / Delete Coordinator</button>
     
   </a>
     `;
@@ -428,17 +428,12 @@ querySnapshot.forEach((docx) => {
                     </div>
                     <div id="edit-error-two"></div>
 
-                    <div class="relative">
-                      <input autocomplete="off" required id="edit-coord-email" name="name" type="text" class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Email Address" value="${docx.data().email}"/>
-                      <label for="edit-coord-email" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Email Address</label>
-                    </div>
-                    
-                    <div id="edit-error-three"></div>
+                   
                     </div>
                     <div class="relative">
                       <button id="edit-coord-btn" class="bg-darkblue hover:bg-blue text-white rounded-md px-2 py-1">Edit</button>
                       <button id="delete-coord-btn" class="bg-red hover:bg-blue text-white rounded-md px-2 py-1">Delete</button>
-                      <button id="close-coord-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
+                      <button id="close-s-btn" class="bg-grey hover:bg-blue text-white rounded-md px-2 py-1">Close</button>
                     </div>
                   </div>
               </div>
@@ -450,18 +445,15 @@ querySnapshot.forEach((docx) => {
 
           let firstNameError = document.querySelector("#edit-error-one");
           let secondNameError = document.querySelector("#edit-error-two");
-          let thirdNameError = document.querySelector("#edit-error-three");
 
           let firstNameField = document.querySelector("#edit-coord-first-name");
           let lastNameField = document.querySelector("#edit-coord-second-name");
-          let emailField = document.querySelector("#edit-coord-email");
 
 
 
-          let closeEditCoord = document.getElementById('close-coord-btn');
+          let closeEditCoord = document.getElementById('close-s-btn');
           if (closeEditCoord) {
-            closeEditCoord.addEventListener('click',async  () => {
-              
+            closeEditCoord.addEventListener('click' ,  () => {
               editEventPopUp.remove();
             });
           }
@@ -484,22 +476,37 @@ querySnapshot.forEach((docx) => {
             editCoord.addEventListener('click', async() => {
               if(!firstNameField.value) firstNameError.innerHTML = '*First Name is required'
               else if(!lastNameField.value) secondNameError.innerHTML = '*Last Name is required'
-              else if(!emailField.value) thirdNameError.innerHTML = '*Email is required'
               else {
-                console.log('All Good')
-                const usersDoc = await getDocs(query(collection(db, "excelSheetMembers") , where("email" , "==" , emailField.value)))
-                if(usersDoc.docs.length > 0) thirdNameError.innerHTML = '*Email already exists'
-                else {
+                console.log(docx.id)
+                let originalname = `${docx.data().firstName} ${docx.data().lastName}`
+                let currentName = `${firstNameField.value} ${lastNameField.value}`
                 if (confirm("Confirm edits?")) {  
-                  
+                await  updateDoc(doc(db, "excelSheetMembers" , docx.id) , {
+                    firstName: firstNameField.value,
+                    lastName: lastNameField.value
+                  }) 
+
+                 
+
+                  let firstQuery = await getDocs(collection(db , "Events"))
+                  firstQuery.forEach(async (event) => {
+                    let secondQuery = await getDoc(doc(db, "Events" , event.id, "users" , docx.id)) 
+                    if(secondQuery) await updateDoc(doc(db, "Events" , event.id, "users" , docx.id) , {
+                      name: currentName
+                    }) 
+                    
+                  })
+
                   alert("Coordinator Edited!");
                   location.reload();
                 }
-              }
+              
               }
             });
           }
         }
+      
+      
       })
     }
     }

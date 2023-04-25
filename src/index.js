@@ -2021,13 +2021,7 @@ let userID = localStorage.getItem("chatUser");
               TableNum: TableNumSelect.value,
               Date: dateRangeSelect.value,
             });
-            const functions = getFunctions();
-              const addMessage = httpsCallable(functions, 'sendNotifi');
-              await addMessage({ 
-                recieverId: docx.id,
-                message: 'has invited you to a meeting',
-                title: `Meeting invite from ${adminName}`,
-              })
+            await sendNotification(docx.id, `Meeting invite from ${adminName}` , 'has invited you to a meeting')     
             alert("User Invited Successfully!");
             location.reload();
             
@@ -2562,15 +2556,19 @@ async function sendMessage (from , to , message)   {
     await updateDoc(chatAdminDoc, {
       datetime: serverTimestamp()
     });
-
-    const functions = getFunctions();
-              const addMessage = httpsCallable(functions, 'sendNotifi');
-              await addMessage({ 
-                recieverId: to,
-                message: message,
-                title: `New message from ${adminName}`,
-              })
+    await sendNotification(to, `New message from ${adminName}` , message )
+    
  }
+}
+
+async function sendNotification(reciever , title , body) {
+  const functions = getFunctions();
+  const addMessage = httpsCallable(functions, 'sendNotifi');
+  await addMessage({ 
+    recieverId: reciever,
+    title: title,
+    message: body,
+  })
 }
 // https://ppec-website.vercel.app/
 // Editing Polls :
@@ -3464,13 +3462,12 @@ querySnapshotyy.forEach(async(docx) => {
                 status: rank == 2  ? 2 : 3
               });
               if(rank == 2) {
-              const functions = getFunctions();
-              const addMessage = httpsCallable(functions, 'sendNotifi');
-              await addMessage({ 
-                recieverId: docx.data().receiverID,
-                message: 'has invited you to a meeting',
-                title: `Meeting invite from ${docx.data().sender_username}`,
-              })
+              await sendNotification(
+               docx.data().receiverID , 
+              `Meeting invite from ${docx.data().sender_username}`,
+              'Has invited you to a meeting',
+              )
+            
               }
             }
             alert("Invitation accepted!");
@@ -3716,6 +3713,16 @@ querySnapshotyy.forEach(async(docx) => {
                         TimeRange: `${TableNumSelect.value}::${docx.data().Date}::${timeRangeSelect.value}`,
                         status: 4,
                       });
+                      await sendNotification(
+                        docx.data().receiverID,
+                        'Meeting',
+                        'Meeting confirmed!'
+                      );
+                      await sendNotification(
+                        docx.data().senderID,
+                        'Meeting',
+                        'Meeting confirmed!'
+                      );
                       alert("Invitation confirmed!");
                       location.reload();
                     }
